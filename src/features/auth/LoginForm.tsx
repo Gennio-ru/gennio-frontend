@@ -29,7 +29,7 @@ export default function LoginForm() {
   return (
     <form
       onSubmit={onSubmit}
-      className="mx-auto w-full max-w-sm space-y-4 rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-6 shadow-sm"
+      className="mx-auto w-full max-w-sm space-y-4 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm"
     >
       <h1 className="text-lg font-semibold">Sign in</h1>
       {error && (

@@ -10,13 +10,13 @@ import {
   apiGetPrompt,
   apiUpdatePrompt,
   type Prompt,
-  type CreatePromptDto,
+  type CreatePromptPayload,
 } from "@/api/prompts";
 import { apiUploadFile } from "@/api/files";
 import Input from "@/shared/Input";
 import Textarea from "@/shared/Textarea";
 import Button from "@/shared/Button";
-import { ImageUploadField } from "@/shared/ImageUploadField";
+import ImageUploader from "@/shared/FilePondUploader";
 
 const promptSchema = z.object({
   title: z.string().min(1, "Укажите заголовок"),
@@ -107,7 +107,7 @@ export default function PromptAdminEdit() {
 
   const onSubmit = async (data: PromptFormValues) => {
     setFormError(null);
-    const dto: CreatePromptDto = {
+    const dto: CreatePromptPayload = {
       title: data.title,
       description: data.description,
       text: data.text,
@@ -199,7 +199,7 @@ export default function PromptAdminEdit() {
         </label>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <ImageUploadField
+          <ImageUploader
             control={control}
             name="beforeImageId"
             label="До"
@@ -207,7 +207,7 @@ export default function PromptAdminEdit() {
             onUpload={upload}
             currentUrl={currentPromptData?.beforeImageUrl ?? null}
           />
-          <ImageUploadField
+          <ImageUploader
             control={control}
             name="afterImageId"
             label="После"

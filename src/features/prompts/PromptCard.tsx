@@ -1,46 +1,53 @@
 import type { Prompt } from "@/api/prompts";
-import { ImgComparisonSlider } from "@img-comparison-slider/react";
+import { useNavigate } from "react-router-dom";
 
-const BASE = (
-  import.meta.env.VITE_ASSETS_BASE_URL ??
-  import.meta.env.VITE_API_URL ??
-  ""
-).replace(/\/$/, "");
-
-function toUrl(p?: string | null, id?: string) {
-  if (!p) return `https://picsum.photos/400/300?random=${id ?? Math.random()}`;
-  if (/^https?:\/\//i.test(p)) return p;
-  const path = p.startsWith("/") ? p.slice(1) : p;
-  return `${BASE}/${path}`;
+interface Props {
+  prompt: Prompt;
 }
 
-export default function PromptCard({ p }: { p: Prompt }) {
-  const beforeSrc = toUrl(p.beforeImageUrl, p.id);
-  const afterSrc = toUrl(p.afterImageUrl, p.id + "-b");
+export default function PromptCard({ prompt }: Props) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/prompt/${prompt.id}`);
+  };
+
+  // const beforeSrc = toUrl(p.beforeImageUrl, p.id);
+  // const afterSrc = toUrl(p.afterImageUrl, p.id + "-b");
 
   return (
-    <article className="group overflow-hidden rounded-2xl border...bg-white dark:bg-neutral-800 dark:border-neutral-700 shadow-sm">
+    <article
+      onClick={handleClick}
+      className="group overflow-hidden rounded-2xl bg-white cursor-pointer"
+    >
       <div className="relative aspect-[4/3] overflow-hidden">
-        <ImgComparisonSlider hover>
-          <img
-            slot="first"
-            className="h-full w-full object-cover transition group-hover:scale-[1.02]"
-            src={beforeSrc}
-            alt={p.title}
-          />
-          <img
-            slot="second"
-            className="h-full w-full object-cover transition group-hover:scale-[1.02]"
-            src={afterSrc}
-            alt={p.title}
-          />
-        </ImgComparisonSlider>
+        <img
+          src={prompt.afterImageUrl}
+          alt={prompt.title}
+          className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
+          loading="lazy"
+        />
+
+        {/* 
+        <BeforeAfterSpring
+          before={beforeSrc}
+          after={afterSrc}
+          alt={p.title}
+          className="h-full w-full"
+          initial={50}
+          returnTo={50} // поставить null, если не нужно авто-возврат к центру
+          stiffness={180} // «вязкость» следования (меньше — мягче/дольше)
+          damping={24}
+          mass={0.45}
+        /> 
+        */}
       </div>
+
       <div className="p-3">
-        <h3 className="truncate text-sm font-semibold">{p.title}</h3>
-        {p.description && (
-          <p className="mt-1 line-clamp-2 text-xs text-neutral-600 dark:text-stone-400">
-            {p.description}
+        <h3 className="truncate text-sm font-semibold">{prompt.title}</h3>
+        {prompt.description && (
+          <p className="mt-1 line-clamp-2 text-xs text-neutral-600">
+            {prompt.description}
           </p>
         )}
       </div>

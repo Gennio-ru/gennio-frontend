@@ -3,41 +3,42 @@ import { useEffect, useState } from "react";
 const THEME_KEY = "theme";
 
 export default function ThemeSwitch() {
-  const [isDark, setIsDark] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
-  // при монтировании смотрим localStorage и системные настройки
+  // при монтировании читаем localStorage и системные настройки
   useEffect(() => {
-    const saved = localStorage.getItem(THEME_KEY);
+    const saved = localStorage.getItem(THEME_KEY) as "light" | "dark" | null;
     if (saved) {
-      setIsDark(saved === "dark");
-      document.documentElement.classList.toggle("dark", saved === "dark");
+      setTheme(saved);
+      document.documentElement.setAttribute("data-theme", saved);
     } else {
       const prefersDark = window.matchMedia(
         "(prefers-color-scheme: dark)"
       ).matches;
-      setIsDark(prefersDark);
-      document.documentElement.classList.toggle("dark", prefersDark);
+      const init = prefersDark ? "dark" : "light";
+      setTheme(init);
+      document.documentElement.setAttribute("data-theme", init);
     }
   }, []);
 
   // обновляем тему при изменении
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", isDark);
-    localStorage.setItem(THEME_KEY, isDark ? "dark" : "light");
-  }, [isDark]);
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem(THEME_KEY, theme);
+  }, [theme]);
 
   return (
     <button
-      onClick={() => setIsDark((p) => !p)}
+      onClick={() => setTheme((prev) => (prev === "light" ? "dark" : "light"))}
       className={`
         relative w-10 h-6 flex items-center rounded-full p-1 transition-colors duration-300
-        ${isDark ? "bg-stone-700" : "bg-stone-300"}
+        ${theme === "dark" ? "bg-stone-700" : "bg-stone-300"}
       `}
     >
       <span
         className={`
           w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-300
-          ${isDark ? "translate-x-4" : "translate-x-0"}
+          ${theme === "dark" ? "translate-x-4" : "translate-x-0"}
         `}
       />
     </button>

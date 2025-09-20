@@ -1,29 +1,57 @@
 import api, { setAccessToken } from "./client";
-import type { components } from "./types.gen";
+import type { components, operations } from "./types.gen";
 
-export type UserDto = components["schemas"]["UserDto"];
-export type LoginByEmailDto = components["schemas"]["LoginByEmailDto"];
-export type RegisterByEmailDto = components["schemas"]["RegisterByEmailDto"];
-export type AuthResponseDto = components["schemas"]["AuthResponseDto"];
+//
+// ==== Entity Types ====
+//
+export type User = components["schemas"]["UserDto"];
+export type AuthResponse = components["schemas"]["AuthResponseDto"];
 
-export async function apiRegister(dto: RegisterByEmailDto) {
-  const { data } = await api.post<AuthResponseDto>("/auth/register/email", dto);
+export type RegisterByEmailPayload =
+  operations["AuthController_registerByEmail"]["requestBody"]["content"]["application/json"];
+export type LoginByEmailPayload =
+  operations["AuthController_loginByEmail"]["requestBody"]["content"]["application/json"];
+
+//
+// ==== API ====
+//
+export async function apiRegister(
+  payload: RegisterByEmailPayload
+): Promise<AuthResponse> {
+  const { data } = await api.post<AuthResponse>(
+    "/auth/register/email",
+    payload
+  );
+
   if (data?.accessToken) setAccessToken(data.accessToken);
+
   return data;
 }
 
-export async function apiLogin(dto: LoginByEmailDto) {
-  const { data } = await api.post<AuthResponseDto>("/auth/login/email", dto);
+export async function apiLogin(
+  payload: LoginByEmailPayload
+): Promise<AuthResponse> {
+  const { data } = await api.post<AuthResponse>("/auth/login/email", payload);
+
   if (data?.accessToken) setAccessToken(data.accessToken);
+
   return data;
 }
 
-export async function apiMe() {
-  const { data } = await api.get<UserDto>("/auth/me");
+export async function apiMe(): Promise<User> {
+  const { data } = await api.get<User>("/auth/me");
   return data;
 }
 
-export async function apiLogout() {
+export async function apiRefresh(): Promise<AuthResponse> {
+  const { data } = await api.post<AuthResponse>("/auth/refresh", {});
+
+  if (data?.accessToken) setAccessToken(data.accessToken);
+
+  return data;
+}
+
+export async function apiLogout(): Promise<void> {
   try {
     await api.post("/auth/logout", {});
   } finally {

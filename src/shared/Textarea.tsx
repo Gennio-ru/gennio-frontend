@@ -13,7 +13,6 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           className={
             "block w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 " +
             "placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 " +
-            "dark:bg-neutral-800 dark:text-neutral-100 dark:border-neutral-700 " +
             (errorText ? "border-red-500 focus:border-red-500 " : "") +
             className
           }

@@ -8,11 +8,13 @@ import PromptsAdminList from "./features/admin/PromptsAdminList";
 import PromptAdminEdit from "./features/admin/PromptAdminEdit";
 import { AdminButton } from "./shared/AdminButton";
 import { Toaster } from "react-hot-toast";
+import ModelJobPage from "./pages/ModelJobPage";
+import ModelJobResult from "./pages/ModelJobPage/ModelJobResult";
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-200 flex flex-col">
-      <header className="border-b border-neutral-200 dark:border-neutral-700 bg-white/70 dark:bg-stone-900 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+    <div className="min-h-screen bg-stone-200 text-neutral-900 flex flex-col">
+      <header className="border-b border-neutral-200 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60">
         <Container>
           <HeaderNav />
         </Container>
@@ -24,6 +26,11 @@ export default function App() {
             {/* публичные */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="*" element={<PromptsPage />} />
+            <Route path="/prompt/:promptId" element={<ModelJobPage />} />
+            <Route
+              path="/prompt/:promptId/model-job/:modelJobId"
+              element={<ModelJobResult />}
+            />
 
             {/* админка */}
             <Route
@@ -56,10 +63,10 @@ export default function App() {
         <AdminButton />
       </main>
 
-      <footer className="border-t border-neutral-200 dark:border-neutral-700 bg-white/70 dark:bg-stone-900 backdrop-blur">
+      <footer className="border-t border-neutral-200 bg-white/70 backdrop-blur">
         <Container>
-          <div className="py-3 text-xs text-neutral-500 dark:text-neutral-200">
-            © {new Date().getFullYear()} gennie — All rights reserved
+          <div className="py-3 text-xs text-neutral-500">
+            © {new Date().getFullYear()} gennio — All rights reserved
           </div>
         </Container>
       </footer>

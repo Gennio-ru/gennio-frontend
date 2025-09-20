@@ -1,24 +1,40 @@
-
 import api from "./client";
-import type { components } from "./types.gen";
+import type { operations } from "./types.gen";
 
-export type UploadFileResponseDto = components["schemas"]["UploadFileResponseDto"];
-export type FileDto = components["schemas"]["FileDto"];
-export type DeleteFileResponseDto = components["schemas"]["DeleteFileResponseDto"];
+export type UploadFileResponse =
+  operations["FilesController_upload"]["responses"][201]["content"]["application/json"];
+export type UploadFilePayload =
+  operations["FilesController_upload"]["requestBody"]["content"]["application/json"];
 
-export async function apiUploadFile(file: File) {
+export type GetFileResponse =
+  operations["FilesController_getOne"]["responses"][200]["content"]["application/json"];
+
+export type DeleteFileResponse =
+  operations["FilesController_remove"]["responses"][200]["content"]["application/json"];
+
+export async function apiUploadFile(file: File): Promise<UploadFileResponse> {
   const formData = new FormData();
   formData.append("file", file);
-  const { data } = await api.post<UploadFileResponseDto>("/files/upload", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+
+  const { data } = await api.post<UploadFileResponse>(
+    "/files/upload",
+    formData,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    }
+  );
+
   return data;
 }
-export async function apiGetFile(id: string) {
-  const { data } = await api.get<FileDto>(`/files/${id}`);
+
+export async function apiGetFile(id: string): Promise<GetFileResponse> {
+  const { data } = await api.get<GetFileResponse>(`/files/${id}`);
+
   return data;
 }
-export async function apiDeleteFile(id: string) {
-  const { data } = await api.delete<DeleteFileResponseDto>(`/files/${id}`);
+
+export async function apiDeleteFile(id: string): Promise<DeleteFileResponse> {
+  const { data } = await api.delete<DeleteFileResponse>(`/files/${id}`);
+
   return data;
 }

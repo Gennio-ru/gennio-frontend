@@ -291,10 +291,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/model-job/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить один процесс по id */
+        get: operations["ModelJobController_findOne"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/model-job": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ModelJobController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @enum {string} */
+        UserRole: "user" | "admin";
         UserDto: {
             /** Format: uuid */
             id: string;
@@ -303,19 +338,11 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
             /** @example user@example.com */
-            email?: Record<string, never> | null;
+            email?: string | null;
             /** @example +79998887766 */
-            phone?: Record<string, never> | null;
-            /**
-             * @description bcrypt-хэш пароля или null, если OTP
-             * @example $2b$10$4FZr...
-             */
-            passwordHash?: Record<string, never> | null;
-            /**
-             * @example user
-             * @enum {string}
-             */
-            role: "user" | "admin";
+            phone?: string | null;
+            /** @example user */
+            role: components["schemas"]["UserRole"];
             /**
              * @description Баланс кредитов
              * @example 100
@@ -392,6 +419,8 @@ export interface components {
             totalPages: number;
             currentPage: number;
         };
+        /** @enum {string} */
+        PromptType: "image-to-image" | "text-to-image" | "text-to-text";
         PromptResponseDto: {
             /** @example Аниме-портрет */
             title: string;
@@ -399,8 +428,7 @@ export interface components {
             description: string;
             beforeImageId: string;
             afterImageId: string;
-            /** @enum {string} */
-            type: "image-to-image" | "text-to-image" | "text-to-text";
+            type: components["schemas"]["PromptType"];
             /** @description Текст промпта */
             text: string;
             /** Format: uuid */
@@ -421,8 +449,7 @@ export interface components {
             description: string;
             beforeImageId: string;
             afterImageId: string;
-            /** @enum {string} */
-            type: "image-to-image" | "text-to-image" | "text-to-text";
+            type: components["schemas"]["PromptType"];
             /** @description Текст промпта */
             text: string;
             /** Format: uuid */
@@ -436,11 +463,11 @@ export interface components {
             /** @example Аниме-портрет */
             title: string;
             /** @example Мягкое освещение, крупный план */
-            description?: string;
-            /** @example /uploads/previews/anime-portrait.jpg */
-            beforeImageId?: string;
-            /** @example /uploads/previews/anime-portrait.jpg */
-            afterImageId?: string;
+            description: string;
+            /** @example f47ac10b-58cc-4372-a567-0e02b2c3d479 */
+            beforeImageId: string;
+            /** @example f47ac10b-58cc-4372-a567-0e02b2c3d479 */
+            afterImageId: string;
             /** @description промпт шаблона */
             text: string;
         };
@@ -449,9 +476,9 @@ export interface components {
             title?: string;
             /** @example Мягкое освещение, крупный план */
             description?: string;
-            /** @example /uploads/previews/anime-portrait.jpg */
+            /** @example f47ac10b-58cc-4372-a567-0e02b2c3d479 */
             beforeImageId?: string;
-            /** @example /uploads/previews/anime-portrait.jpg */
+            /** @example f47ac10b-58cc-4372-a567-0e02b2c3d479 */
             afterImageId?: string;
             /** @description промпт шаблона */
             text?: string;
@@ -480,7 +507,10 @@ export interface components {
         FileDto: {
             /** @example uploads/2025/09/04/photo.png */
             key: string;
-            /** @example https://cdn.example.com/uploads/2025/09/04/photo.png */
+            /**
+             * Format: uri
+             * @example https://cdn.example.com/uploads/2025/09/04/photo.png
+             */
             url?: Record<string, never> | null;
             /** @example image/png */
             contentType?: Record<string, never> | null;
@@ -513,6 +543,54 @@ export interface components {
              * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
              */
             id: string;
+        };
+        /** @enum {string} */
+        ModelType: "OPENAI";
+        /** @enum {string} */
+        ModelJobStatusType: "queued" | "processing" | "succeeded" | "failed";
+        ModelJobDto: {
+            model: components["schemas"]["ModelType"];
+            status: components["schemas"]["ModelJobStatusType"];
+            /** @example Мягкое освещение, крупный план */
+            prompt: string;
+            /** @example user-123 */
+            userId: string;
+            /**
+             * Format: uuid
+             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
+             */
+            inputFileId: string | null;
+            /**
+             * Format: uuid
+             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
+             */
+            outputFileId: string | null;
+            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.png */
+            inputFileUrl: Record<string, never> | null;
+            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.png */
+            outputFileUrl: Record<string, never> | null;
+            /** @example OpenAI timeout error */
+            error: Record<string, never> | null;
+            /** Format: date-time */
+            startedAt: string | null;
+            /** Format: date-time */
+            finishedAt: string | null;
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        CreateModelJobDto: {
+            model: components["schemas"]["ModelType"];
+            /** @example Мягкое освещение, крупный план */
+            prompt: string;
+            /**
+             * Format: uuid
+             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
+             */
+            inputFileId: string;
         };
     };
     responses: never;
@@ -796,8 +874,8 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        items?: components["schemas"]["PromptResponseDto"][];
-                        meta?: components["schemas"]["PaginationMetaDto"];
+                        items: components["schemas"]["PromptResponseDto"][];
+                        meta: components["schemas"]["PaginationMetaDto"];
                     };
                 };
             };
@@ -1017,6 +1095,59 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    ModelJobController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Найденный процесс */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelJobDto"];
+                };
+            };
+            /** @description Процесс не найден */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ModelJobController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateModelJobDto"];
+            };
+        };
+        responses: {
+            /** @description Генерация запущена */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelJobDto"];
+                };
             };
         };
     };
