@@ -1,9 +1,15 @@
 import PromptsGrid from "@/features/prompts/PromptsGrid";
+import CustomSelect from "@/shared/CustomSelect";
 
 export default function PromptsPage() {
   return (
     <div className="mx-auto w-full p-6">
-      <h1 className="mb-4 text-xl font-semibold">Prompts</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1>Prompts</h1>
+
+        <CustomSelect />
+      </div>
+
       <PromptsGrid />
     </div>
   );

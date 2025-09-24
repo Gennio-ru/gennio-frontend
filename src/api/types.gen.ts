@@ -324,6 +324,42 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить список категорий */
+        get: operations["CategoriesController_findMany"];
+        put?: never;
+        /** Создать новую категорию (только админ) */
+        post: operations["CategoriesController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/categories/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Удалить категорию (только админ) */
+        delete: operations["CategoriesController_remove"];
+        options?: never;
+        head?: never;
+        /** Обновить категорию (только админ) */
+        patch: operations["CategoriesController_update"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -421,6 +457,18 @@ export interface components {
         };
         /** @enum {string} */
         PromptType: "image-to-image" | "text-to-image" | "text-to-text";
+        CategoryDto: {
+            /** @example Мультипликация */
+            name: string;
+            /** @example Обработка изображения в рисовке мультфильмов */
+            description: string;
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
         PromptResponseDto: {
             /** @example Аниме-портрет */
             title: string;
@@ -431,6 +479,8 @@ export interface components {
             type: components["schemas"]["PromptType"];
             /** @description Текст промпта */
             text: string;
+            categoryId: Record<string, never>;
+            category: components["schemas"]["CategoryDto"];
             /** Format: uuid */
             id: string;
             /** Format: date-time */
@@ -452,6 +502,8 @@ export interface components {
             type: components["schemas"]["PromptType"];
             /** @description Текст промпта */
             text: string;
+            categoryId: Record<string, never>;
+            category: components["schemas"]["CategoryDto"];
             /** Format: uuid */
             id: string;
             /** Format: date-time */
@@ -468,8 +520,10 @@ export interface components {
             beforeImageId: string;
             /** @example f47ac10b-58cc-4372-a567-0e02b2c3d479 */
             afterImageId: string;
-            /** @description промпт шаблона */
+            /** @description Промпт шаблона */
             text: string;
+            /** @description Категория */
+            categoryId: string;
         };
         UpdatePromptDto: {
             /** @example Аниме-портрет */
@@ -480,8 +534,10 @@ export interface components {
             beforeImageId?: string;
             /** @example f47ac10b-58cc-4372-a567-0e02b2c3d479 */
             afterImageId?: string;
-            /** @description промпт шаблона */
+            /** @description Промпт шаблона */
             text?: string;
+            /** @description Категория */
+            categoryId?: string;
         };
         UploadDto: {
             /** Format: binary */
@@ -591,6 +647,16 @@ export interface components {
              * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
              */
             inputFileId: string;
+        };
+        CreateCategoryDto: {
+            /** @example Мультипликация */
+            name: string;
+            description: string;
+        };
+        UpdateCategoryDto: {
+            /** @example Мультипликация */
+            name?: string;
+            description?: string;
         };
     };
     responses: never;
@@ -858,6 +924,7 @@ export interface operations {
     PromptsController_findMany: {
         parameters: {
             query?: {
+                categoryId?: string;
                 search?: string;
                 limit?: number;
                 page?: number;
@@ -1148,6 +1215,109 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ModelJobDto"];
                 };
+            };
+        };
+    };
+    CategoriesController_findMany: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryDto"][];
+                };
+            };
+        };
+    };
+    CategoriesController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCategoryDto"];
+            };
+        };
+        responses: {
+            /** @description Категория создана */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryDto"];
+                };
+            };
+        };
+    };
+    CategoriesController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Категория удалёна */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Категория не найдена */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CategoriesController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCategoryDto"];
+            };
+        };
+        responses: {
+            /** @description Обновлённая категория */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryDto"];
+                };
+            };
+            /** @description Категория не найдена */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
