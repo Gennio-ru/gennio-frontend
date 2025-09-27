@@ -1,17 +1,20 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { apiLogin, apiMe, apiLogout } from "@/api/auth";
+import type { components } from "@/api/types.gen";
+import type { RootState } from "@/app/store";
 
-type User = { id: string; email?: string; role: string } | null;
+type User = components["schemas"]["UserDto"] | null;
 
 type State = {
   user: User;
-  token: string | null;
   status: "idle" | "loading" | "failed";
+  authReady: boolean; // <- признак, что проверка сессии завершена
 };
+
 const initialState: State = {
   user: null,
-  token: localStorage.getItem("accessToken"),
   status: "idle",
+  authReady: false,
 };
 
 export const loginThunk = createAsyncThunk(
@@ -20,13 +23,22 @@ export const loginThunk = createAsyncThunk(
     apiLogin({ email, password })
 );
 
+// аккуратно вытаскиваем http-статус без any
+function getHttpStatus(e: unknown): number {
+  if (typeof e === "object" && e !== null && "response" in e) {
+    const resp = (e as { response?: { status?: number } }).response;
+    return resp?.status ?? 0;
+  }
+  return 0;
+}
+
 export const meThunk = createAsyncThunk(
   "auth/me",
   async (_, { rejectWithValue }) => {
     try {
       return await apiMe();
-    } catch (e: any) {
-      return rejectWithValue({ status: e?.response?.status ?? 0 });
+    } catch (e: unknown) {
+      return rejectWithValue({ status: getHttpStatus(e) });
     }
   }
 );
@@ -35,36 +47,49 @@ export const logoutThunk = createAsyncThunk("auth/logout", async () =>
   apiLogout()
 );
 
+// Инициализация auth при старте приложения.
+// Если refresh-кука валидна — meThunk вернёт пользователя.
+// В любом случае по завершении ставим authReady = true.
+export const initAuthThunk = createAsyncThunk(
+  "auth/init",
+  async (_, { dispatch }) => {
+    try {
+      await dispatch(meThunk()).unwrap();
+    } catch {
+      /* not logged in */
+    }
+    // ничего не возвращаем — факт готовности отметим редьюсером ниже
+  }
+);
+
 const slice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setToken(state, action: PayloadAction<string | null>) {
-      state.token = action.payload;
-      if (action.payload) localStorage.setItem("accessToken", action.payload);
-      else localStorage.removeItem("accessToken");
+    setUser(state, action: PayloadAction<User>) {
+      state.user = action.payload;
     },
     logout(state) {
       state.user = null;
-      state.token = null;
-      localStorage.removeItem("accessToken");
     },
   },
   extraReducers: (builder) => {
     builder
+      // login
       .addCase(loginThunk.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(loginThunk.fulfilled, (state, a) => {
+      .addCase(loginThunk.fulfilled, (state, action) => {
         state.status = "idle";
-        state.user = a.payload.user;
-        state.token = a.payload.accessToken;
-        localStorage.setItem("accessToken", a.payload.accessToken);
+        state.user = action.payload.user; // accessToken хранится in-memory в api слое
+        state.authReady = true; // после явного логина считаем готовыми
       })
       .addCase(loginThunk.rejected, (state) => {
         state.status = "failed";
+        state.authReady = true;
       });
 
+    // me
     builder
       .addCase(meThunk.pending, (state) => {
         state.status = "loading";
@@ -72,26 +97,43 @@ const slice = createSlice({
       .addCase(meThunk.fulfilled, (state, action) => {
         state.user = action.payload;
         state.status = "idle";
+        state.authReady = true; // проверка завершена
       })
       .addCase(meThunk.rejected, (state, action) => {
-        const status = (action.payload as any)?.status;
+        const status =
+          (action.payload as { status: number } | undefined)?.status ?? 0;
         if (status === 401) {
           state.user = null;
-          state.token = null;
-          localStorage.removeItem("accessToken"); // важный момент
-          state.status = "idle"; // бутстрап завершён
+          state.status = "idle";
         } else {
           state.status = "failed";
         }
+        state.authReady = true; // в любом случае проверка завершена
       });
 
+    // init завершился — помечаем готовность (на случай, если meThunk не выставил)
+    builder
+      .addCase(initAuthThunk.fulfilled, (state) => {
+        state.authReady = true;
+      })
+      .addCase(initAuthThunk.rejected, (state) => {
+        state.authReady = true;
+      });
+
+    // logout
     builder.addCase(logoutThunk.fulfilled, (state) => {
       state.user = null;
-      state.token = null;
-      localStorage.removeItem("accessToken");
+      state.status = "idle";
+      state.authReady = true;
     });
   },
 });
 
-export const { setToken, logout } = slice.actions;
+export const { setUser, logout } = slice.actions;
 export default slice.reducer;
+
+// ----- Селекторы -----
+export const selectUser = (s: RootState) => s.auth.user;
+export const selectIsAuthenticated = (s: RootState) => Boolean(s.auth.user);
+export const selectAuthReady = (s: RootState) => s.auth.authReady;
+export const selectAuthStatus = (s: RootState) => s.auth.status;

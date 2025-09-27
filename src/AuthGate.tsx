@@ -1,20 +1,16 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
-import { bootstrapAuth } from "./features/auth/auth.bootstrap";
+import { initAuthThunk, selectAuthReady } from "./features/auth/authSlice";
 
 export function AuthGate({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
-  const { token, user, status } = useAppSelector((s) => s.auth);
+  const authReady = useAppSelector(selectAuthReady);
 
   useEffect(() => {
-    dispatch(bootstrapAuth());
+    dispatch(initAuthThunk()); // один раз проверит сессию (me -> refresh при необходимости)
   }, [dispatch]);
 
-  const bootstrapping = token && !user && status === "loading";
-
-  if (bootstrapping) {
-    return null;
-  }
+  if (!authReady) return null; // или скелетон/сплэш
 
   return <>{children}</>;
 }

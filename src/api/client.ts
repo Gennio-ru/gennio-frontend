@@ -14,18 +14,11 @@ const API_URL =
   import.meta.env.VITE_API_BASE_URL ??
   "http://localhost:3000/api";
 
-// ==== access token storage ====
-let accessToken: string | null =
-  (typeof localStorage !== "undefined" &&
-    localStorage.getItem("accessToken")) ||
-  null;
+// ==== access token in-memory ====
+let accessToken: string | null = null;
 
 export function setAccessToken(token: string | null) {
   accessToken = token;
-  if (typeof localStorage !== "undefined") {
-    if (token) localStorage.setItem("accessToken", token);
-    else localStorage.removeItem("accessToken");
-  }
 }
 export function getAccessToken() {
   return accessToken;
@@ -34,18 +27,17 @@ export function getAccessToken() {
 // ==== axios instance ====
 const api: AxiosInstance = axios.create({
   baseURL: API_URL,
-  withCredentials: true, // refresh-cookie
+  withCredentials: true, // <- обязательно, чтобы httpOnly куки уходили на бэк
 });
 
-// Добавим свой флаг в конфиг, без any:
+// Расширим конфиг для пометки повторной попытки
 type RetryConfig<D = unknown> = InternalAxiosRequestConfig<D> & {
   _retry?: boolean;
 };
 
-// request interceptor — без any в headers
+// === Request interceptor: подставляем Bearer, если есть in-memory токен
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   if (accessToken) {
-    // Нормализуем к AxiosHeaders и безопасно добавляем заголовок
     const headers = AxiosHeaders.from(config.headers);
     headers.set("Authorization", `Bearer ${accessToken}`);
     config.headers = headers;
@@ -53,20 +45,18 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config;
 });
 
-// ==== refresh serialization ====
+// === Refresh serialization (единственный refresh на всё приложение)
 let refreshing = false;
 let waiters: Array<(t: string | null) => void> = [];
-
-function onWait(cb: (t: string | null) => void) {
-  waiters.push(cb);
-}
-function notifyAll(t: string | null) {
+const onWait = (cb: (t: string | null) => void) => waiters.push(cb);
+const notifyAll = (t: string | null) => {
   waiters.forEach((cb) => cb(t));
   waiters = [];
-}
+};
 
 async function doRefresh(): Promise<string | null> {
   try {
+    // httpOnly refresh cookie автоматически приедет сюда благодаря withCredentials
     const { data } = await api.post<AuthResponseDto>("/auth/refresh", {});
     const token = data?.accessToken ?? null;
     setAccessToken(token);
@@ -77,11 +67,12 @@ async function doRefresh(): Promise<string | null> {
   }
 }
 
-// response interceptor — типизируем original и убираем any
+// === Response interceptor: на 401 пробуем refresh, затем повторяем запрос
 api.interceptors.response.use(
   (r) => r,
   async (error: AxiosError) => {
     const original = error.config as RetryConfig | undefined;
+
     if (error.response?.status === 401 && original && !original._retry) {
       original._retry = true;
 
@@ -95,13 +86,10 @@ api.interceptors.response.use(
         return api(original as AxiosRequestConfig);
       }
 
-      // ждём завершения текущего refresh
+      // ждём текущий refresh
       return new Promise((resolve, reject) => {
         onWait((t) => {
-          if (!t) {
-            reject(error);
-            return;
-          }
+          if (!t) return reject(error);
           resolve(api(original as AxiosRequestConfig));
         });
       });

@@ -1,9 +1,6 @@
 import api, { setAccessToken } from "./client";
 import type { components, operations } from "./types.gen";
 
-//
-// ==== Entity Types ====
-//
 export type User = components["schemas"]["UserDto"];
 export type AuthResponse = components["schemas"]["AuthResponseDto"];
 
@@ -12,9 +9,6 @@ export type RegisterByEmailPayload =
 export type LoginByEmailPayload =
   operations["AuthController_loginByEmail"]["requestBody"]["content"]["application/json"];
 
-//
-// ==== API ====
-//
 export async function apiRegister(
   payload: RegisterByEmailPayload
 ): Promise<AuthResponse> {
@@ -22,9 +16,7 @@ export async function apiRegister(
     "/auth/register/email",
     payload
   );
-
-  if (data?.accessToken) setAccessToken(data.accessToken);
-
+  if (data?.accessToken) setAccessToken(data.accessToken); // только в памяти
   return data;
 }
 
@@ -32,9 +24,7 @@ export async function apiLogin(
   payload: LoginByEmailPayload
 ): Promise<AuthResponse> {
   const { data } = await api.post<AuthResponse>("/auth/login/email", payload);
-
-  if (data?.accessToken) setAccessToken(data.accessToken);
-
+  if (data?.accessToken) setAccessToken(data.accessToken); // только в памяти
   return data;
 }
 
@@ -45,16 +35,14 @@ export async function apiMe(): Promise<User> {
 
 export async function apiRefresh(): Promise<AuthResponse> {
   const { data } = await api.post<AuthResponse>("/auth/refresh", {});
-
   if (data?.accessToken) setAccessToken(data.accessToken);
-
   return data;
 }
 
 export async function apiLogout(): Promise<void> {
   try {
-    await api.post("/auth/logout", {});
+    await api.post("/auth/logout", {}); // сервер удаляет httpOnly refresh cookie
   } finally {
-    setAccessToken(null);
+    setAccessToken(null); // чистим in-memory access
   }
 }
