@@ -18,7 +18,7 @@ const passwordSchema = z
   .regex(/[A-Z]/, "Нужна прописная латинская буква")
   .regex(/[0-9]/, "Нужна цифра")
   .regex(/[^A-Za-z0-9]/, "Нужен спецсимвол")
-  .refine((v) => !/\s/.test(v), "Без пробелов");
+  .refine((v) => v.length === 0 || !/\s/.test(v), "Без пробелов");
 
 const schema = z
   .object({
@@ -213,7 +213,13 @@ export default function RegistrationForm() {
             >
               • Спецсимвол (например, !@#$%^&*)
             </li>
-            <li className={!/\s/.test(passwordValue) ? "text-green-600" : ""}>
+            <li
+              className={
+                passwordValue.trim().length > 0 && !/\s/.test(passwordValue)
+                  ? "text-green-600"
+                  : ""
+              }
+            >
               • Без пробелов
             </li>
           </ul>

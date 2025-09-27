@@ -22,7 +22,7 @@ export default function HeaderNav() {
   return (
     <div className="flex w-full items-center justify-between py-3">
       <Link to="/" className="font-semibold">
-        gennio
+        Gennio
       </Link>
 
       <nav className="flex items-center gap-4 text-sm">
@@ -39,7 +39,7 @@ export default function HeaderNav() {
               onClick={onLogout}
               className="rounded-xl bg-neutral-900 px-3 py-1.5 text-white hover:bg-neutral-950"
             >
-              Logout
+              Выйти
             </button>
           </div>
         )}
@@ -49,7 +49,7 @@ export default function HeaderNav() {
             to="/login"
             className="rounded-xl bg-neutral-900 px-3 py-1.5 text-white hover:bg-neutral-950"
           >
-            Login
+            Войти
           </Link>
         )}
       </nav>

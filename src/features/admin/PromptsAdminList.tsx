@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiGetPrompts, type PromptResponseDto } from "@/api/prompts";
+import { apiGetPrompts, type Prompt } from "@/api/prompts";
 import type { components } from "@/api/types.gen";
 import Input from "@/shared/Input";
 import Button from "@/shared/Button";
@@ -14,7 +14,7 @@ export default function PromptsAdminList() {
   const [page, setPage] = useState(1);
   const [limit] = useState(50);
 
-  const [items, setItems] = useState<PromptResponseDto[]>([]);
+  const [items, setItems] = useState<Prompt[]>([]);
   const [meta, setMeta] = useState<PaginationMetaDto | undefined>(undefined);
   const [status, setStatus] = useState<"idle" | "loading" | "failed">("idle");
 
@@ -32,7 +32,7 @@ export default function PromptsAdminList() {
           page,
           limit,
           search: query,
-        })) as { items: PromptResponseDto[]; meta: PaginationMetaDto };
+        })) as { items: Prompt[]; meta: PaginationMetaDto };
 
         if (!cancelled) {
           setItems(items);
@@ -83,7 +83,7 @@ export default function PromptsAdminList() {
             <tr>
               <th className="p-3 text-left">Title</th>
               <th className="p-3 text-left hidden sm:table-cell">Type</th>
-              <th className="p-3 text-left hidden md:table-cell">Premium</th>
+              <th className="p-3 text-left hidden md:table-cell">Category</th>
               <th className="p-3 text-left hidden lg:table-cell">Created</th>
             </tr>
           </thead>

@@ -11,8 +11,11 @@ import { Toaster } from "react-hot-toast";
 import ModelJobPage from "./pages/ModelJobPage";
 import ModelJobResult from "./pages/ModelJobPage/ModelJobResult";
 import RegistrationPage from "./pages/RegistrationPage";
+import { useAuth } from "./features/auth/useAuth";
 
 export default function App() {
+  const { user } = useAuth();
+
   return (
     <div className="min-h-screen bg-stone-200 text-neutral-900 flex flex-col">
       <header className="border-b border-neutral-200 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -62,7 +65,7 @@ export default function App() {
           </Routes>
         </Container>
 
-        <AdminButton />
+        {user?.role === "admin" && <AdminButton />}
       </main>
 
       <footer className="border-t border-neutral-200 bg-white/70 backdrop-blur">

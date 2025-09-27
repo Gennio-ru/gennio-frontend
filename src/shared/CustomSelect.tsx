@@ -16,14 +16,16 @@ export default function CustomSelect() {
   }, []);
 
   return (
-    <Select defaultValue="apple">
-      <SelectTrigger className="w-48">
-        <SelectValue placeholder="Выберите категорию" />
+    <Select>
+      <SelectTrigger className="w-auto min-w-36 bg-white">
+        <SelectValue placeholder="Все категории" />
       </SelectTrigger>
 
       <SelectContent>
         {categories.map((item) => (
-          <SelectItem value={item.id}>{item.name}</SelectItem>
+          <SelectItem key={item.id} value={item.id}>
+            {item.name}
+          </SelectItem>
         ))}
       </SelectContent>
     </Select>

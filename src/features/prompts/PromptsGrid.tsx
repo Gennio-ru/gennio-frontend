@@ -6,26 +6,27 @@ import { useInfiniteObserver } from "@/shared/hooks/useInfiniteObserver";
 
 export default function PromptsGrid() {
   const dispatch = useAppDispatch();
-  const { items, status, isLoadingMore, page, hasMore } = useAppSelector(
-    (s) => s.prompts
-  );
+  const { items, status, page, hasMore } = useAppSelector((s) => s.prompts);
+
+  const isLoading = status === "loading" && items.length === 0;
+  const isLoadingMore = status === "loading" && items.length > 0;
 
   useEffect(() => {
     dispatch(fetchPromptsPage({ page: 1 }));
   }, [dispatch]);
 
   const loadMore = useCallback(() => {
-    if (!hasMore || isLoadingMore || status === "loading") return;
+    if (!hasMore || status === "loading") return;
     dispatch(fetchPromptsPage({ page: page + 1 }));
-  }, [dispatch, hasMore, isLoadingMore, status, page]);
+  }, [dispatch, hasMore, status, page]);
 
   const sentinelRef = useInfiniteObserver(
     loadMore,
-    hasMore && !isLoadingMore && status !== "loading",
+    hasMore && status !== "loading",
     "500px"
   );
 
-  if (status === "loading" && items.length === 0) {
+  if (isLoading) {
     return <div className="p-4 text-neutral-600">Loading…</div>;
   }
   if (status === "failed" && items.length === 0) {
@@ -41,8 +42,8 @@ export default function PromptsGrid() {
       </div>
 
       {isLoadingMore && (
-        <div className="py-6 grid place-items-center text-sm text-neutral-500">
-          Загрузка…
+        <div className="flex justify-center py-6">
+          <span className="loading loading-spinner loading-md text-neutral-500" />
         </div>
       )}
 

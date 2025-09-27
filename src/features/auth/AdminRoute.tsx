@@ -6,12 +6,11 @@ export default function AdminRoute({
 }: {
   children: React.ReactNode;
 }) {
-  const { token, user, status } = useAppSelector((s) => s.auth);
+  const { user, authReady } = useAppSelector((s) => s.auth);
   const loc = useLocation();
 
-  if (!token) return <Navigate to="/login" state={{ from: loc }} replace />;
-
-  if (!user && (status === "loading" || status === "idle")) {
+  // Пока не знаем факт авторизации — показываем загрузку
+  if (!authReady) {
     return (
       <div className="flex h-dvh items-center justify-center text-sm text-muted-foreground">
         Проверяем доступ…
@@ -19,10 +18,12 @@ export default function AdminRoute({
     );
   }
 
+  // Не авторизован
   if (!user) {
     return <Navigate to="/login" state={{ from: loc }} replace />;
   }
 
+  // Авторизован, но не админ
   if (user.role !== "admin") {
     return <div className="p-6">403 — Forbidden</div>;
   }

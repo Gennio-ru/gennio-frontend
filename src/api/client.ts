@@ -1,3 +1,4 @@
+// api/client.ts
 import axios, {
   AxiosError,
   AxiosInstance,
@@ -9,14 +10,13 @@ import type { components } from "./types.gen";
 
 export type AuthResponseDto = components["schemas"]["AuthResponseDto"];
 
-const API_URL =
+export const API_URL =
   import.meta.env.VITE_API_URL ??
   import.meta.env.VITE_API_BASE_URL ??
   "http://localhost:3000/api";
 
 // ==== access token in-memory ====
 let accessToken: string | null = null;
-
 export function setAccessToken(token: string | null) {
   accessToken = token;
 }
@@ -24,18 +24,13 @@ export function getAccessToken() {
   return accessToken;
 }
 
-// ==== axios instance ====
+// ==== основной axios c интерсепторами ====
 const api: AxiosInstance = axios.create({
   baseURL: API_URL,
-  withCredentials: true, // <- обязательно, чтобы httpOnly куки уходили на бэк
+  withCredentials: true,
 });
 
-// Расширим конфиг для пометки повторной попытки
-type RetryConfig<D = unknown> = InternalAxiosRequestConfig<D> & {
-  _retry?: boolean;
-};
-
-// === Request interceptor: подставляем Bearer, если есть in-memory токен
+// request: подставляем Bearer
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   if (accessToken) {
     const headers = AxiosHeaders.from(config.headers);
@@ -45,7 +40,16 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config;
 });
 
-// === Refresh serialization (единственный refresh на всё приложение)
+// вспомогательный «сырой» клиент БЕЗ интерсепторов — только для refresh
+const raw = axios.create({
+  baseURL: API_URL,
+  withCredentials: true,
+});
+
+// ---- refresh serialization
+type RetryConfig<D = unknown> = InternalAxiosRequestConfig<D> & {
+  _retry?: boolean;
+};
 let refreshing = false;
 let waiters: Array<(t: string | null) => void> = [];
 const onWait = (cb: (t: string | null) => void) => waiters.push(cb);
@@ -56,18 +60,18 @@ const notifyAll = (t: string | null) => {
 
 async function doRefresh(): Promise<string | null> {
   try {
-    // httpOnly refresh cookie автоматически приедет сюда благодаря withCredentials
-    const { data } = await api.post<AuthResponseDto>("/auth/refresh", {});
+    // ВАЖНО: используем raw, чтобы не сработал этот же интерсептор
+    const { data } = await raw.post<AuthResponseDto>("/auth/refresh", {});
     const token = data?.accessToken ?? null;
     setAccessToken(token);
-    return token;
+    return token; // null => refresh не сработал (нет куки/просрочен)
   } catch {
     setAccessToken(null);
     return null;
   }
 }
 
-// === Response interceptor: на 401 пробуем refresh, затем повторяем запрос
+// response: на 401 пробуем refresh
 api.interceptors.response.use(
   (r) => r,
   async (error: AxiosError) => {
@@ -82,11 +86,17 @@ api.interceptors.response.use(
         notifyAll(t);
         refreshing = false;
 
-        if (!t) return Promise.reject(error);
+        if (!t) {
+          // refresh не сработал — считаем гость; не роняем приложение
+          // Возвращаем отклонённый промис, НО его ловит ваш thunk и обрабатывает как "не залогинен"
+          return Promise.reject(error);
+        }
+
+        // получили новый access — повторяем исходный запрос
         return api(original as AxiosRequestConfig);
       }
 
-      // ждём текущий refresh
+      // уже идёт refresh — ждём результата
       return new Promise((resolve, reject) => {
         onWait((t) => {
           if (!t) return reject(error);
