@@ -10,6 +10,7 @@ import { AdminButton } from "./shared/AdminButton";
 import { Toaster } from "react-hot-toast";
 import ModelJobPage from "./pages/ModelJobPage";
 import ModelJobResult from "./pages/ModelJobPage/ModelJobResult";
+import RegistrationPage from "./pages/RegistrationPage";
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
           <Routes>
             {/* публичные */}
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/registration" element={<RegistrationPage />} />
             <Route path="*" element={<PromptsPage />} />
             <Route path="/prompt/:promptId" element={<ModelJobPage />} />
             <Route

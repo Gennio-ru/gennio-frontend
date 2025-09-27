@@ -1,0 +1,265 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Input from "@/shared/Input";
+import Button from "@/shared/Button";
+import { useAppDispatch } from "@/app/hooks";
+import { loginThunk, meThunk } from "./authSlice";
+import { apiRegister } from "@/api/auth";
+import { EyeIcon, EyeClosedIcon } from "lucide-react";
+
+// Требования к паролю: мин. 12 символов, латиница (верх/низ), цифра, спецсимвол, без пробелов.
+const passwordSchema = z
+  .string()
+  .min(12, "Минимум 12 символов")
+  .regex(/[a-z]/, "Нужна строчная латинская буква")
+  .regex(/[A-Z]/, "Нужна прописная латинская буква")
+  .regex(/[0-9]/, "Нужна цифра")
+  .regex(/[^A-Za-z0-9]/, "Нужен спецсимвол")
+  .refine((v) => !/\s/.test(v), "Без пробелов");
+
+const schema = z
+  .object({
+    email: z.string().email("Некорректный email"),
+    password: passwordSchema,
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Пароли не совпадают",
+    path: ["confirmPassword"],
+  });
+
+type FormValues = z.infer<typeof schema>;
+
+function scorePassword(pw: string) {
+  let score = 0;
+  if (pw.length >= 12) score++;
+  if (pw.length >= 16) score++;
+  if (/[a-z]/.test(pw)) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  return Math.min(score, 5);
+}
+
+function strengthLabel(score: number) {
+  switch (score) {
+    case 0:
+    case 1:
+    case 2:
+      return "Слабый";
+    case 3:
+      return "Средний";
+    case 4:
+      return "Сильный";
+    case 5:
+      return "Очень сильный";
+    default:
+      return "";
+  }
+}
+
+export default function RegistrationForm() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [showPwd, setShowPwd] = useState(false);
+  const [showPwd2, setShowPwd2] = useState(false);
+
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+    clearErrors,
+  } = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { email: "", password: "", confirmPassword: "" },
+    mode: "onSubmit",
+    reValidateMode: "onSubmit",
+    resetOptions: {
+      keepErrors: false,
+    },
+  });
+
+  const passwordValue = watch("password") ?? "";
+  const s = scorePassword(passwordValue);
+
+  const onSubmit = async (data: FormValues) => {
+    setServerError(null);
+    try {
+      await apiRegister({ email: data.email, password: data.password });
+      await dispatch(
+        loginThunk({ email: data.email, password: data.password })
+      ).unwrap();
+      await dispatch(meThunk());
+      navigate("/");
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        setServerError(e.message);
+      } else {
+        setServerError("Регистрация не удалась");
+      }
+    }
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="mx-auto w-full max-w-sm space-y-5 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm"
+    >
+      <h1 className="text-lg font-semibold">Регистрация</h1>
+
+      {serverError && (
+        <div className="rounded-lg bg-red-50 p-2 text-sm text-red-700">
+          {serverError}
+        </div>
+      )}
+
+      {/* Email */}
+      <div className="relative space-y-1">
+        <Controller
+          name="email"
+          control={control}
+          render={({ field }) => (
+            <Input
+              {...field}
+              type="email"
+              placeholder="you@example.com"
+              onChange={(e) => {
+                field.onChange(e);
+                clearErrors("email");
+              }}
+            />
+          )}
+        />
+
+        {errors.email && (
+          <p className="absolute top-full text-xs text-red-600">
+            {errors.email.message}
+          </p>
+        )}
+      </div>
+
+      {/* Password */}
+      <div className="space-y-1">
+        <div className="relative">
+          <Controller
+            name="password"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                type={showPwd ? "text" : "password"}
+                placeholder="Пароль"
+                autoComplete="new-password"
+                onChange={(e) => {
+                  field.onChange(e);
+                  clearErrors("password");
+                }}
+              />
+            )}
+          />
+          <button
+            type="button"
+            className="absolute inset-y-0 right-2 my-auto rounded px-2 text-sm text-neutral-600 cursor-pointer"
+            onClick={() => setShowPwd((v) => !v)}
+            aria-label={showPwd ? "Скрыть пароль" : "Показать пароль"}
+          >
+            {showPwd ? <EyeClosedIcon size={20} /> : <EyeIcon size={20} />}
+          </button>
+        </div>
+        {errors.password && (
+          <p className="text-xs text-red-600">{errors.password.message}</p>
+        )}
+
+        {/* Индикатор силы */}
+        <div className="space-y-1">
+          <div className="h-2 w-full overflow-hidden rounded bg-neutral-100">
+            <div
+              className={[
+                "h-2 transition-all",
+                s <= 2
+                  ? "bg-red-500"
+                  : s === 3
+                  ? "bg-yellow-500"
+                  : "bg-green-500",
+              ].join(" ")}
+              style={{ width: `${(s / 5) * 100}%` }}
+            />
+          </div>
+          <div className="text-xs text-neutral-600">
+            Защита: {strengthLabel(s)}
+          </div>
+          <ul className="text-xs text-neutral-600 space-y-0.5">
+            <li className={passwordValue.length >= 12 ? "text-green-600" : ""}>
+              • Минимум 12 символов
+            </li>
+            <li className={/[a-z]/.test(passwordValue) ? "text-green-600" : ""}>
+              • Строчная латиница (a–z)
+            </li>
+            <li className={/[A-Z]/.test(passwordValue) ? "text-green-600" : ""}>
+              • Прописная латиница (A–Z)
+            </li>
+            <li className={/[0-9]/.test(passwordValue) ? "text-green-600" : ""}>
+              • Цифра (0–9)
+            </li>
+            <li
+              className={
+                /[^A-Za-z0-9]/.test(passwordValue) ? "text-green-600" : ""
+              }
+            >
+              • Спецсимвол (например, !@#$%^&*)
+            </li>
+            <li className={!/\s/.test(passwordValue) ? "text-green-600" : ""}>
+              • Без пробелов
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      {/* Confirm Password */}
+      <div className="relative">
+        <Controller
+          name="confirmPassword"
+          control={control}
+          render={({ field }) => (
+            <Input
+              {...field}
+              type={showPwd2 ? "text" : "password"}
+              placeholder="Подтвердите пароль"
+              autoComplete="new-password"
+              onChange={(e) => {
+                field.onChange(e);
+                clearErrors("confirmPassword");
+              }}
+            />
+          )}
+        />
+        <button
+          type="button"
+          className="absolute inset-y-0 right-2 my-auto rounded px-2 text-sm text-neutral-600 cursor-pointer"
+          onClick={() => setShowPwd2((v) => !v)}
+          aria-label={showPwd2 ? "Скрыть пароль" : "Показать пароль"}
+        >
+          {showPwd2 ? <EyeClosedIcon size={20} /> : <EyeIcon size={20} />}
+        </button>
+
+        {errors.confirmPassword && (
+          <p className="absolute top-full mt-1 text-xs text-red-600">
+            {errors.confirmPassword.message}
+          </p>
+        )}
+      </div>
+
+      <div className="flex items-center justify-between mt-8">
+        <Button disabled={isSubmitting}>
+          {isSubmitting ? "Создаём аккаунт…" : "Зарегистрироваться"}
+        </Button>
+        <Link to="/login">Войти</Link>
+      </div>
+    </form>
+  );
+}
