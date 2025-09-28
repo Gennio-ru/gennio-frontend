@@ -6,14 +6,22 @@ import { useInfiniteObserver } from "@/shared/hooks/useInfiniteObserver";
 
 export default function PromptsGrid() {
   const dispatch = useAppDispatch();
-  const { items, status, page, hasMore } = useAppSelector((s) => s.prompts);
+  const {
+    items,
+    status,
+    page,
+    hasMore,
+    filters: { categoryId },
+  } = useAppSelector((s) => s.prompts);
 
   const isLoading = status === "loading" && items.length === 0;
   const isLoadingMore = status === "loading" && items.length > 0;
 
   useEffect(() => {
-    dispatch(fetchPromptsPage({ page: 1 }));
-  }, [dispatch]);
+    dispatch(
+      fetchPromptsPage({ page: 1, categoryId: categoryId || undefined })
+    );
+  }, [dispatch, categoryId]);
 
   const loadMore = useCallback(() => {
     if (!hasMore || status === "loading") return;
@@ -50,8 +58,14 @@ export default function PromptsGrid() {
       <div ref={sentinelRef} className="h-1" />
 
       {!hasMore && items.length > 0 && (
-        <div className="py-6 grid place-items-center text-xs text-neutral-400">
+        <div className="py-10 grid place-items-center text-neutral-400">
           Больше ничего нет
+        </div>
+      )}
+
+      {items.length === 0 && (
+        <div className="py-10 grid place-items-center text-neutral-400">
+          Ничего не найдено
         </div>
       )}
     </>

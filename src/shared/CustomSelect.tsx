@@ -1,4 +1,3 @@
-import { apiGetCategories, Category } from "@/api/categories";
 import {
   Select,
   SelectContent,
@@ -6,28 +5,56 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+import { X as ClearIcon } from "lucide-react";
 
-export default function CustomSelect() {
-  const [categories, setCategories] = useState<Category[]>([]);
+interface Item {
+  value: string;
+  label: string;
+}
 
-  useEffect(() => {
-    apiGetCategories().then((res) => setCategories(res));
-  }, []);
+interface Props {
+  value: string;
+  onChange: (value: string) => void;
+  onReset?: () => void;
+  items: Item[];
+}
+
+export default function CustomSelect({
+  value,
+  onChange,
+  onReset,
+  items,
+}: Props) {
+  const showResetButton = onReset && value;
 
   return (
-    <Select>
-      <SelectTrigger className="w-auto min-w-36 bg-white">
-        <SelectValue placeholder="Все категории" />
-      </SelectTrigger>
+    <div className="relative flex items-center w-auto min-w-36">
+      <Select value={value || ""} onValueChange={onChange}>
+        <SelectTrigger
+          className={cn("flex-1 bg-white", showResetButton && "gap-8")}
+        >
+          <SelectValue placeholder="Все категории" />
+        </SelectTrigger>
 
-      <SelectContent>
-        {categories.map((item) => (
-          <SelectItem key={item.id} value={item.id}>
-            {item.name}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+        <SelectContent>
+          {items.map((item) => (
+            <SelectItem key={item.value} value={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      {showResetButton && (
+        <button
+          type="button"
+          onClick={onReset}
+          className="absolute right-[34px] cursor-pointer text-neutral-400 hover:text-neutral-500"
+        >
+          <ClearIcon size={16} />
+        </button>
+      )}
+    </div>
   );
 }

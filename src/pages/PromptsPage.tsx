@@ -1,5 +1,5 @@
 import PromptsGrid from "@/features/prompts/PromptsGrid";
-import CustomSelect from "@/shared/CustomSelect";
+import CategoriesSelect from "@/shared/CategoriesSelect";
 
 export default function PromptsPage() {
   return (
@@ -7,7 +7,7 @@ export default function PromptsPage() {
       <div className="flex justify-between items-center mb-4">
         <span className="h2">Промпты</span>
 
-        <CustomSelect />
+        <CategoriesSelect />
       </div>
 
       <PromptsGrid />

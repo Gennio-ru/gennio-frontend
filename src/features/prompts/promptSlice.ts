@@ -1,5 +1,5 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { apiGetPrompts, type Prompt } from "@/api/prompts";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { apiGetPrompts, PromptsListParams, type Prompt } from "@/api/prompts";
 import { PaginationResult } from "@/api/types";
 import { RootState } from "@/app/store";
 
@@ -7,6 +7,9 @@ type State = {
   items: Prompt[];
   page: number;
   hasMore: boolean;
+  filters: {
+    categoryId: string | null;
+  };
   status: "idle" | "loading" | "failed";
   error?: string;
 };
@@ -15,16 +18,19 @@ const initialState: State = {
   items: [],
   page: 0,
   hasMore: true,
+  filters: {
+    categoryId: null,
+  },
   status: "idle",
 };
 
 export const fetchPromptsPage = createAsyncThunk<
   PaginationResult<Prompt>,
-  { page?: number; search?: string },
+  PromptsListParams,
   { state: RootState }
->("prompts/fetchPage", async ({ page = 1, search }) => {
+>("prompts/fetchPage", async ({ page = 1, search, categoryId }) => {
   const limit = 20;
-  return apiGetPrompts({ page, limit, search });
+  return apiGetPrompts({ page, limit, search, categoryId });
 });
 
 const promptsSlice = createSlice({
@@ -32,6 +38,12 @@ const promptsSlice = createSlice({
   initialState,
   reducers: {
     resetPrompts: () => initialState,
+    setCategory(state, action: PayloadAction<string>) {
+      state.filters.categoryId = action.payload;
+    },
+    resetCategory(state) {
+      state.filters.categoryId = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -55,5 +67,6 @@ const promptsSlice = createSlice({
   },
 });
 
-export const { resetPrompts } = promptsSlice.actions;
+export const { resetPrompts, setCategory, resetCategory } =
+  promptsSlice.actions;
 export default promptsSlice.reducer;

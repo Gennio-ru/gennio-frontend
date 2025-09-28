@@ -124,7 +124,7 @@ export default function LoginForm() {
 
       <div className="flex items-center justify-between mt-8">
         <Button disabled={isSubmitting || status === "loading"}>
-          {isSubmitting || status === "loading" ? "Авторизация…" : "Войти"}
+          {isSubmitting || status === "loading" ? "Вход…" : "Войти"}
         </Button>
         <Link to="/registration">Регистрация</Link>
       </div>
