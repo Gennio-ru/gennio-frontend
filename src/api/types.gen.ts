@@ -455,6 +455,37 @@ export interface components {
             totalPages: number;
             currentPage: number;
         };
+        FileDto: {
+            /** @example uploads/2025/09/04/photo.png */
+            key: string;
+            /**
+             * Format: uri
+             * @example https://cdn.example.com/uploads/2025/09/04/photo.png
+             */
+            url?: Record<string, never> | null;
+            /** @example image/png */
+            contentType?: Record<string, never> | null;
+            /**
+             * @description Размер файла в байтах
+             * @example 204800
+             */
+            size?: Record<string, never>;
+            /** @example my-bucket */
+            bucket: string;
+            /** @example user-123 */
+            ownerId?: Record<string, never> | null;
+            /** @example {
+             *       "width": 400,
+             *       "height": 300
+             *     } */
+            meta?: Record<string, never> | null;
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
         /** @enum {string} */
         PromptType: "image-to-image" | "text-to-image" | "text-to-text";
         CategoryDto: {
@@ -475,7 +506,9 @@ export interface components {
             /** @example Мягкое освещение, крупный план */
             description: string;
             beforeImageId: string;
+            beforeImage: components["schemas"]["FileDto"];
             afterImageId: string;
+            afterImage: components["schemas"]["FileDto"];
             type: components["schemas"]["PromptType"];
             /** @description Текст промпта */
             text: string;
@@ -498,7 +531,9 @@ export interface components {
             /** @example Мягкое освещение, крупный план */
             description: string;
             beforeImageId: string;
+            beforeImage: components["schemas"]["FileDto"];
             afterImageId: string;
+            afterImage: components["schemas"]["FileDto"];
             type: components["schemas"]["PromptType"];
             /** @description Текст промпта */
             text: string;
@@ -559,37 +594,6 @@ export interface components {
             size: Record<string, never>;
             /** Format: date-time */
             createdAt: string;
-        };
-        FileDto: {
-            /** @example uploads/2025/09/04/photo.png */
-            key: string;
-            /**
-             * Format: uri
-             * @example https://cdn.example.com/uploads/2025/09/04/photo.png
-             */
-            url?: Record<string, never> | null;
-            /** @example image/png */
-            contentType?: Record<string, never> | null;
-            /**
-             * @description Размер файла в байтах
-             * @example 204800
-             */
-            size?: Record<string, never>;
-            /** @example my-bucket */
-            bucket: string;
-            /** @example user-123 */
-            ownerId?: Record<string, never> | null;
-            /** @example {
-             *       "width": 400,
-             *       "height": 300
-             *     } */
-            meta?: Record<string, never> | null;
-            /** Format: uuid */
-            id: string;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
         };
         DeleteFileResponseDto: {
             /** @example true */
