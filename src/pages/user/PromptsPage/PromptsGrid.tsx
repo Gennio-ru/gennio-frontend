@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { fetchPromptsPage } from "./promptSlice";
+import { fetchPromptsPage } from "../../../features/prompts/promptSlice";
 import PromptCard from "./PromptCard";
 import { useInfiniteObserver } from "@/shared/hooks/useInfiniteObserver";
 

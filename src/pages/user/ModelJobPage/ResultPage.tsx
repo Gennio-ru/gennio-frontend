@@ -2,7 +2,7 @@ import { apiGetModelJob, ModelJob } from "@/api/model-job";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-export default function ModelJobResult() {
+export default function ModelJobResultPage() {
   const { modelJobId } = useParams<{ modelJobId: string }>();
 
   const [currentModelJob, setCurrentModelJob] = useState<ModelJob | null>(null);

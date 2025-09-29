@@ -4,7 +4,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/shared/ui/shadcn/select";
 import { cn } from "@/lib/utils";
 import { X as ClearIcon } from "lucide-react";
 

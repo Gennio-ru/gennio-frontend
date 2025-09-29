@@ -12,9 +12,6 @@ export default function PromptCard({ prompt }: Props) {
     navigate(`/prompt/${prompt.id}`);
   };
 
-  // const beforeSrc = toUrl(p.beforeImageUrl, p.id);
-  // const afterSrc = toUrl(p.afterImageUrl, p.id + "-b");
-
   return (
     <article
       onClick={handleClick}
@@ -27,20 +24,6 @@ export default function PromptCard({ prompt }: Props) {
           className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
           loading="lazy"
         />
-
-        {/* 
-        <BeforeAfterSpring
-          before={beforeSrc}
-          after={afterSrc}
-          alt={p.title}
-          className="h-full w-full"
-          initial={50}
-          returnTo={50} // поставить null, если не нужно авто-возврат к центру
-          stiffness={180} // «вязкость» следования (меньше — мягче/дольше)
-          damping={24}
-          mass={0.45}
-        /> 
-        */}
       </div>
 
       <div className="p-3">

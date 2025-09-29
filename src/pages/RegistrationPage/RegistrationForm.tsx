@@ -3,10 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Input from "@/shared/Input";
-import Button from "@/shared/Button";
+import Input from "@/shared/ui/Input";
+import Button from "@/shared/ui/Button";
 import { useAppDispatch } from "@/app/hooks";
-import { loginThunk, meThunk } from "./authSlice";
+import { loginThunk, meThunk } from "@/features/auth/authSlice";
 import { apiRegister } from "@/api/auth";
 import { EyeIcon, EyeClosedIcon } from "lucide-react";
 

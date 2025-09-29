@@ -2,7 +2,7 @@ import { apiGetCategories, Category } from "@/api/categories";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { resetCategory, setCategory } from "@/features/prompts/promptSlice";
 import { useEffect, useMemo, useState } from "react";
-import CustomSelect from "./CustomSelect";
+import CustomSelect from "../../../shared/ui/CustomSelect";
 
 export default function CategoriesSelect() {
   const dispatch = useAppDispatch();

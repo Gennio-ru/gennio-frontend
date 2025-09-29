@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/app/hooks";
 import { logoutThunk } from "@/features/auth/authSlice";
-import ThemeSwitch from "./ThemeSwitch";
+import ThemeSwitch from "../ui/ThemeSwitch";
 import { useAuth } from "@/features/auth/useAuth";
 
 export default function HeaderNav() {

@@ -13,10 +13,10 @@ import {
   type CreatePromptPayload,
 } from "@/api/prompts";
 import { apiUploadFile } from "@/api/files";
-import Input from "@/shared/Input";
-import Textarea from "@/shared/Textarea";
-import Button from "@/shared/Button";
-import ImageUploader from "@/shared/FilePondUploader";
+import Input from "@/shared/ui/Input";
+import Textarea from "@/shared/ui/Textarea";
+import Button from "@/shared/ui/Button";
+import ImageUploader from "@/shared/ui/FilePondUploader";
 
 const promptSchema = z.object({
   title: z.string().min(1, "Укажите заголовок"),
@@ -43,7 +43,7 @@ function getErrorMessage(e: unknown, fallback = "Произошла ошибка
   return fallback;
 }
 
-export default function PromptAdminEdit() {
+export default function PromptEditForm() {
   const [currentPromptData, setCurrentPromptData] = useState<Prompt | null>(
     null
   );
@@ -130,101 +130,99 @@ export default function PromptAdminEdit() {
 
   const isBusy = isFetching || isSubmitting;
 
+  if (formError) {
+    return (
+      <div className="rounded bg-red-50 text-red-800 px-3 py-2 text-sm">
+        {formError}
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-3xl mx-auto p-4 space-y-6">
-      <h1 className="text-xl font-semibold">Редактирование промпта</h1>
-
-      {formError && (
-        <div className="rounded bg-red-50 text-red-800 px-3 py-2 text-sm">
-          {formError}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <label className="block">
-          <div className="mb-1 text-sm text-neutral-600">Заголовок</div>
-          <Controller
-            control={control}
-            name="title"
-            render={({ field }) => (
-              <Input
-                {...field}
-                placeholder="Название"
-                aria-invalid={!!errors.title}
-              />
-            )}
-          />
-          {errors.title && (
-            <p className="mt-1 text-xs text-red-600">{errors.title.message}</p>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <label className="block">
+        <div className="mb-1 text-sm text-neutral-600">Заголовок</div>
+        <Controller
+          control={control}
+          name="title"
+          render={({ field }) => (
+            <Input
+              {...field}
+              placeholder="Название"
+              aria-invalid={!!errors.title}
+            />
           )}
-        </label>
+        />
+        {errors.title && (
+          <p className="mt-1 text-xs text-red-600">{errors.title.message}</p>
+        )}
+      </label>
 
-        <label className="block">
-          <div className="mb-1 text-sm text-neutral-600">Описание</div>
-          <Controller
-            control={control}
-            name="description"
-            render={({ field }) => (
-              <Textarea
-                {...field}
-                placeholder="Краткое описание"
-                aria-invalid={!!errors.description}
-              />
-            )}
-          />
-          {errors.description && (
-            <p className="mt-1 text-xs text-red-600">
-              {errors.description.message}
-            </p>
+      <label className="block">
+        <div className="mb-1 text-sm text-neutral-600">Описание</div>
+        <Controller
+          control={control}
+          name="description"
+          render={({ field }) => (
+            <Textarea
+              {...field}
+              placeholder="Краткое описание"
+              aria-invalid={!!errors.description}
+            />
           )}
-        </label>
+        />
+        {errors.description && (
+          <p className="mt-1 text-xs text-red-600">
+            {errors.description.message}
+          </p>
+        )}
+      </label>
 
-        <label className="block">
-          <div className="mb-1 text-sm text-neutral-600">Текст промпта</div>
-          <Controller
-            control={control}
-            name="text"
-            render={({ field }) => (
-              <Textarea
-                {...field}
-                placeholder="Текст промпта для модели"
-                rows={6}
-                aria-invalid={!!errors.text}
-              />
-            )}
-          />
-          {errors.text && (
-            <p className="mt-1 text-xs text-red-600">{errors.text.message}</p>
+      <label className="block">
+        <div className="mb-1 text-sm text-neutral-600">Текст промпта</div>
+        <Controller
+          control={control}
+          name="text"
+          render={({ field }) => (
+            <Textarea
+              {...field}
+              placeholder="Текст промпта для модели"
+              rows={6}
+              aria-invalid={!!errors.text}
+            />
           )}
-        </label>
+        />
+        {errors.text && (
+          <p className="mt-1 text-xs text-red-600">{errors.text.message}</p>
+        )}
+      </label>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <ImageUploader
-            control={control}
-            name="beforeImageId"
-            label="До"
-            disabled={isBusy}
-            onUpload={upload}
-            currentUrl={currentPromptData?.beforeImageUrl ?? null}
-          />
-          <ImageUploader
-            control={control}
-            name="afterImageId"
-            label="После"
-            disabled={isBusy}
-            onUpload={upload}
-            currentUrl={currentPromptData?.afterImageUrl ?? null}
-          />
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <ImageUploader
+          control={control}
+          name="beforeImageId"
+          label="До"
+          disabled={isBusy}
+          onUpload={upload}
+          currentUrl={currentPromptData?.beforeImageUrl ?? null}
+        />
+        <ImageUploader
+          control={control}
+          name="afterImageId"
+          label="После"
+          disabled={isBusy}
+          onUpload={upload}
+          currentUrl={currentPromptData?.afterImageUrl ?? null}
+        />
+      </div>
 
-        <Button type="submit" disabled={isBusy}>
-          {isSubmitting
-            ? "Сохранение..."
-            : isFetching
-            ? "Загрузка..."
-            : "Сохранить"}
-        </Button>
-      </form>
-    </div>
+      <Button type="submit" disabled={isBusy}>
+        {isSubmitting
+          ? "Сохранение..."
+          : isFetching
+          ? "Загрузка..."
+          : "Сохранить"}
+      </Button>
+    </form>
   );
 }

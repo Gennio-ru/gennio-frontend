@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiGetPrompts, type Prompt } from "@/api/prompts";
-import type { components } from "@/api/types.gen";
-import Input from "@/shared/Input";
-import Button from "@/shared/Button";
+import Input from "@/shared/ui/Input";
+import Button from "@/shared/ui/Button";
+import { PaginationMetaDto } from "@/api/types";
+import CategoriesSelect from "./CategoriesSelect";
 
-type PaginationMetaDto = components["schemas"]["PaginationMetaDto"];
-
-export default function PromptsAdminList() {
+export default function PromptsList() {
   const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
@@ -27,7 +26,6 @@ export default function PromptsAdminList() {
       try {
         const query = debouncedSearch.trim() || undefined;
 
-        // apiGetPrompts возвращает { items, meta }
         const { items, meta } = (await apiGetPrompts({
           page,
           limit,
@@ -56,7 +54,6 @@ export default function PromptsAdminList() {
     <div className="py-6">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="flex-1">
-          <label className="mb-1 block text-xs text-neutral-600">Title</label>
           <Input
             value={search}
             onChange={(e) => {
@@ -66,6 +63,9 @@ export default function PromptsAdminList() {
             placeholder="Search by title or description"
           />
         </div>
+
+        <CategoriesSelect />
+
         <Button
           className="sm:w-auto"
           onClick={() => navigate("/admin/prompts/new")}
@@ -88,17 +88,19 @@ export default function PromptsAdminList() {
             </tr>
           </thead>
           <tbody>
-            {items.map((p) => (
+            {items.map((prompt) => (
               <tr
-                key={p.id}
+                key={prompt.id}
                 className="cursor-pointer hover:bg-neutral-50"
-                onClick={() => navigate(`/admin/prompts/${p.id}`)}
+                onClick={() => navigate(`/admin/prompts/${prompt.id}`)}
               >
-                <td className="p-3">{p.title}</td>
-                <td className="p-3 hidden sm:table-cell">{p.type}</td>
-                <td className="p-3 hidden md:table-cell">—</td>
+                <td className="p-3">{prompt.title}</td>
+                <td className="p-3 hidden sm:table-cell">{prompt.type}</td>
+                <td className="p-3 hidden md:table-cell">
+                  {prompt.category?.name || "-"}
+                </td>
                 <td className="p-3 hidden lg:table-cell">
-                  {new Date(p.createdAt).toLocaleString()}
+                  {new Date(prompt.createdAt).toLocaleString()}
                 </td>
               </tr>
             ))}
@@ -106,7 +108,7 @@ export default function PromptsAdminList() {
             {items.length === 0 && status === "idle" && (
               <tr>
                 <td className="p-4 text-neutral-500" colSpan={4}>
-                  No prompts found
+                  Не найдено
                 </td>
               </tr>
             )}
@@ -126,14 +128,12 @@ export default function PromptsAdminList() {
         </div>
         <div className="flex gap-2">
           <Button
-            variant="secondary"
             disabled={!canPrev || status === "loading"}
             onClick={() => canPrev && setPage((p) => Math.max(1, p - 1))}
           >
             Prev
           </Button>
           <Button
-            variant="secondary"
             disabled={!canNext || status === "loading"}
             onClick={() => canNext && setPage((p) => p + 1)}
           >

@@ -1,5 +1,5 @@
-import PromptsGrid from "@/features/prompts/PromptsGrid";
-import CategoriesSelect from "@/shared/CategoriesSelect";
+import PromptsGrid from "@/pages/user/PromptsPage/PromptsGrid";
+import CategoriesSelect from "@/pages/user/PromptsPage/CategoriesSelect";
 
 export default function PromptsPage() {
   return (

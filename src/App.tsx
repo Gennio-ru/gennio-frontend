@@ -1,17 +1,10 @@
-import { Routes, Route } from "react-router-dom";
-import Container from "@/shared/Container";
-import HeaderNav from "@/shared/HeaderNav";
-import LoginPage from "@/pages/LoginPage";
-import PromptsPage from "@/pages/PromptsPage";
-import AdminRoute from "./features/auth/AdminRoute";
-import PromptsAdminList from "./features/admin/PromptsAdminList";
-import PromptAdminEdit from "./features/admin/PromptAdminEdit";
-import { AdminButton } from "./shared/AdminButton";
+import Container from "@/shared/ui/Container";
+import HeaderNav from "./shared/widgets/HeaderNav";
+import { AdminButton } from "./shared/ui/AdminButton";
 import { Toaster } from "react-hot-toast";
-import ModelJobPage from "./pages/ModelJobPage";
-import ModelJobResult from "./pages/ModelJobPage/ModelJobResult";
-import RegistrationPage from "./pages/RegistrationPage";
 import { useAuth } from "./features/auth/useAuth";
+import { AppRoutes } from "./app/routes";
+import Footer from "./shared/widgets/Footer";
 
 export default function App() {
   const { user } = useAuth();
@@ -26,43 +19,7 @@ export default function App() {
 
       <main className="flex-1">
         <Container>
-          <Routes>
-            {/* публичные */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/registration" element={<RegistrationPage />} />
-            <Route path="*" element={<PromptsPage />} />
-            <Route path="/prompt/:promptId" element={<ModelJobPage />} />
-            <Route
-              path="/prompt/:promptId/model-job/:modelJobId"
-              element={<ModelJobResult />}
-            />
-
-            {/* админка */}
-            <Route
-              path="/admin/prompts"
-              element={
-                <AdminRoute>
-                  <PromptsAdminList />
-                </AdminRoute>
-              }
-            />
-            <Route
-              path="/admin/prompts/:id"
-              element={
-                <AdminRoute>
-                  <PromptAdminEdit />
-                </AdminRoute>
-              }
-            />
-            <Route
-              path="/admin/prompts/new"
-              element={
-                <AdminRoute>
-                  <PromptAdminEdit />
-                </AdminRoute>
-              }
-            />
-          </Routes>
+          <AppRoutes />
         </Container>
 
         {user?.role === "admin" && <AdminButton />}
@@ -70,9 +27,7 @@ export default function App() {
 
       <footer className="border-t border-neutral-200 bg-white/70 backdrop-blur">
         <Container>
-          <div className="py-3 text-xs text-neutral-500">
-            © {new Date().getFullYear()} gennio — All rights reserved
-          </div>
+          <Footer />
         </Container>
       </footer>
 

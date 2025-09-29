@@ -1,9 +1,9 @@
 import { apiUploadFile } from "@/api/files";
 import { apiCreateModelJob } from "@/api/model-job";
 import { apiGetPrompt, Prompt } from "@/api/prompts";
-import Button from "@/shared/Button";
-import ImageUploader from "@/shared/FilePondUploader";
-import Textarea from "@/shared/Textarea";
+import Button from "@/shared/ui/Button";
+import ImageUploader from "@/shared/ui/FilePondUploader";
+import Textarea from "@/shared/ui/Textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";

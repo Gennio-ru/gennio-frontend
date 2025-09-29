@@ -1,4 +1,4 @@
-import RegistrationForm from "@/features/auth/RegistrationForm";
+import RegistrationForm from "./RegistrationForm";
 
 export default function RegistrationPage() {
   return (
