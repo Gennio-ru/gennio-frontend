@@ -15,7 +15,7 @@ export default function PromptCard({ prompt }: Props) {
   return (
     <article
       onClick={handleClick}
-      className="group overflow-hidden rounded-2xl bg-white cursor-pointer"
+      className="group overflow-hidden rounded-2xl bg-base-100 text-base-content cursor-pointer"
     >
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
@@ -27,9 +27,11 @@ export default function PromptCard({ prompt }: Props) {
       </div>
 
       <div className="p-3">
-        <h3 className="truncate text-sm font-semibold">{prompt.title}</h3>
+        <h3 className="truncate text-sm font-semibold text-base-content">
+          {prompt.title}
+        </h3>
         {prompt.description && (
-          <p className="mt-1 line-clamp-2 text-xs text-neutral-600">
+          <p className="mt-1 line-clamp-2 text-xs text-base-content/70">
             {prompt.description}
           </p>
         )}

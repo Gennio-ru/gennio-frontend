@@ -54,12 +54,13 @@ export default function LoginForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="mx-auto w-full max-w-sm space-y-5 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm"
+      autoComplete="no"
+      className="mx-auto w-full max-w-sm space-y-5 rounded-2xl bg-base-100 p-6"
     >
-      <h1 className="text-lg font-semibold">Вход</h1>
+      <h1 className="text-lg font-semibold text-base-content">Вход</h1>
 
       {serverError && (
-        <div className="rounded-lg bg-red-50 p-2 text-sm text-red-700">
+        <div className="rounded-lg bg-error p-2 text-sm text-error-content">
           {serverError}
         </div>
       )}
@@ -74,7 +75,7 @@ export default function LoginForm() {
               {...field}
               type="email"
               placeholder="you@example.com"
-              autoComplete="email"
+              autoComplete="no"
               onChange={(e) => {
                 field.onChange(e);
                 clearErrors("email");
@@ -83,7 +84,7 @@ export default function LoginForm() {
           )}
         />
         {errors.email && (
-          <p className="absolute top-full mt-0.5 text-xs text-red-600">
+          <p className="absolute top-full mt-0.5 text-xs text-error">
             {errors.email.message}
           </p>
         )}
@@ -107,16 +108,18 @@ export default function LoginForm() {
             />
           )}
         />
+
         <button
           type="button"
-          className="absolute inset-y-0 right-2 my-auto rounded px-2 text-sm text-neutral-600 cursor-pointer"
+          className="absolute inset-y-0 right-2 my-auto rounded px-2 text-sm cursor-pointer"
           onClick={() => setShowPwd((v) => !v)}
           aria-label={showPwd ? "Скрыть пароль" : "Показать пароль"}
         >
           {showPwd ? <EyeClosedIcon size={20} /> : <EyeIcon size={20} />}
         </button>
+
         {errors.password && (
-          <p className="absolute top-full mt-0.5 text-xs text-red-600">
+          <p className="absolute top-full mt-0.5 text-xs text-error">
             {errors.password.message}
           </p>
         )}
@@ -126,7 +129,9 @@ export default function LoginForm() {
         <Button disabled={isSubmitting || status === "loading"}>
           {isSubmitting || status === "loading" ? "Вход…" : "Войти"}
         </Button>
-        <Link to="/registration">Регистрация</Link>
+        <Link to="/registration" className="text-primary hover:underline">
+          Регистрация
+        </Link>
       </div>
     </form>
   );

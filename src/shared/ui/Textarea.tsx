@@ -11,14 +11,14 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         <textarea
           ref={ref}
           className={
-            "block w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 " +
-            "placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-0 " +
-            (errorText ? "border-red-500 focus:border-red-500 " : "") +
+            "block w-full rounded-field bg-base-200 px-3 py-2 text-sm text-base-content " +
+            "placeholder:text-base-content/50 focus:border-primary focus:outline-none focus:ring-0 " +
+            (errorText ? "border-error focus:border-error " : "") +
             className
           }
           {...props}
         />
-        {errorText && <p className="mt-1 text-xs text-red-600">{errorText}</p>}
+        {errorText && <p className="mt-1 text-xs text-error">{errorText}</p>}
       </div>
     );
   }

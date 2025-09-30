@@ -50,7 +50,7 @@ export default function PromptsAdminList() {
       items.map((prompt) => (
         <tr
           key={prompt.id}
-          className="cursor-pointer hover:bg-neutral-50"
+          className="cursor-pointer hover:bg-base-200"
           onClick={() => navigate(`/admin/prompts/${prompt.id}`)}
         >
           <td className="p-3">{prompt.title}</td>
@@ -74,6 +74,7 @@ export default function PromptsAdminList() {
             value={searchLocal}
             onChange={(e) => setSearchLocal(e.target.value)}
             placeholder="Search by title or description"
+            className="bg-base-100!"
           />
         </div>
 
@@ -88,12 +89,12 @@ export default function PromptsAdminList() {
       </div>
 
       {status === "failed" && (
-        <div className="mb-3 text-red-600">Failed to load</div>
+        <div className="mb-3 text-error">Failed to load</div>
       )}
 
-      <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+      <div className="overflow-hidden rounded-box bg-base-100">
         <table className="w-full text-sm">
-          <thead className="bg-neutral-50 text-neutral-600">
+          <thead className="bg-base-100 text-base-content/70 border-b border-base-300">
             <tr>
               <th className="p-3 text-left">Title</th>
               <th className="p-3 text-left hidden sm:table-cell">Type</th>
@@ -106,7 +107,7 @@ export default function PromptsAdminList() {
 
             {items.length === 0 && status !== "loading" && (
               <tr>
-                <td className="p-4 text-neutral-500" colSpan={4}>
+                <td className="p-4 text-base-content/50" colSpan={4}>
                   Не найдено
                 </td>
               </tr>
@@ -115,15 +116,13 @@ export default function PromptsAdminList() {
         </table>
       </div>
 
-      {/* Лоадер */}
       {isLoading && (
         <div className="flex justify-center py-6">
-          <span className="loading loading-spinner loading-md text-neutral-500" />
+          <span className="loading loading-spinner loading-md text-base-content/50" />
         </div>
       )}
 
-      {/* Пагинация */}
-      <div className="mt-4 flex items-center justify-between text-sm text-neutral-600">
+      <div className="mt-4 flex items-center justify-between text-sm text-base-content/70">
         <div>
           Page {page} of {totalPages}
         </div>

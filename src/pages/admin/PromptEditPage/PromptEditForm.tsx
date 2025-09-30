@@ -130,18 +130,19 @@ export default function PromptEditForm() {
 
   const isBusy = isFetching || isSubmitting;
 
-  if (formError) {
-    return (
-      <div className="rounded bg-red-50 text-red-800 px-3 py-2 text-sm">
-        {formError}
-      </div>
-    );
-  }
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-4 rounded-box bg-base-100 p-6 mt-6 text-base-content"
+    >
+      {formError && (
+        <div className="rounded-lg bg-error/10 text-error px-3 py-2 text-sm">
+          {formError}
+        </div>
+      )}
+
       <label className="block">
-        <div className="mb-1 text-sm text-neutral-600">Заголовок</div>
+        <div className="mb-1 text-sm text-base-content/70">Заголовок</div>
         <Controller
           control={control}
           name="title"
@@ -154,12 +155,12 @@ export default function PromptEditForm() {
           )}
         />
         {errors.title && (
-          <p className="mt-1 text-xs text-red-600">{errors.title.message}</p>
+          <p className="mt-1 text-xs text-error">{errors.title.message}</p>
         )}
       </label>
 
       <label className="block">
-        <div className="mb-1 text-sm text-neutral-600">Описание</div>
+        <div className="mb-1 text-sm text-base-content/70">Описание</div>
         <Controller
           control={control}
           name="description"
@@ -172,14 +173,14 @@ export default function PromptEditForm() {
           )}
         />
         {errors.description && (
-          <p className="mt-1 text-xs text-red-600">
+          <p className="mt-1 text-xs text-error">
             {errors.description.message}
           </p>
         )}
       </label>
 
       <label className="block">
-        <div className="mb-1 text-sm text-neutral-600">Текст промпта</div>
+        <div className="mb-1 text-sm text-base-content/70">Текст промпта</div>
         <Controller
           control={control}
           name="text"
@@ -193,7 +194,7 @@ export default function PromptEditForm() {
           )}
         />
         {errors.text && (
-          <p className="mt-1 text-xs text-red-600">{errors.text.message}</p>
+          <p className="mt-1 text-xs text-error">{errors.text.message}</p>
         )}
       </label>
 

@@ -32,7 +32,10 @@ export default function CustomSelect({
     <div className="relative flex items-center w-auto min-w-36">
       <Select value={value || ""} onValueChange={onChange}>
         <SelectTrigger
-          className={cn("flex-1 bg-white", showResetButton && "gap-8")}
+          className={cn(
+            "flex-1 bg-base-100 text-base-content",
+            showResetButton && "gap-8"
+          )}
         >
           <SelectValue placeholder="Все категории" />
         </SelectTrigger>

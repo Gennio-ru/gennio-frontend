@@ -6,6 +6,7 @@ import { FilePondInitialFile } from "filepond";
 // CSS
 import "filepond/dist/filepond.min.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+import "./index.css";
 
 // Plugins
 import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";

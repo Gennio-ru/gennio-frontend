@@ -10,14 +10,16 @@ export default function App() {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-stone-200 text-neutral-900 flex flex-col">
-      <header className="border-b border-neutral-200 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+    <div className="min-h-screen flex flex-col bg-base-200 text-base-content">
+      {/* HEADER */}
+      <header className="border-b border-base-300 bg-base-200">
         <Container>
           <HeaderNav />
         </Container>
       </header>
 
-      <main className="flex-1">
+      {/* MAIN */}
+      <main className="flex-1 py-6">
         <Container>
           <AppRoutes />
         </Container>
@@ -25,12 +27,14 @@ export default function App() {
         {user?.role === "admin" && <AdminButton />}
       </main>
 
-      <footer className="border-t border-neutral-200 bg-white/70 backdrop-blur">
+      {/* FOOTER */}
+      <footer className="border-t border-base-300 bg-base-100">
         <Container>
           <Footer />
         </Container>
       </footer>
 
+      {/* TOASTER */}
       <Toaster position="top-right" />
     </div>
   );

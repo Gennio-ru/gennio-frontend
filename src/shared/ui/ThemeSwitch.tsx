@@ -31,15 +31,17 @@ export default function ThemeSwitch() {
     <button
       onClick={() => setTheme((prev) => (prev === "light" ? "dark" : "light"))}
       className={`
-        relative w-10 h-6 flex items-center rounded-full p-1 transition-colors duration-300
-        ${theme === "dark" ? "bg-stone-700" : "bg-stone-300"}
-      `}
+    relative w-10 h-6 flex items-center rounded-full p-1 transition-colors duration-300
+    ${theme === "dark" ? "bg-base-100" : "bg-base-100"}
+  `}
     >
       <span
         className={`
-          w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-300
-          ${theme === "dark" ? "translate-x-4" : "translate-x-0"}
-        `}
+      w-4 h-4 ${
+        theme === "dark" ? "bg-stone-400" : "bg-stone-300"
+      } rounded-full transform transition-transform duration-300
+      ${theme === "dark" ? "translate-x-4" : "translate-x-0"}
+    `}
       />
     </button>
   );

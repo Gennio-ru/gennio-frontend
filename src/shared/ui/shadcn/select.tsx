@@ -33,12 +33,11 @@ function SelectTrigger({
       data-size={size}
       className={cn(
         // визуал
-        "flex w-fit items-center justify-between gap-2 rounded-xl border bg-transparent px-3 py-2 text-sm whitespace-nowrap transition-[color]",
+        "flex w-fit items-center justify-between gap-2 rounded-field px-3 py-2 text-sm whitespace-nowrap transition-[color]",
         // цвета (daisyui)
-        "border-base-300 data-[placeholder]:text-base-content/70 [&_svg:not([class*='text-'])]:text-base-content/70",
+        "data-[placeholder]:text-base-content/70 [&_svg:not([class*='text-'])]:text-base-content/70",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary",
-        "aria-invalid:ring-error/20 dark:aria-invalid:ring-error/40 aria-invalid:border-error",
-        "dark:bg-base-200/30 dark:hover:bg-base-200/50",
+        "aria-invalid:ring-error/20 aria-invalid:border-error",
         // размеры
         "data-[size=default]:h-10 data-[size=sm]:h-8",
         // иконки/внутр
@@ -69,7 +68,7 @@ function SelectContent({
         data-slot="select-content"
         className={cn(
           // цвета и контейнер
-          "bg-base-100 text-base-content relative z-50 min-w-[8rem] max-h-(--radix-select-content-available-height) overflow-x-hidden overflow-y-auto rounded-md border border-base-300",
+          "bg-base-100 text-base-content relative z-50 min-w-[8rem] max-h-(--radix-select-content-available-height) overflow-x-hidden overflow-y-auto rounded-md",
           // анимации/позиционирование
           "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
           position === "popper" &&

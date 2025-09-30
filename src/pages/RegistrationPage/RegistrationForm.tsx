@@ -108,12 +108,12 @@ export default function RegistrationForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="mx-auto w-full max-w-sm space-y-5 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm"
+      className="mx-auto w-full max-w-sm space-y-5 rounded-2xl bg-base-100 p-6 text-base-content"
     >
       <h1 className="text-lg font-semibold">Регистрация</h1>
 
       {serverError && (
-        <div className="rounded-lg bg-red-50 p-2 text-sm text-red-700">
+        <div className="rounded-lg bg-error/10 p-2 text-sm text-error">
           {serverError}
         </div>
       )}
@@ -137,7 +137,7 @@ export default function RegistrationForm() {
         />
 
         {errors.email && (
-          <p className="absolute top-full text-xs text-red-600">
+          <p className="absolute top-full text-xs text-error">
             {errors.email.message}
           </p>
         )}
@@ -164,7 +164,7 @@ export default function RegistrationForm() {
           />
           <button
             type="button"
-            className="absolute inset-y-0 right-2 my-auto rounded px-2 text-sm text-neutral-600 cursor-pointer"
+            className="absolute inset-y-0 right-2 my-auto rounded px-2 text-sm text-base-content/60 hover:text-base-content cursor-pointer"
             onClick={() => setShowPwd((v) => !v)}
             aria-label={showPwd ? "Скрыть пароль" : "Показать пароль"}
           >
@@ -172,43 +172,39 @@ export default function RegistrationForm() {
           </button>
         </div>
         {errors.password && (
-          <p className="text-xs text-red-600">{errors.password.message}</p>
+          <p className="text-xs text-error">{errors.password.message}</p>
         )}
 
         {/* Индикатор силы */}
         <div className="space-y-1">
-          <div className="h-2 w-full overflow-hidden rounded bg-neutral-100">
+          <div className="h-2 w-full overflow-hidden rounded bg-base-200">
             <div
               className={[
                 "h-2 transition-all",
-                s <= 2
-                  ? "bg-red-500"
-                  : s === 3
-                  ? "bg-yellow-500"
-                  : "bg-green-500",
+                s <= 2 ? "bg-error" : s === 3 ? "bg-warning" : "bg-success",
               ].join(" ")}
               style={{ width: `${(s / 5) * 100}%` }}
             />
           </div>
-          <div className="text-xs text-neutral-600">
+          <div className="text-xs text-base-content/70">
             Защита: {strengthLabel(s)}
           </div>
-          <ul className="text-xs text-neutral-600 space-y-0.5">
-            <li className={passwordValue.length >= 12 ? "text-green-600" : ""}>
+          <ul className="text-xs text-base-content/70 space-y-0.5">
+            <li className={passwordValue.length >= 12 ? "text-success" : ""}>
               • Минимум 12 символов
             </li>
-            <li className={/[a-z]/.test(passwordValue) ? "text-green-600" : ""}>
+            <li className={/[a-z]/.test(passwordValue) ? "text-success" : ""}>
               • Строчная латиница (a–z)
             </li>
-            <li className={/[A-Z]/.test(passwordValue) ? "text-green-600" : ""}>
+            <li className={/[A-Z]/.test(passwordValue) ? "text-success" : ""}>
               • Прописная латиница (A–Z)
             </li>
-            <li className={/[0-9]/.test(passwordValue) ? "text-green-600" : ""}>
+            <li className={/[0-9]/.test(passwordValue) ? "text-success" : ""}>
               • Цифра (0–9)
             </li>
             <li
               className={
-                /[^A-Za-z0-9]/.test(passwordValue) ? "text-green-600" : ""
+                /[^A-Za-z0-9]/.test(passwordValue) ? "text-success" : ""
               }
             >
               • Спецсимвол (например, !@#$%^&*)
@@ -216,7 +212,7 @@ export default function RegistrationForm() {
             <li
               className={
                 passwordValue.trim().length > 0 && !/\s/.test(passwordValue)
-                  ? "text-green-600"
+                  ? "text-success"
                   : ""
               }
             >
@@ -246,7 +242,7 @@ export default function RegistrationForm() {
         />
         <button
           type="button"
-          className="absolute inset-y-0 right-2 my-auto rounded px-2 text-sm text-neutral-600 cursor-pointer"
+          className="absolute inset-y-0 right-2 my-auto rounded px-2 text-sm text-base-content/60 hover:text-base-content cursor-pointer"
           onClick={() => setShowPwd2((v) => !v)}
           aria-label={showPwd2 ? "Скрыть пароль" : "Показать пароль"}
         >
@@ -254,7 +250,7 @@ export default function RegistrationForm() {
         </button>
 
         {errors.confirmPassword && (
-          <p className="absolute top-full mt-1 text-xs text-red-600">
+          <p className="absolute top-full mt-1 text-xs text-error">
             {errors.confirmPassword.message}
           </p>
         )}
@@ -264,7 +260,9 @@ export default function RegistrationForm() {
         <Button disabled={isSubmitting}>
           {isSubmitting ? "Создаём аккаунт…" : "Зарегистрироваться"}
         </Button>
-        <Link to="/login">Войти</Link>
+        <Link to="/login" className="text-primary hover:underline">
+          Войти
+        </Link>
       </div>
     </form>
   );

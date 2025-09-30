@@ -21,23 +21,21 @@ export default function HeaderNav() {
 
   return (
     <div className="flex w-full items-center justify-between py-3">
-      <Link to="/" className="font-semibold">
+      <Link to="/" className="font-semibold text-base-content">
         Gennio
       </Link>
 
-      <nav className="flex items-center gap-4 text-sm">
+      <nav className="flex items-center gap-4 text-sm text-base-content/80">
         <ThemeSwitch />
 
         {isAuth && (
           <div className="flex items-center gap-3">
             {user?.email && (
-              <span className="hidden sm:inline text-neutral-600">
-                {user.email}
-              </span>
+              <span className="hidden sm:inline">{user.email}</span>
             )}
             <button
               onClick={onLogout}
-              className="rounded-xl bg-neutral-900 px-3 py-1.5 text-white hover:bg-neutral-950"
+              className="rounded-field bg-accent px-3 py-1.5 text-accent-content hover:bg-accent/80"
             >
               Выйти
             </button>
@@ -47,7 +45,7 @@ export default function HeaderNav() {
         {!isAuth && location.pathname !== "/login" && (
           <Link
             to="/login"
-            className="rounded-xl bg-neutral-900 px-3 py-1.5 text-white hover:bg-neutral-950"
+            className="rounded-field bg-accent px-3 py-1.5 text-accent-content hover:bg-accent/80"
           >
             Войти
           </Link>
