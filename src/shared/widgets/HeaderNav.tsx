@@ -3,6 +3,7 @@ import { useAppDispatch } from "@/app/hooks";
 import { logoutThunk } from "@/features/auth/authSlice";
 import ThemeSwitch from "../ui/ThemeSwitch";
 import { useAuth } from "@/features/auth/useAuth";
+import { SidebarToggleButton } from "../layouts/Sidebar";
 
 export default function HeaderNav() {
   const dispatch = useAppDispatch();
@@ -20,10 +21,14 @@ export default function HeaderNav() {
   };
 
   return (
-    <div className="flex w-full items-center justify-between py-3">
-      <Link to="/" className="font-semibold text-base-content">
-        Gennio
-      </Link>
+    <div className="flex w-full items-center justify-between py-2">
+      <div className="flex items-center gap-4">
+        <SidebarToggleButton />
+
+        <Link to="/" className="text-xl font-bold text-base-content">
+          Gennio
+        </Link>
+      </div>
 
       <nav className="flex items-center gap-4 text-sm text-base-content/80">
         <ThemeSwitch />
@@ -35,7 +40,7 @@ export default function HeaderNav() {
             )}
             <button
               onClick={onLogout}
-              className="rounded-field bg-accent px-3 py-1.5 text-accent-content hover:bg-accent/80"
+              className="rounded-field bg-primary px-3 py-1.5 text-primary-content hover:bg-primary/80"
             >
               Выйти
             </button>
@@ -45,7 +50,7 @@ export default function HeaderNav() {
         {!isAuth && location.pathname !== "/login" && (
           <Link
             to="/login"
-            className="rounded-field bg-accent px-3 py-1.5 text-accent-content hover:bg-accent/80"
+            className="rounded-field bg-primary px-3 py-1.5 text-primary-content hover:bg-primary/80"
           >
             Войти
           </Link>

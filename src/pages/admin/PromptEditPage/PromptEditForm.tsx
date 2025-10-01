@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,6 +33,7 @@ type FormValues = z.infer<typeof schema>;
 type UploadResponse = { id?: string };
 
 export default function PromptEditForm() {
+  const navigate = useNavigate();
   const { id: promptId } = useParams<{ id: string }>();
   const [isFetching, setIsFetching] = useState(false);
   const [currentPrompt, setCurrentPrompt] = useState<Prompt | null>(null);
@@ -57,7 +58,6 @@ export default function PromptEditForm() {
     reValidateMode: "onSubmit",
   });
 
-  // Загрузка данных промпта
   useEffect(() => {
     if (!promptId) return;
 
@@ -106,11 +106,12 @@ export default function PromptEditForm() {
     try {
       if (promptId) {
         await apiUpdatePrompt(promptId, dto);
+        const data = await apiGetPrompt(promptId);
+        setCurrentPrompt(data);
       } else {
-        await apiCreatePrompt(dto);
+        const { id } = await apiCreatePrompt(dto);
+        navigate(`/admin/prompts/${id}`);
       }
-      const data = await apiGetPrompt(promptId);
-      setCurrentPrompt(data);
       toast.success("Сохранено!");
     } catch (e) {
       toast.error(`Не удалось сохранить промпт. ${e.message}`);
@@ -122,14 +123,18 @@ export default function PromptEditForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="mx-auto w-full max-w-2xl space-y-5 rounded-2xl bg-base-100 p-6 text-base-content"
+      className="mx-auto w-full max-w-2xl space-y-6 rounded-2xl bg-base-100 p-6 text-base-content"
     >
       <h1 className="text-lg font-semibold">
         {promptId ? "Редактировать промпт" : "Создать промпт"}
       </h1>
 
       {/* Заголовок */}
-      <div className="space-y-1">
+      <div className="relative mb-6">
+        <label className="mb-1 block text-sm text-base-content/70">
+          Заголовок
+        </label>
+
         <Controller
           name="title"
           control={control}
@@ -145,12 +150,18 @@ export default function PromptEditForm() {
           )}
         />
         {errors.title && (
-          <p className="text-xs text-error">{errors.title.message}</p>
+          <p className="absolute top-full mt-1 text-xs text-error">
+            {errors.title.message}
+          </p>
         )}
       </div>
 
       {/* Описание */}
-      <div className="space-y-1">
+      <div className="relative mb-6">
+        <label className="mb-1 block text-sm text-base-content/70">
+          Описание
+        </label>
+
         <Controller
           name="description"
           control={control}
@@ -167,12 +178,18 @@ export default function PromptEditForm() {
           )}
         />
         {errors.description && (
-          <p className="text-xs text-error">{errors.description.message}</p>
+          <p className="absolute top-full mt-1 text-xs text-error">
+            {errors.description.message}
+          </p>
         )}
       </div>
 
       {/* Категория */}
-      <div className="space-y-1">
+      <div className="relative mb-6">
+        <label className="mb-1 block text-sm text-base-content/70">
+          Категория
+        </label>
+
         <Controller
           name="categoryId"
           control={control}
@@ -187,12 +204,18 @@ export default function PromptEditForm() {
           )}
         />
         {errors.categoryId && (
-          <p className="text-xs text-error">{errors.categoryId.message}</p>
+          <p className="absolute top-full mt-1 text-xs text-error">
+            {errors.categoryId.message}
+          </p>
         )}
       </div>
 
       {/* Текст промпта */}
-      <div className="space-y-1">
+      <div className="relative mb-6">
+        <label className="mb-1 block text-sm text-base-content/70">
+          Текст промпта
+        </label>
+
         <Controller
           name="text"
           control={control}
@@ -209,35 +232,54 @@ export default function PromptEditForm() {
           )}
         />
         {errors.text && (
-          <p className="text-xs text-error">{errors.text.message}</p>
+          <p className="absolute top-full mt-1 text-xs text-error">
+            {errors.text.message}
+          </p>
         )}
       </div>
 
       {/* Изображения */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <ImageUploader
-          control={control}
-          name="beforeImageId"
-          label="До"
-          disabled={isBusy}
-          onUpload={upload}
-          currentUrl={currentPrompt?.beforeImageUrl ?? null}
-        />
-        <ImageUploader
-          control={control}
-          name="afterImageId"
-          label="После"
-          disabled={isBusy}
-          onUpload={upload}
-          currentUrl={currentPrompt?.afterImageUrl ?? null}
-        />
+        <div className="relative mb-6">
+          <ImageUploader
+            control={control}
+            name="beforeImageId"
+            label="До"
+            disabled={isBusy}
+            onUpload={async (file: File) => {
+              const id = await upload(file);
+              clearErrors("beforeImageId");
+              return id;
+            }}
+            currentUrl={currentPrompt?.beforeImageUrl ?? null}
+          />
+          {errors.beforeImageId && (
+            <p className="absolute top-full mt-1 text-xs text-error">
+              {errors.beforeImageId.message}
+            </p>
+          )}
+        </div>
+
+        <div className="relative mb-6">
+          <ImageUploader
+            control={control}
+            name="afterImageId"
+            label="После"
+            disabled={isBusy}
+            onUpload={async (file: File) => {
+              const id = await upload(file);
+              clearErrors("afterImageId");
+              return id;
+            }}
+            currentUrl={currentPrompt?.afterImageUrl ?? null}
+          />
+          {errors.afterImageId && (
+            <p className="absolute top-full mt-1 text-xs text-error">
+              {errors.afterImageId.message}
+            </p>
+          )}
+        </div>
       </div>
-      {errors.beforeImageId && (
-        <p className="text-xs text-error">{errors.beforeImageId.message}</p>
-      )}
-      {errors.afterImageId && (
-        <p className="text-xs text-error">{errors.afterImageId.message}</p>
-      )}
 
       {/* Кнопка */}
       <div className="pt-4">

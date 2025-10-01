@@ -1,8 +1,9 @@
 import { apiUploadFile } from "@/api/files";
 import { apiCreateModelJob } from "@/api/model-job";
-import { apiGetPrompt, Prompt } from "@/api/prompts";
+import { apiGetPrompt, type Prompt } from "@/api/prompts";
 import Button from "@/shared/ui/Button";
 import ImageUploader from "@/shared/ui/FilePondUploader";
+import Loader from "@/shared/ui/Loader";
 import Textarea from "@/shared/ui/Textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
@@ -17,106 +18,131 @@ const modelJobSchema = z.object({
 });
 
 type ModelJobFormValues = z.infer<typeof modelJobSchema>;
-
 type UploadResponse = { id?: string; key?: string };
 
 export default function ModelJobPage() {
-  const { promptId } = useParams<{
-    promptId: string;
-  }>();
+  const { promptId } = useParams<{ promptId: string }>();
   const navigate = useNavigate();
 
-  const [currentPrompt, setCurrentPrompt] = useState<Prompt>(null);
+  const [currentPrompt, setCurrentPrompt] = useState<Prompt | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
 
   const {
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
+    clearErrors,
   } = useForm<ModelJobFormValues>({
     resolver: zodResolver(modelJobSchema),
-    defaultValues: {
-      prompt: "",
-      inputFileId: "",
-    },
-    mode: "onBlur",
+    defaultValues: { prompt: "", inputFileId: "" },
+    mode: "onSubmit",
+    reValidateMode: "onSubmit",
   });
 
   useEffect(() => {
-    apiGetPrompt(promptId).then((res) => {
-      setCurrentPrompt(res);
-    });
+    if (!promptId) return;
+    setIsLoading(true);
+    apiGetPrompt(promptId)
+      .then((res) => {
+        setCurrentPrompt(res);
+      })
+      .finally(() => setIsLoading(false));
   }, [promptId]);
+
+  const upload = async (file: File) => {
+    const res = (await apiUploadFile(file)) as UploadResponse;
+    if (!res.id) throw new Error("Сервер не вернул id файла");
+    return res.id;
+  };
 
   const onSubmit = async (data: ModelJobFormValues) => {
     try {
       setIsFetching(true);
-      await apiCreateModelJob({ ...data, model: "OPENAI" }).then((res) => {
-        navigate(`/prompt/${promptId}/model-job/${res.id}`);
-      });
-    } catch (error) {
-      toast.error(error?.message);
+      const res = await apiCreateModelJob({ ...data, model: "OPENAI" });
+      navigate(`/prompt/${promptId}/model-job/${res.id}`);
+      toast.success("Задача запущена!");
+    } catch (e) {
+      toast.error(e?.message || "Не удалось создать задачу");
     } finally {
       setIsFetching(false);
     }
   };
 
-  const upload = async (file: File) => {
-    const res = (await apiUploadFile(file)) as UploadResponse;
-    const value = res.id;
-    if (!value) throw new Error("Сервер не вернул id файла");
-    return value;
-  };
-
   const isBusy = isFetching || isSubmitting;
 
+  if (isLoading) {
+    return <Loader />;
+  }
+
   return (
-    <div className="mx-auto w-full p-6">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div className="flex justify-center">
-          <div className="flex flex-col gap-4 w-[500px]">
-            <ImageUploader
-              control={control}
-              name="inputFileId"
-              label="Референс"
-              onUpload={upload}
-              className="w-full"
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="mx-auto w-full max-w-xl space-y-6 rounded-box bg-base-100 p-6 text-base-content"
+    >
+      <h1 className="text-lg font-semibold">{currentPrompt.title}</h1>
+
+      {/* Референс */}
+      <div className="relative mb-6">
+        <label className="mb-1 block text-sm text-base-content/70">
+          Референс
+        </label>
+
+        <ImageUploader
+          control={control}
+          name="inputFileId"
+          onUpload={async (file) => {
+            const id = await upload(file);
+            clearErrors("inputFileId");
+            return id;
+          }}
+          disabled={isBusy}
+          className="w-full"
+        />
+
+        {errors.inputFileId && (
+          <p className="absolute top-full mt-1 text-xs text-error">
+            {errors.inputFileId.message}
+          </p>
+        )}
+      </div>
+
+      {/* Промпт */}
+      <div className="relative mb-6">
+        <label className="mb-1 block text-sm text-base-content/70">
+          Промпт
+        </label>
+
+        <Controller
+          name="prompt"
+          control={control}
+          render={({ field }) => (
+            <Textarea
+              {...field}
+              rows={4}
+              placeholder="Введите уточняющий промпт, если необходимо"
+              className="w-full rounded-field p-2"
+              onChange={(e) => {
+                field.onChange(e);
+                clearErrors("prompt");
+              }}
             />
+          )}
+        />
 
-            <label className="block w-full">
-              <div className="mb-1 text-sm text-neutral-600">Промпт</div>
-              <Controller
-                control={control}
-                name="prompt"
-                render={({ field }) => (
-                  <Textarea
-                    {...field}
-                    rows={4}
-                    placeholder="Введите уточняющий промпт, если необходимо"
-                    aria-invalid={!!errors.prompt}
-                    className="w-full rounded-md border border-neutral-300 p-2 text-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-                  />
-                )}
-              />
-              {errors.prompt && (
-                <p className="mt-1 text-xs text-red-600">
-                  {errors.prompt.message}
-                </p>
-              )}
-            </label>
-          </div>
-        </div>
+        {errors.prompt && (
+          <p className="absolute top-full mt-1 text-xs text-error">
+            {errors.prompt.message}
+          </p>
+        )}
+      </div>
 
-        <div className="flex justify-center">
-          <Button type="submit" disabled={isBusy} className="px-6 w-[200px]">
-            {isSubmitting
-              ? "Обработка..."
-              : isFetching
-              ? "Загрузка..."
-              : "Начать"}
-          </Button>
-        </div>
-      </form>
-    </div>
+      {/* Кнопка */}
+      <div className="pt-4 flex justify-center">
+        <Button type="submit" disabled={isBusy} className="px-6 w-[200px]">
+          {isSubmitting ? "Обработка…" : isFetching ? "Загрузка…" : "Начать"}
+        </Button>
+      </div>
+    </form>
   );
 }

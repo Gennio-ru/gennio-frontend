@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@import "@fontsource/roboto/400.css";
+@import "@fontsource/roboto/500.css";
+@import "@fontsource/roboto/700.css";
+
 @custom-variant dark (&:is(.dark *));
 @plugin "daisyui";
 
@@ -98,4 +102,8 @@
     border-radius: inherit; /* чтобы не обрезало углы */
     background-clip: content-box, padding-box;
   }
+}
+
+body {
+  font-family: "Roboto", sans-serif;
 }

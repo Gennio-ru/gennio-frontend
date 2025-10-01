@@ -32,13 +32,13 @@ export default function ThemeSwitch() {
       onClick={() => setTheme((prev) => (prev === "light" ? "dark" : "light"))}
       className={`
     relative w-10 h-6 flex items-center rounded-full p-1 transition-colors duration-300
-    ${theme === "dark" ? "bg-base-100" : "bg-base-100"}
+    ${theme === "dark" ? "bg-base-200" : "bg-neutral-300"}
   `}
     >
       <span
         className={`
       w-4 h-4 ${
-        theme === "dark" ? "bg-stone-400" : "bg-stone-300"
+        theme === "dark" ? "bg-stone-400" : "bg-neutral-400"
       } rounded-full transform transition-transform duration-300
       ${theme === "dark" ? "translate-x-4" : "translate-x-0"}
     `}

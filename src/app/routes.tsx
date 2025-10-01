@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import AdminRoute from "@/shared/routes/AdminRoute";
 
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
@@ -31,7 +31,8 @@ export function AppRoutes() {
         {/* публичные */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/registration" element={<RegistrationPage />} />
-        <Route path="/" element={<PromptsPage />} />
+        <Route path="/" element={<Navigate to="/prompts" replace />} />
+        <Route path="/prompts" element={<PromptsPage />} />
         <Route path="/prompt/:promptId" element={<ModelJobPage />} />
         <Route
           path="/prompt/:promptId/model-job/:modelJobId"
