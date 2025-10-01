@@ -13,17 +13,10 @@ type NavItem = { label: string; href: string; external?: boolean };
 
 type SidebarProps = {
   items: NavItem[];
-  secondary?: NavItem[];
-  socials?: NavItem[];
   className?: string;
 };
 
-export function SidebarDesktop({
-  items,
-  secondary,
-  socials,
-  className,
-}: SidebarProps) {
+export function SidebarDesktop({ items, className }: SidebarProps) {
   return (
     <aside
       className={cn(
@@ -34,95 +27,38 @@ export function SidebarDesktop({
       aria-label="Боковое меню"
     >
       <nav className="space-y-1">
-        {items.map((it) =>
-          it.external ? (
-            <a
-              key={it.label}
-              href={it.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block rounded-field px-3 py-2 text-base-content/80 hover:text-base-content hover:bg-base-200 transition-colors"
-            >
-              {it.label}
-            </a>
-          ) : (
-            <NavLink
-              key={it.label}
-              to={it.href}
-              className={({ isActive }) =>
-                cn(
-                  "block rounded-field px-3 py-2 transition-colors text-base",
-                  isActive
-                    ? "bg-primary text-primary-content"
-                    : "text-base-content/80 hover:text-primary-content hover:bg-primary/70"
-                )
-              }
-            >
-              <b>{it.label}</b>
-            </NavLink>
-          )
-        )}
+        {items.map((item) => (
+          <MenuItem key={item.label} item={item} />
+        ))}
       </nav>
-
-      {socials?.length ? (
-        <div className="mt-6">
-          <div className="mb-2 text-xs uppercase tracking-wide text-base-content/50">
-            соцсети
-          </div>
-          <nav className="space-y-1">
-            {socials.map((it) => (
-              <a
-                key={it.label}
-                href={it.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block rounded-field px-3 py-2 text-base-content/70 hover:text-base-content hover:bg-base-200 transition-colors"
-              >
-                {it.label}
-              </a>
-            ))}
-          </nav>
-        </div>
-      ) : null}
-
-      {secondary?.length ? (
-        <div className="mt-6">
-          <div className="mb-2 text-xs uppercase tracking-wide text-base-content/50">
-            сервис
-          </div>
-          <nav className="space-y-1">
-            {secondary.map((it) =>
-              it.external ? (
-                <a
-                  key={it.label}
-                  href={it.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block rounded-field px-3 py-2 text-base-content/70 hover:text-base-content hover:bg-base-200 transition-colors"
-                >
-                  {it.label}
-                </a>
-              ) : (
-                <NavLink
-                  key={it.label}
-                  to={it.href}
-                  className={({ isActive }) =>
-                    cn(
-                      "block rounded-field px-3 py-2 transition-colors",
-                      isActive
-                        ? "bg-base-100 text-base-content font-small ring-1 ring-base-300"
-                        : "text-base-content/70 hover:text-base-content hover:bg-base-200"
-                    )
-                  }
-                >
-                  {it.label}
-                </NavLink>
-              )
-            )}
-          </nav>
-        </div>
-      ) : null}
     </aside>
+  );
+}
+
+export function MenuItem({ item }: { item: NavItem }) {
+  return item.external ? (
+    <a
+      key={item.label}
+      href={item.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block py-1 text-base-content hover:text-primary transition-colors"
+    >
+      {item.label}
+    </a>
+  ) : (
+    <NavLink
+      key={item.label}
+      to={item.href}
+      className={({ isActive }) =>
+        cn(
+          "block transition-colors text-base py-1.5",
+          isActive ? "text-primary" : "text-base-content hover:text-primary"
+        )
+      }
+    >
+      <b>{item.label}</b>
+    </NavLink>
   );
 }
 
@@ -150,7 +86,7 @@ export function SidebarToggleButton({
   );
 }
 
-export function SidebarMobile({ items, socials, secondary }: SidebarProps) {
+export function SidebarMobile({ items }: SidebarProps) {
   const dispatch = useAppDispatch();
   const isShownMobileSidebar = useAppSelector(selectShowMobileSidebar);
 
@@ -207,99 +143,10 @@ export function SidebarMobile({ items, socials, secondary }: SidebarProps) {
         </div>
 
         <nav className="space-y-1">
-          {items.map((it) =>
-            it.external ? (
-              <a
-                key={it.label}
-                href={it.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => dispatch(hideMobileSidebar())}
-                className="block rounded-field px-3 py-2 text-base-content/80 hover:text-base-content hover:bg-base-200 transition-colors"
-              >
-                {it.label}
-              </a>
-            ) : (
-              <NavLink
-                key={it.label}
-                to={it.href}
-                onClick={() => dispatch(hideMobileSidebar())}
-                className={({ isActive }) =>
-                  cn(
-                    "block rounded-field px-3 py-2 transition-colors",
-                    isActive
-                      ? "bg-base-100 text-primary-content text-base bg-primary"
-                      : "text-base-content/80 hover:text-primary-content hover:bg-primary/70"
-                  )
-                }
-              >
-                {it.label}
-              </NavLink>
-            )
-          )}
+          {items.map((item) => (
+            <MenuItem key={item.label} item={item} />
+          ))}
         </nav>
-
-        {socials?.length ? (
-          <div className="mt-6">
-            <div className="mb-2 text-xs uppercase tracking-wide text-base-content/50">
-              соцсети
-            </div>
-            <nav className="space-y-1">
-              {socials.map((it) => (
-                <a
-                  key={it.label}
-                  href={it.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => dispatch(hideMobileSidebar())}
-                  className="block rounded-field px-3 py-2 text-base-content/70 hover:text-base-content hover:bg-base-200 transition-colors"
-                >
-                  {it.label}
-                </a>
-              ))}
-            </nav>
-          </div>
-        ) : null}
-
-        {secondary?.length ? (
-          <div className="mt-6">
-            <div className="mb-2 text-xs uppercase tracking-wide text-base-content/50">
-              сервис
-            </div>
-            <nav className="space-y-1">
-              {secondary.map((it) =>
-                it.external ? (
-                  <a
-                    key={it.label}
-                    href={it.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => dispatch(hideMobileSidebar())}
-                    className="block rounded-field px-3 py-2 text-base-content/70 hover:text-base-content hover:bg-base-200 transition-colors"
-                  >
-                    {it.label}
-                  </a>
-                ) : (
-                  <NavLink
-                    key={it.label}
-                    to={it.href}
-                    onClick={() => dispatch(hideMobileSidebar())}
-                    className={({ isActive }) =>
-                      cn(
-                        "block rounded-field px-3 py-2 transition-colors",
-                        isActive
-                          ? "bg-base-100 text-base-content font-small"
-                          : "text-base-content/70 hover:text-base-content hover:bg-base-200"
-                      )
-                    }
-                  >
-                    {it.label}
-                  </NavLink>
-                )
-              )}
-            </nav>
-          </div>
-        ) : null}
       </aside>
     </div>
   );

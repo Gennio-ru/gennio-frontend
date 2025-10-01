@@ -5,7 +5,7 @@ import Footer from "@/shared/widgets/Footer";
 import { SidebarDesktop, SidebarMobile } from "@/shared/layouts/Sidebar";
 import { AdminButton } from "@/shared/ui/AdminButton";
 import { useAuth } from "@/features/auth/useAuth";
-import { primaryMenu, secondaryMenu, socialsMenu } from "../config/menu";
+import { primaryMenu } from "../config/menu";
 
 type Props = { children: ReactNode };
 
@@ -23,11 +23,7 @@ export default function AppLayout({ children }: Props) {
       </header>
 
       <div className="flex flex-1">
-        <SidebarDesktop
-          items={primaryMenu}
-          socials={socialsMenu}
-          secondary={secondaryMenu}
-        />
+        <SidebarDesktop items={primaryMenu} />
 
         <main className="flex-1 py-6 [@media(min-width:1440px)]:mr-52">
           <Container>
@@ -43,11 +39,7 @@ export default function AppLayout({ children }: Props) {
         </Container>
       </footer>
 
-      <SidebarMobile
-        items={primaryMenu}
-        socials={socialsMenu}
-        secondary={secondaryMenu}
-      />
+      <SidebarMobile items={primaryMenu} />
     </div>
   );
 }

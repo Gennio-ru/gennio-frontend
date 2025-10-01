@@ -19,7 +19,7 @@
   --color-base-content: oklch(22% 0.015 70); /* ОСНОВНОЙ текст */
 
   /* brand / accents */
-  --color-primary: oklch(0.5128 0.038 223.31);
+  --color-primary: oklch(0.5874 0.15 342);
   --color-primary-content: oklch(98% 0.003 95); /* текст на primary */
 
   --color-secondary: oklch(0.804 0.0387 232.06);
