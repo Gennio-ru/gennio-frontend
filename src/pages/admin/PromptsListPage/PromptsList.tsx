@@ -5,10 +5,12 @@ import {
   fetchAdminPrompts,
   setSearch,
   setPage,
+  setCategory,
+  resetCategory,
 } from "@/features/admin-prompts/adminPromptSlice";
 import Input from "@/shared/ui/Input";
 import Button from "@/shared/ui/Button";
-import CategoriesSelect from "./CategoriesSelect";
+import CategoriesSelect from "@/shared/ui/CategoriesSelect";
 
 export default function PromptsAdminList() {
   const dispatch = useAppDispatch();
@@ -21,6 +23,14 @@ export default function PromptsAdminList() {
     status,
     filters: { categoryId, search },
   } = useAppSelector((s) => s.adminPrompts);
+
+  const changeCategory = (value: string) => {
+    dispatch(setCategory(value));
+  };
+
+  const clearCategory = () => {
+    dispatch(resetCategory());
+  };
 
   // локальный контрол для поиска + дебаунс
   const [searchLocal, setSearchLocal] = useState(search ?? "");
@@ -78,7 +88,12 @@ export default function PromptsAdminList() {
           />
         </div>
 
-        <CategoriesSelect />
+        <CategoriesSelect
+          value={categoryId || null}
+          onChange={changeCategory}
+          onReset={clearCategory}
+          className="bg-base-100"
+        />
 
         <Button
           className="sm:w-auto"

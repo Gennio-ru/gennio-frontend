@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, Control, FieldPath, FieldValues } from "react-hook-form";
 import { FilePond, registerPlugin } from "react-filepond";
-import { FilePondInitialFile } from "filepond";
+import { X as ClearIcon } from "lucide-react";
 
 // CSS
 import "filepond/dist/filepond.min.css";
@@ -13,15 +13,13 @@ import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orien
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
-type PondFile = (string | Blob | FilePondInitialFile | File)[];
-
-type UploadFn = (file: File) => Promise<string>; // верни id/ключ (он пойдёт в form state)
+type UploadFn = (file: File) => Promise<string>;
 
 type ImageUploaderProps<T extends FieldValues> = {
   control: Control<T>;
   name: FieldPath<T>;
   label?: string;
-  currentUrl?: string; // стартовый превью-URL (например, уже загруженное "до")
+  currentUrl?: string;
   onUpload: UploadFn;
   disabled?: boolean;
   className?: string;
@@ -36,19 +34,22 @@ export default function ImageUploader<T extends FieldValues>({
   disabled,
   className,
 }: ImageUploaderProps<T>) {
-  // Подготовим стартовый список файлов для превью по URL (без реального файла)
-  const initialFiles = useMemo(() => {
-    if (!currentUrl) return [];
-    // показываем как локальный (FilePond сам подгрузит <img>)
-    return [{ source: currentUrl, options: { type: "local" as const } }];
-  }, [currentUrl]);
-
-  // Храним текущее отображаемое состояние FilePond (не form-state)
-  const [files, setFiles] = useState<unknown[]>(initialFiles);
+  const [lastImageUrl, setLastImageUrl] = useState<string | null>(currentUrl);
+  const [showUploader, setShowUploader] = useState(true);
+  const [imageUploaded, setImageUploaded] = useState(false);
 
   useEffect(() => {
-    setFiles(initialFiles);
-  }, [initialFiles]);
+    if (currentUrl && !imageUploaded) {
+      setShowUploader(false);
+    }
+  }, [currentUrl, imageUploaded]);
+
+  useEffect(() => {
+    if (currentUrl !== lastImageUrl) {
+      setLastImageUrl(currentUrl);
+      setShowUploader(false);
+    }
+  }, [currentUrl, lastImageUrl]);
 
   return (
     <div className={className}>
@@ -57,43 +58,74 @@ export default function ImageUploader<T extends FieldValues>({
       <Controller
         control={control}
         name={name}
-        render={({ field }) => {
-          return (
+        render={({ field }) =>
+          !showUploader ? (
+            <div className="relative w-full">
+              <div className="w-full overflow-hidden rounded-lg bg-base-200">
+                <img
+                  src={currentUrl}
+                  alt="preview"
+                  className="w-full h-auto object-contain"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowUploader(true);
+                  field.onChange(null);
+                }}
+                className="absolute top-2 right-2 rounded-full bg-black/60 p-1 text-white hover:bg-black/80 cursor-pointer"
+              >
+                <ClearIcon size={18} />
+              </button>
+            </div>
+          ) : (
             <FilePond
-              files={files as PondFile}
               disabled={disabled}
               allowMultiple={false}
               maxFiles={1}
-              allowReorder={false}
               credits={false}
-              labelIdle='Перетащите сюда изображение или <span class="filepond--label-action">Выберите</span>'
-              onupdatefiles={(items) => {
-                setFiles(items);
-                // Если пользователь удалил последний файл вручную — обнуляем поле формы
-                if (items.length === 0 && field.value) {
-                  field.onChange(null);
-                }
-              }}
-              onaddfile={async (err, item) => {
-                if (err) return;
-                const file = item.file as File;
-                try {
-                  const id = await onUpload(file);
-                  field.onChange(id); // сохранили id в форму
-                } catch (e) {
-                  console.error("Upload failed", e);
-                  field.onChange(null);
-                }
-              }}
               acceptedFileTypes={["image/*"]}
-              name="file"
-              // Чтоб при клике не открывалось, если disabled
+              labelIdle='Перетащите сюда изображение или <span class="filepond--label-action">Выберите</span>'
               allowBrowse={!disabled}
-              // Чтоб сразу грузить после добавления
               instantUpload
+              server={{
+                // встроенный процесс загрузки
+                process: async (
+                  fieldName,
+                  file,
+                  metadata,
+                  load,
+                  error,
+                  progress,
+                  abort
+                ) => {
+                  try {
+                    const id = await onUpload(file as File);
+                    field.onChange(id); // прокидываем в react-hook-form
+                    setImageUploaded(true);
+                    load(id); // <- FilePond считает загрузку успешной
+                  } catch (e) {
+                    console.error("Upload failed", e);
+                    field.onChange(null);
+                    error("Ошибка загрузки");
+                  }
+
+                  return {
+                    abort: () => {
+                      abort();
+                    },
+                  };
+                },
+                // удаление (если нажал крестик)
+                revert: (uniqueFileId, load) => {
+                  field.onChange(null);
+                  load();
+                },
+              }}
             />
-          );
-        }}
+          )
+        }
       />
     </div>
   );

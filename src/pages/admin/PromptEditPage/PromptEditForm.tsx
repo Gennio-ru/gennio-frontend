@@ -1,9 +1,15 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
+
+import Input from "@/shared/ui/Input";
+import Textarea from "@/shared/ui/Textarea";
+import Button from "@/shared/ui/Button";
+import ImageUploader from "@/shared/ui/FilePondUploader";
+import CategoriesSelect from "@/shared/ui/CategoriesSelect";
 
 import {
   apiCreatePrompt,
@@ -13,107 +19,89 @@ import {
   type CreatePromptPayload,
 } from "@/api/prompts";
 import { apiUploadFile } from "@/api/files";
-import Input from "@/shared/ui/Input";
-import Textarea from "@/shared/ui/Textarea";
-import Button from "@/shared/ui/Button";
-import ImageUploader from "@/shared/ui/FilePondUploader";
 
-const promptSchema = z.object({
+const schema = z.object({
   title: z.string().min(1, "Укажите заголовок"),
   description: z.string().min(1, "Укажите описание"),
+  categoryId: z.string().min(1, "Выберите категорию"),
   text: z.string().min(1, "Добавьте текст промпта"),
   beforeImageId: z.string().min(1, "Загрузите изображение «До»"),
   afterImageId: z.string().min(1, "Загрузите изображение «После»"),
 });
 
-type PromptFormValues = z.infer<typeof promptSchema>;
-
-type UploadResponse = { id?: string; key?: string };
-
-function getErrorMessage(e: unknown, fallback = "Произошла ошибка"): string {
-  if (
-    typeof e === "object" &&
-    e !== null &&
-    "response" in e &&
-    typeof (e as any).response?.data?.message === "string"
-  ) {
-    return (e as any).response.data.message as string;
-  }
-  if (e instanceof Error && e.message) return e.message;
-  return fallback;
-}
+type FormValues = z.infer<typeof schema>;
+type UploadResponse = { id?: string };
 
 export default function PromptEditForm() {
-  const [currentPromptData, setCurrentPromptData] = useState<Prompt | null>(
-    null
-  );
-  const [formError, setFormError] = useState<string | null>(null);
-  const [isFetching, setIsFetching] = useState(false);
   const { id: promptId } = useParams<{ id: string }>();
+  const [isFetching, setIsFetching] = useState(false);
+  const [currentPrompt, setCurrentPrompt] = useState<Prompt | null>(null);
 
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<PromptFormValues>({
-    resolver: zodResolver(promptSchema),
+    clearErrors,
+  } = useForm<FormValues>({
+    resolver: zodResolver(schema),
     defaultValues: {
       title: "",
       description: "",
+      categoryId: "",
       text: "",
       beforeImageId: "",
       afterImageId: "",
     },
-    mode: "onBlur",
+    mode: "onSubmit",
+    reValidateMode: "onSubmit",
   });
 
+  // Загрузка данных промпта
   useEffect(() => {
-    let ignore = false;
+    if (!promptId) return;
+
+    const controller = new AbortController();
+
     (async () => {
-      if (!promptId) return;
       try {
         setIsFetching(true);
-        const prompt: Prompt = await apiGetPrompt(promptId);
-        if (ignore) return;
+        const data = await apiGetPrompt(promptId);
+        if (controller.signal.aborted) return;
 
-        setCurrentPromptData(prompt);
-
+        setCurrentPrompt(data);
         reset({
-          title: prompt.title ?? "",
-          description: (prompt.description ?? "").trim(),
-          text: prompt.text ?? "",
-          beforeImageId: (prompt.beforeImageId ?? "").toString(),
-          afterImageId: (prompt.afterImageId ?? "").toString(),
+          title: data.title ?? "",
+          description: data.description ?? "",
+          categoryId: data.categoryId,
+          text: data.text ?? "",
+          beforeImageId: data.beforeImageId ?? "",
+          afterImageId: data.afterImageId ?? "",
         });
       } catch (e) {
-        if (!ignore)
-          setFormError(getErrorMessage(e, "Не удалось загрузить промпт"));
+        if (!controller.signal.aborted) {
+          toast.error(`Не удалось загрузить промпт. ${e.message}`);
+        }
       } finally {
-        if (!ignore) setIsFetching(false);
+        if (!controller.signal.aborted) {
+          setIsFetching(false);
+        }
       }
     })();
+
     return () => {
-      ignore = true;
+      controller.abort();
     };
   }, [promptId, reset]);
 
   const upload = async (file: File) => {
     const res = (await apiUploadFile(file)) as UploadResponse;
-    const value = res.id;
-    if (!value) throw new Error("Сервер не вернул id файла");
-    return value;
+    if (!res.id) throw new Error("Сервер не вернул id файла");
+    return res.id;
   };
 
-  const onSubmit = async (data: PromptFormValues) => {
-    setFormError(null);
-    const dto: CreatePromptPayload = {
-      title: data.title,
-      description: data.description,
-      text: data.text,
-      beforeImageId: data.beforeImageId,
-      afterImageId: data.afterImageId,
-    };
+  const onSubmit = async (data: FormValues) => {
+    const dto: CreatePromptPayload = { ...data };
 
     try {
       if (promptId) {
@@ -121,10 +109,11 @@ export default function PromptEditForm() {
       } else {
         await apiCreatePrompt(dto);
       }
-      reset(data);
+      const data = await apiGetPrompt(promptId);
+      setCurrentPrompt(data);
       toast.success("Сохранено!");
     } catch (e) {
-      setFormError(getErrorMessage(e, "Не удалось сохранить промпт"));
+      toast.error(`Не удалось сохранить промпт. ${e.message}`);
     }
   };
 
@@ -133,71 +122,98 @@ export default function PromptEditForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="space-y-4 rounded-box bg-base-100 p-6 mt-6 text-base-content"
+      className="mx-auto w-full max-w-2xl space-y-5 rounded-2xl bg-base-100 p-6 text-base-content"
     >
-      {formError && (
-        <div className="rounded-lg bg-error/10 text-error px-3 py-2 text-sm">
-          {formError}
-        </div>
-      )}
+      <h1 className="text-lg font-semibold">
+        {promptId ? "Редактировать промпт" : "Создать промпт"}
+      </h1>
 
-      <label className="block">
-        <div className="mb-1 text-sm text-base-content/70">Заголовок</div>
+      {/* Заголовок */}
+      <div className="space-y-1">
         <Controller
-          control={control}
           name="title"
+          control={control}
           render={({ field }) => (
             <Input
               {...field}
               placeholder="Название"
-              aria-invalid={!!errors.title}
+              onChange={(e) => {
+                field.onChange(e);
+                clearErrors("title");
+              }}
             />
           )}
         />
         {errors.title && (
-          <p className="mt-1 text-xs text-error">{errors.title.message}</p>
+          <p className="text-xs text-error">{errors.title.message}</p>
         )}
-      </label>
+      </div>
 
-      <label className="block">
-        <div className="mb-1 text-sm text-base-content/70">Описание</div>
+      {/* Описание */}
+      <div className="space-y-1">
         <Controller
-          control={control}
           name="description"
+          control={control}
           render={({ field }) => (
             <Textarea
               {...field}
               placeholder="Краткое описание"
-              aria-invalid={!!errors.description}
+              rows={3}
+              onChange={(e) => {
+                field.onChange(e);
+                clearErrors("description");
+              }}
             />
           )}
         />
         {errors.description && (
-          <p className="mt-1 text-xs text-error">
-            {errors.description.message}
-          </p>
+          <p className="text-xs text-error">{errors.description.message}</p>
         )}
-      </label>
+      </div>
 
-      <label className="block">
-        <div className="mb-1 text-sm text-base-content/70">Текст промпта</div>
+      {/* Категория */}
+      <div className="space-y-1">
         <Controller
+          name="categoryId"
           control={control}
+          render={({ field }) => (
+            <CategoriesSelect
+              value={field.value || null}
+              onChange={(v) => {
+                field.onChange(v);
+                clearErrors("categoryId");
+              }}
+            />
+          )}
+        />
+        {errors.categoryId && (
+          <p className="text-xs text-error">{errors.categoryId.message}</p>
+        )}
+      </div>
+
+      {/* Текст промпта */}
+      <div className="space-y-1">
+        <Controller
           name="text"
+          control={control}
           render={({ field }) => (
             <Textarea
               {...field}
               placeholder="Текст промпта для модели"
               rows={6}
-              aria-invalid={!!errors.text}
+              onChange={(e) => {
+                field.onChange(e);
+                clearErrors("text");
+              }}
             />
           )}
         />
         {errors.text && (
-          <p className="mt-1 text-xs text-error">{errors.text.message}</p>
+          <p className="text-xs text-error">{errors.text.message}</p>
         )}
-      </label>
+      </div>
 
+      {/* Изображения */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <ImageUploader
           control={control}
@@ -205,7 +221,7 @@ export default function PromptEditForm() {
           label="До"
           disabled={isBusy}
           onUpload={upload}
-          currentUrl={currentPromptData?.beforeImageUrl ?? null}
+          currentUrl={currentPrompt?.beforeImageUrl ?? null}
         />
         <ImageUploader
           control={control}
@@ -213,17 +229,26 @@ export default function PromptEditForm() {
           label="После"
           disabled={isBusy}
           onUpload={upload}
-          currentUrl={currentPromptData?.afterImageUrl ?? null}
+          currentUrl={currentPrompt?.afterImageUrl ?? null}
         />
       </div>
+      {errors.beforeImageId && (
+        <p className="text-xs text-error">{errors.beforeImageId.message}</p>
+      )}
+      {errors.afterImageId && (
+        <p className="text-xs text-error">{errors.afterImageId.message}</p>
+      )}
 
-      <Button type="submit" disabled={isBusy}>
-        {isSubmitting
-          ? "Сохранение..."
-          : isFetching
-          ? "Загрузка..."
-          : "Сохранить"}
-      </Button>
+      {/* Кнопка */}
+      <div className="pt-4">
+        <Button disabled={isBusy}>
+          {isSubmitting
+            ? "Сохранение…"
+            : isFetching
+            ? "Загрузка…"
+            : "Сохранить"}
+        </Button>
+      </div>
     </form>
   );
 }

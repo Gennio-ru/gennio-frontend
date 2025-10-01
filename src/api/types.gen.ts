@@ -512,7 +512,7 @@ export interface components {
             type: components["schemas"]["PromptType"];
             /** @description Текст промпта */
             text: string;
-            categoryId: Record<string, never>;
+            categoryId: string;
             category: components["schemas"]["CategoryDto"];
             /** Format: uuid */
             id: string;
@@ -537,7 +537,7 @@ export interface components {
             type: components["schemas"]["PromptType"];
             /** @description Текст промпта */
             text: string;
-            categoryId: Record<string, never>;
+            categoryId: string;
             category: components["schemas"]["CategoryDto"];
             /** Format: uuid */
             id: string;

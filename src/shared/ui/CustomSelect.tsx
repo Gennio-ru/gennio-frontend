@@ -18,6 +18,8 @@ interface Props {
   onChange: (value: string) => void;
   onReset?: () => void;
   items: Item[];
+  placeholder?: string;
+  className?: string;
 }
 
 export default function CustomSelect({
@@ -25,6 +27,8 @@ export default function CustomSelect({
   onChange,
   onReset,
   items,
+  placeholder,
+  className,
 }: Props) {
   const showResetButton = onReset && value;
 
@@ -33,11 +37,12 @@ export default function CustomSelect({
       <Select value={value || ""} onValueChange={onChange}>
         <SelectTrigger
           className={cn(
-            "flex-1 bg-base-100 text-base-content",
-            showResetButton && "gap-8"
+            "flex-1 bg-base-200 text-base-content",
+            showResetButton && "gap-8",
+            className
           )}
         >
-          <SelectValue placeholder="Все категории" />
+          <SelectValue placeholder={placeholder} />
         </SelectTrigger>
 
         <SelectContent>
