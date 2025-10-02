@@ -21,7 +21,7 @@ export function SidebarDesktop({ items, className }: SidebarProps) {
     <aside
       className={cn(
         "hidden [@media(min-width:1440px)]:flex sticky top-16 h-min w-52 shrink-0 flex-col overflow-auto",
-        "px-4",
+        "px-6",
         className
       )}
       aria-label="Боковое меню"
@@ -124,7 +124,7 @@ export function SidebarMobile({ items }: SidebarProps) {
       <aside
         className={cn(
           "absolute left-0 top-0 h-full w-[82%] max-w-[240px]",
-          "bg-base-100 px-4 py-2",
+          "bg-base-100 px-6 py-2",
           "transition-transform duration-300 ease-in-out",
           isShownMobileSidebar ? "translate-x-0" : "-translate-x-full"
         )}
