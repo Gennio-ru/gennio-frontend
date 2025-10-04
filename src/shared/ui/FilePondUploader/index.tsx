@@ -36,7 +36,7 @@ export default function ImageUploader<T extends FieldValues>({
 }: ImageUploaderProps<T>) {
   const [lastImageUrl, setLastImageUrl] = useState<string | null>(currentUrl);
   const [showUploader, setShowUploader] = useState(true);
-  const [imageUploaded, setImageUploaded] = useState(false);
+  const [imageUploaded] = useState(false);
 
   useEffect(() => {
     if (currentUrl && !imageUploaded) {
@@ -87,11 +87,16 @@ export default function ImageUploader<T extends FieldValues>({
               credits={false}
               acceptedFileTypes={["image/*"]}
               labelIdle='Перетащите сюда изображение или <span class="filepond--label-action">Выберите</span>'
+              labelTapToRetry="Нажмите для повтора"
+              labelFileProcessingError="Ошибка загрузки"
+              labelTapToCancel="Нажмите для отмены"
+              labelFileProcessing="Загрузка"
+              labelTapToUndo="Нажмите для удаления"
+              labelFileProcessingComplete="Загрузка завершена"
               allowBrowse={!disabled}
               instantUpload
               server={{
-                // встроенный процесс загрузки
-                process: async (
+                process: (
                   fieldName,
                   file,
                   metadata,
@@ -100,24 +105,38 @@ export default function ImageUploader<T extends FieldValues>({
                   progress,
                   abort
                 ) => {
-                  try {
-                    const id = await onUpload(file as File);
-                    field.onChange(id); // прокидываем в react-hook-form
-                    setImageUploaded(true);
-                    load(id); // <- FilePond считает загрузку успешной
-                  } catch (e) {
-                    console.error("Upload failed", e);
-                    field.onChange(null);
-                    error("Ошибка загрузки");
-                  }
+                  // создаём контроллер отмены
+                  const controller = new AbortController();
+                  const signal = controller.signal;
 
+                  (async () => {
+                    try {
+                      // имитируем прогресс — FilePond ожидает вызовы progress(...)
+                      progress(true, 0, 0);
+
+                      // теперь реальный аплоад с возможностью отмены
+                      const id = await onUpload(file as File);
+
+                      // завершено успешно
+                      load(id);
+                    } catch (e) {
+                      if (signal.aborted) {
+                        console.log("Upload aborted by user");
+                        return;
+                      }
+                      console.error("Upload failed:", e);
+                      error("Ошибка загрузки");
+                    }
+                  })();
+
+                  // FilePond вызывает abort() при нажатии крестика
                   return {
                     abort: () => {
-                      abort();
+                      controller.abort();
+                      abort(); // уведомляем FilePond
                     },
                   };
                 },
-                // удаление (если нажал крестик)
                 revert: (uniqueFileId, load) => {
                   field.onChange(null);
                   load();
