@@ -317,7 +317,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["ModelJobController_create"];
+        post: operations["ModelJobController_startImageGenerateByPromptText"];
         delete?: never;
         options?: never;
         head?: never;
@@ -612,7 +612,9 @@ export interface components {
             model: components["schemas"]["ModelType"];
             status: components["schemas"]["ModelJobStatusType"];
             /** @example Мягкое освещение, крупный план */
-            prompt: string;
+            text: string | null;
+            /** @example Мягкое освещение, крупный план */
+            promptId: string | null;
             /** @example user-123 */
             userId: string;
             /**
@@ -642,15 +644,23 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
         };
-        CreateModelJobDto: {
+        StartImageEditByPromptIdDto: {
+            model: components["schemas"]["ModelType"];
+            promptId: string;
+            /** @example Мягкое освещение, крупный план */
+            text: string;
+            inputFileId: string;
+        };
+        StartImageEditByPromptTextDto: {
             model: components["schemas"]["ModelType"];
             /** @example Мягкое освещение, крупный план */
-            prompt: string;
-            /**
-             * Format: uuid
-             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
-             */
+            text: string;
             inputFileId: string;
+        };
+        StartImageGenerateByPromptTextDto: {
+            model: components["schemas"]["ModelType"];
+            /** @example Мягкое освещение, крупный план */
+            text: string;
         };
         CreateCategoryDto: {
             /** @example Мультипликация */
@@ -1198,7 +1208,7 @@ export interface operations {
             };
         };
     };
-    ModelJobController_create: {
+    ModelJobController_startImageGenerateByPromptText: {
         parameters: {
             query?: never;
             header?: never;
@@ -1207,7 +1217,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateModelJobDto"];
+                "application/json": components["schemas"]["StartImageGenerateByPromptTextDto"];
             };
         };
         responses: {

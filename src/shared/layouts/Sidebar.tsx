@@ -57,7 +57,7 @@ export function MenuItem({ item }: { item: NavItem }) {
         )
       }
     >
-      <b>{item.label}</b>
+      {item.label}
     </NavLink>
   );
 }
