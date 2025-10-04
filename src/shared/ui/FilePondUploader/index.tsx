@@ -36,7 +36,7 @@ export default function ImageUploader<T extends FieldValues>({
 }: ImageUploaderProps<T>) {
   const [lastImageUrl, setLastImageUrl] = useState<string | null>(currentUrl);
   const [showUploader, setShowUploader] = useState(true);
-  const [imageUploaded] = useState(false);
+  const [imageUploaded, setImageUploaded] = useState(false);
 
   useEffect(() => {
     if (currentUrl && !imageUploaded) {
@@ -91,8 +91,6 @@ export default function ImageUploader<T extends FieldValues>({
               labelFileProcessingError="Ошибка загрузки"
               labelTapToCancel="Нажмите для отмены"
               labelFileProcessing="Загрузка"
-              labelTapToUndo="Нажмите для удаления"
-              labelFileProcessingComplete="Загрузка завершена"
               allowBrowse={!disabled}
               instantUpload
               server={{
@@ -103,40 +101,39 @@ export default function ImageUploader<T extends FieldValues>({
                   load,
                   error,
                   progress,
-                  abort
+                  abortPond
                 ) => {
-                  // создаём контроллер отмены
-                  const controller = new AbortController();
-                  const signal = controller.signal;
+                  let aborted = false;
 
                   (async () => {
                     try {
-                      // имитируем прогресс — FilePond ожидает вызовы progress(...)
+                      // (опц.) показать, что пошла загрузка
                       progress(true, 0, 0);
 
-                      // теперь реальный аплоад с возможностью отмены
                       const id = await onUpload(file as File);
 
-                      // завершено успешно
-                      load(id);
+                      if (aborted) return; // пользователь отменил — игнорим результат
+
+                      field.onChange(id);
+                      setImageUploaded(true);
+                      load(id); // сообщаем FilePond об успешной загрузке
                     } catch (e) {
-                      if (signal.aborted) {
-                        console.log("Upload aborted by user");
-                        return;
-                      }
-                      console.error("Upload failed:", e);
+                      if (aborted) return; // если отменили — не показываем ошибку
+                      console.error("Upload failed", e);
+                      field.onChange(null);
                       error("Ошибка загрузки");
                     }
                   })();
 
-                  // FilePond вызывает abort() при нажатии крестика
+                  // связка с кнопкой «Отмена»
                   return {
                     abort: () => {
-                      controller.abort();
-                      abort(); // уведомляем FilePond
+                      aborted = true; // помечаем, что отменили
+                      abortPond(); // уведомляем FilePond
                     },
                   };
                 },
+
                 revert: (uniqueFileId, load) => {
                   field.onChange(null);
                   load();
