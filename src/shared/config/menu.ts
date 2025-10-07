@@ -5,3 +5,8 @@ export const primaryMenu: NavItem[] = [
   { label: "Сгенерировать", href: "/generate-image" },
   { label: "Обработать", href: "/edit-image" },
 ];
+
+export const adminMenu: NavItem[] = [
+  { label: "Промпты", href: "/admin/prompts" },
+  { label: "Категории", href: "/admin/categories" },
+];

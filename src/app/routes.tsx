@@ -23,6 +23,9 @@ const PromptsAdminList = lazy(
 const PromptAdminEdit = lazy(
   () => import("@/pages/admin/PromptEditPage/PromptEditForm")
 );
+const CategoriesAdminList = lazy(
+  () => import("@/pages/admin/CategoriesListPage/CategoriesList")
+);
 
 export function AppRoutes() {
   return (
@@ -56,6 +59,7 @@ export function AppRoutes() {
           <Route path="prompts" element={<PromptsAdminList />} />
           <Route path="prompts/:id" element={<PromptAdminEdit />} />
           <Route path="prompts/new" element={<PromptAdminEdit />} />
+          <Route path="categories" element={<CategoriesAdminList />} />
         </Route>
       </Routes>
     </Suspense>

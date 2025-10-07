@@ -1,16 +1,27 @@
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import Container from "@/shared/ui/Container";
 import HeaderNav from "@/shared/widgets/HeaderNav";
 import Footer from "@/shared/widgets/Footer";
 import { SidebarDesktop, SidebarMobile } from "@/shared/layouts/Sidebar";
 import { AdminButton } from "@/shared/ui/AdminButton";
 import { useAuth } from "@/features/auth/useAuth";
-import { primaryMenu } from "../config/menu";
+import { primaryMenu, adminMenu } from "../config/menu";
+import { useLocation } from "react-router-dom";
 
 type Props = { children: ReactNode };
 
 export default function AppLayout({ children }: Props) {
   const { user } = useAuth();
+  const location = useLocation();
+
+  const showAdminMenu = useMemo(() => {
+    return user?.role === "admin" && location.pathname.startsWith("/admin");
+  }, [user?.role, location.pathname]);
+
+  const menuItems = useMemo(
+    () => (showAdminMenu ? adminMenu : primaryMenu),
+    [showAdminMenu]
+  );
 
   return (
     <div className="min-h-screen flex flex-col bg-base-200 text-base-content">
@@ -23,7 +34,7 @@ export default function AppLayout({ children }: Props) {
       </header>
 
       <div className="flex flex-1">
-        <SidebarDesktop items={primaryMenu} />
+        <SidebarDesktop items={menuItems} />
 
         <main className="flex-1 py-6 [@media(min-width:1440px)]:mr-52">
           <Container>
@@ -39,7 +50,7 @@ export default function AppLayout({ children }: Props) {
         </Container>
       </footer>
 
-      <SidebarMobile items={primaryMenu} />
+      <SidebarMobile items={menuItems} />
     </div>
   );
 }

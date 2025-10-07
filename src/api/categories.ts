@@ -11,6 +11,8 @@ export type Category = components["schemas"]["CategoryDto"];
 // Список категорий (ответ findMany)
 export type CategoriesListResponse =
   operations["CategoriesController_findMany"]["responses"]["200"]["content"]["application/json"];
+export type CategoriesListParams =
+  operations["CategoriesController_findMany"]["parameters"]["query"];
 
 // Пейлоады
 export type CreateCategoryPayload =

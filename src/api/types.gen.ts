@@ -381,7 +381,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Получить один промпт по id */
+        get: operations["CategoriesController_findOne"];
         put?: never;
         post?: never;
         /** Удалить категорию (только админ) */
@@ -700,7 +701,7 @@ export interface components {
         CreateCategoryDto: {
             /** @example Мультипликация */
             name: string;
-            description: string;
+            description?: string;
         };
         UpdateCategoryDto: {
             /** @example Мультипликация */
@@ -1355,6 +1356,35 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CategoryDto"];
                 };
+            };
+        };
+    };
+    CategoriesController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Найденная категория */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryDto"];
+                };
+            };
+            /** @description Категория не найдена */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
