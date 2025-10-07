@@ -308,7 +308,39 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/model-job": {
+    "/api/model-job/start-image-edit-by-prompt-id": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ModelJobController_startImageEditByPromptId"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/model-job/start-image-edit-by-prompt-text": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ModelJobController_startImageEditByPromptText"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/model-job/start-image-generate": {
         parameters: {
             query?: never;
             header?: never;
@@ -607,9 +639,12 @@ export interface components {
         /** @enum {string} */
         ModelType: "OPENAI";
         /** @enum {string} */
+        ModelJobType: "image-edit-by-prompt-id" | "image-edit-by-prompt-text" | "image-generate-by-prompt-text";
+        /** @enum {string} */
         ModelJobStatusType: "queued" | "processing" | "succeeded" | "failed";
         ModelJobDto: {
             model: components["schemas"]["ModelType"];
+            type: components["schemas"]["ModelJobType"];
             status: components["schemas"]["ModelJobStatusType"];
             /** @example Мягкое освещение, крупный план */
             text: string | null;
@@ -1205,6 +1240,54 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    ModelJobController_startImageEditByPromptId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartImageEditByPromptIdDto"];
+            };
+        };
+        responses: {
+            /** @description Генерация запущена */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelJobDto"];
+                };
+            };
+        };
+    };
+    ModelJobController_startImageEditByPromptText: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartImageEditByPromptTextDto"];
+            };
+        };
+        responses: {
+            /** @description Генерация запущена */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelJobDto"];
+                };
             };
         };
     };

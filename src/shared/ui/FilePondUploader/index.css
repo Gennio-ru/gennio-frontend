@@ -1,4 +1,13 @@
+.filepond--root .filepond--drop-label {
+  min-height: 240px;
+}
+
 .filepond--panel-root {
   background-color: var(--color-base-200);
   border-radius: var(--radius-field);
+}
+
+.filepond--drop-label {
+  outline: 2px dashed var(--color-base-300);
+  border-radius: calc(var(--radius-field) - 1px);
 }

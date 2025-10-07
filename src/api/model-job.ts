@@ -1,16 +1,20 @@
 import api from "./client";
-import type { components, operations } from "./types.gen";
+import type { operations } from "./types.gen";
 
 //
 // ==== Entity Types ====
 //
 
 export type ModelJob =
-  operations["ModelJobController_create"]["responses"]["201"]["content"]["application/json"];
+  operations["ModelJobController_startImageEditByPromptId"]["responses"]["201"]["content"]["application/json"];
 
 // Пейлоады
-export type CreateModelJobPayload =
-  operations["ModelJobController_create"]["requestBody"]["content"]["application/json"];
+export type StartImageEditByPromptIdPayload =
+  operations["ModelJobController_startImageEditByPromptId"]["requestBody"]["content"]["application/json"];
+export type StartImageEditByPromptTextPayload =
+  operations["ModelJobController_startImageEditByPromptText"]["requestBody"]["content"]["application/json"];
+export type StartImageGenerateByPromptTextPayload =
+  operations["ModelJobController_startImageGenerateByPromptText"]["requestBody"]["content"]["application/json"];
 
 //
 // ==== API ====
@@ -22,10 +26,32 @@ export async function apiGetModelJob(id: string): Promise<ModelJob> {
   return data;
 }
 
-// Начать обработку
-export async function apiCreateModelJob(
-  payload: CreateModelJobPayload
+export async function apiStartImageEditByPromptId(
+  payload: StartImageEditByPromptIdPayload
 ): Promise<ModelJob> {
-  const { data } = await api.post<ModelJob>("/model-job/", payload);
+  const { data } = await api.post<ModelJob>(
+    "/model-job/start-image-edit-by-prompt-id",
+    payload
+  );
+  return data;
+}
+
+export async function apiStartImageEditByPromptText(
+  payload: StartImageEditByPromptTextPayload
+): Promise<ModelJob> {
+  const { data } = await api.post<ModelJob>(
+    "/model-job/start-image-edit-by-prompt-text",
+    payload
+  );
+  return data;
+}
+
+export async function apiStartImageGenerateByPromptText(
+  payload: StartImageGenerateByPromptTextPayload
+): Promise<ModelJob> {
+  const { data } = await api.post<ModelJob>(
+    "/model-job/start-image-generate",
+    payload
+  );
   return data;
 }

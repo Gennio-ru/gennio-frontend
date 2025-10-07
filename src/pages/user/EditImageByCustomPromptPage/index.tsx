@@ -1,31 +1,25 @@
 import { apiUploadFile } from "@/api/files";
-import { apiCreateModelJob } from "@/api/model-job";
-import { apiGetPrompt, type Prompt } from "@/api/prompts";
+import { apiStartImageEditByPromptText } from "@/api/model-job";
 import Button from "@/shared/ui/Button";
 import ImageUploader from "@/shared/ui/FilePondUploader";
-import Loader from "@/shared/ui/Loader";
 import Textarea from "@/shared/ui/Textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import z from "zod";
 
 const modelJobSchema = z.object({
-  prompt: z.string().min(1, "Добавьте уточняющий промпт, если необходимо"),
+  text: z.string().min(1, "Добавьте текст промпта"),
   inputFileId: z.string().min(1, "Загрузите изображение"),
 });
 
 type ModelJobFormValues = z.infer<typeof modelJobSchema>;
 type UploadResponse = { id?: string; key?: string };
 
-export default function ModelJobPage() {
-  const { promptId } = useParams<{ promptId: string }>();
+export default function EditImageByCustomPromptPage() {
   const navigate = useNavigate();
-
-  const [currentPrompt, setCurrentPrompt] = useState<Prompt | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
 
   const {
@@ -35,20 +29,10 @@ export default function ModelJobPage() {
     clearErrors,
   } = useForm<ModelJobFormValues>({
     resolver: zodResolver(modelJobSchema),
-    defaultValues: { prompt: "", inputFileId: "" },
+    defaultValues: { text: "", inputFileId: "" },
     mode: "onSubmit",
     reValidateMode: "onSubmit",
   });
-
-  useEffect(() => {
-    if (!promptId) return;
-    setIsLoading(true);
-    apiGetPrompt(promptId)
-      .then((res) => {
-        setCurrentPrompt(res);
-      })
-      .finally(() => setIsLoading(false));
-  }, [promptId]);
 
   const upload = async (file: File) => {
     const res = (await apiUploadFile(file)) as UploadResponse;
@@ -59,8 +43,11 @@ export default function ModelJobPage() {
   const onSubmit = async (data: ModelJobFormValues) => {
     try {
       setIsFetching(true);
-      const res = await apiCreateModelJob({ ...data, model: "OPENAI" });
-      navigate(`/prompt/${promptId}/model-job/${res.id}`);
+      const res = await apiStartImageEditByPromptText({
+        ...data,
+        model: "OPENAI",
+      });
+      navigate(`/model-job/${res.id}`);
       toast.success("Задача запущена!");
     } catch (e) {
       toast.error(e?.message || "Не удалось создать задачу");
@@ -71,17 +58,11 @@ export default function ModelJobPage() {
 
   const isBusy = isFetching || isSubmitting;
 
-  if (isLoading) {
-    return <Loader />;
-  }
-
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
       className="mx-auto w-full max-w-xl space-y-6 rounded-box bg-base-100 p-6 text-base-content"
     >
-      <h1 className="text-lg font-semibold">{currentPrompt.title}</h1>
-
       {/* Референс */}
       <div className="relative mb-6">
         <label className="mb-1 block text-sm text-base-content/70">
@@ -114,7 +95,7 @@ export default function ModelJobPage() {
         </label>
 
         <Controller
-          name="prompt"
+          name="text"
           control={control}
           render={({ field }) => (
             <Textarea
@@ -124,15 +105,15 @@ export default function ModelJobPage() {
               className="w-full rounded-field p-2"
               onChange={(e) => {
                 field.onChange(e);
-                clearErrors("prompt");
+                clearErrors("text");
               }}
             />
           )}
         />
 
-        {errors.prompt && (
+        {errors.text && (
           <p className="absolute top-full mt-1 text-xs text-error">
-            {errors.prompt.message}
+            {errors.text.message}
           </p>
         )}
       </div>

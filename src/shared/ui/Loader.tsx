@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 type LoaderProps = {
   size?: "sm" | "md" | "lg";
   className?: string;
+  containerClassName?: string;
 };
 
 const sizeMap: Record<NonNullable<LoaderProps["size"]>, string> = {
@@ -11,14 +12,27 @@ const sizeMap: Record<NonNullable<LoaderProps["size"]>, string> = {
   lg: "w-10 h-10", // 40px
 };
 
-export default function Loader({ size = "md", className }: LoaderProps) {
+export default function Loader({
+  size = "md",
+  className,
+  containerClassName,
+}: LoaderProps) {
   return (
-    <span
-      className={cn(
-        "loading loading-spinner text-base-content/50",
-        sizeMap[size],
-        className
-      )}
-    />
+    <div
+      className={cn("w-full flex justify-center py-8 my-8", containerClassName)}
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+    >
+      <span
+        className={cn(
+          "loading loading-spinner text-base-content/50",
+          sizeMap[size],
+          className
+        )}
+        aria-label="Загрузка"
+      />
+      <span className="sr-only">Загрузка…</span>
+    </div>
   );
 }

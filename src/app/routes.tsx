@@ -5,9 +5,15 @@ import AdminRoute from "@/shared/routes/AdminRoute";
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
 const RegistrationPage = lazy(() => import("@/pages/RegistrationPage"));
 const PromptsPage = lazy(() => import("@/pages/user/PromptsPage"));
-const ModelJobPage = lazy(() => import("@/pages/user/ModelJobPage"));
+const EditImageByPlatformPromptPage = lazy(
+  () => import("@/pages/user/EditImageByPlatformPromptPage")
+);
+const EditImageByCustomPromptPage = lazy(
+  () => import("@/pages/user/EditImageByCustomPromptPage")
+);
+const GenerateImagePage = lazy(() => import("@/pages/user/GenerateImagePage"));
 const ModelJobResultPage = lazy(
-  () => import("@/pages/user/ModelJobPage/ResultPage")
+  () => import("@/pages/user/ModelJobResultPage")
 );
 
 // админские
@@ -33,11 +39,17 @@ export function AppRoutes() {
         <Route path="/registration" element={<RegistrationPage />} />
         <Route path="/" element={<Navigate to="/prompts" replace />} />
         <Route path="/prompts" element={<PromptsPage />} />
-        <Route path="/prompt/:promptId" element={<ModelJobPage />} />
+        {/* Обработка по промпту платформы */}
         <Route
-          path="/prompt/:promptId/model-job/:modelJobId"
-          element={<ModelJobResultPage />}
+          path="/prompt/:promptId/edit-image"
+          element={<EditImageByPlatformPromptPage />}
         />
+        {/* Обработка по промпту пользователя */}
+        <Route path="/edit-image" element={<EditImageByCustomPromptPage />} />
+        {/* Генерация по промпту пользователя */}
+        <Route path="/generate-image" element={<GenerateImagePage />} />
+        {/* Результат генерации */}
+        <Route path="/model-job/:modelJobId" element={<ModelJobResultPage />} />
 
         {/* админка */}
         <Route path="/admin" element={<AdminRoute />}>
