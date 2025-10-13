@@ -108,7 +108,7 @@ export default function RegistrationForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="mx-auto w-full max-w-sm space-y-5 rounded-2xl bg-base-100 p-6 text-base-content"
+      className="w-full space-y-5 rounded-2xl bg-base-100 p-6"
     >
       <h1 className="text-lg font-semibold">Регистрация</h1>
 

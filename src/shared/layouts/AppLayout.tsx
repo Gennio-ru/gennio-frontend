@@ -1,7 +1,6 @@
 import { ReactNode, useMemo } from "react";
 import Container from "@/shared/ui/Container";
 import HeaderNav from "@/shared/widgets/HeaderNav";
-import Footer from "@/shared/widgets/Footer";
 import { SidebarDesktop, SidebarMobile } from "@/shared/layouts/Sidebar";
 import { AdminButton } from "@/shared/ui/AdminButton";
 import { useAuth } from "@/features/auth/useAuth";
@@ -43,12 +42,6 @@ export default function AppLayout({ children }: Props) {
           </Container>
         </main>
       </div>
-
-      <footer className="border-t border-base-300 bg-base-100">
-        <Container>
-          <Footer />
-        </Container>
-      </footer>
 
       <SidebarMobile items={menuItems} />
     </div>

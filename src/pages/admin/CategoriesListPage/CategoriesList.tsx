@@ -110,7 +110,7 @@ export default function CategoriesAdminList() {
           <tbody>
             {!isLoading &&
               filtered.map((category) => (
-                <tr key={category.id} className="hover:bg-base-200">
+                <tr key={category.id}>
                   <td className="p-3">{category.name}</td>
                   <td className="p-3 hidden sm:table-cell">
                     {category.description || "-"}

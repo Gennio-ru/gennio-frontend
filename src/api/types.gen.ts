@@ -53,6 +53,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/email/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AuthController_confirmEmail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/email/confirm/resend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AuthController_resendConfirmLink"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/login/email": {
         parameters: {
             query?: never;
@@ -87,23 +119,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/login/email/otp/request": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Запросить OTP-код для email */
-        post: operations["AuthController_requestEmailOtp"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/auth/login/phone/otp/request": {
         parameters: {
             query?: never;
@@ -131,22 +146,6 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["AuthController_verifyPhoneOtp"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/auth/login/email/otp/verify": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AuthController_verifyEmailOtp"];
         delete?: never;
         options?: never;
         head?: never;
@@ -198,6 +197,38 @@ export interface paths {
         put?: never;
         /** Выйти и отозвать сессию */
         post: operations["AuthController_logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/yandex": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AuthController_redirectToYandex"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/yandex/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AuthController_yandexCallback"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -408,6 +439,7 @@ export interface components {
             updatedAt: string;
             /** @example user@example.com */
             email?: string | null;
+            yandexId?: string | null;
             /** @example +79998887766 */
             phone?: string | null;
             /** @example user */
@@ -461,10 +493,6 @@ export interface components {
             /** @example Secret123 */
             password: string;
         };
-        RequestEmailOtpDto: {
-            /** @example user@example.com */
-            email: string;
-        };
         RequestPhoneOtpDto: {
             /** @example +79998887766 */
             phone: string;
@@ -472,12 +500,6 @@ export interface components {
         VerifyPhoneOtpDto: {
             /** @example +79998887766 */
             phone: string;
-            /** @example 123456 */
-            code: string;
-        };
-        VerifyEmailOtpDto: {
-            /** @example user@example.com */
-            email: string;
             /** @example 123456 */
             code: string;
         };
@@ -780,6 +802,43 @@ export interface operations {
             };
         };
     };
+    AuthController_confirmEmail: {
+        parameters: {
+            query: {
+                userId: string;
+                token: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_resendConfirmLink: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     AuthController_loginByEmail: {
         parameters: {
             query?: never;
@@ -826,29 +885,6 @@ export interface operations {
             };
         };
     };
-    AuthController_requestEmailOtp: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RequestEmailOtpDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
     AuthController_requestPhoneOtp: {
         parameters: {
             query?: never;
@@ -882,27 +918,6 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["VerifyPhoneOtpDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    AuthController_verifyEmailOtp: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["VerifyEmailOtpDto"];
             };
         };
         responses: {
@@ -968,6 +983,42 @@ export interface operations {
                 content: {
                     "application/json": unknown;
                 };
+            };
+        };
+    };
+    AuthController_redirectToYandex: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_yandexCallback: {
+        parameters: {
+            query: {
+                code: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

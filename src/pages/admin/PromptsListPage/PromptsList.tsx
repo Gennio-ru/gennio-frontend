@@ -60,7 +60,7 @@ export default function PromptsAdminList() {
       items.map((prompt) => (
         <tr
           key={prompt.id}
-          className="cursor-pointer hover:bg-base-200"
+          className="cursor-pointer hover:bg-base-200/50"
           onClick={() => navigate(`/admin/prompts/${prompt.id}`)}
         >
           <td className="p-3">{prompt.title}</td>

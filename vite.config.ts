@@ -5,7 +5,15 @@ import path from "path";
 import svgr from "vite-plugin-svgr";
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), svgr()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    svgr({
+      svgrOptions: {
+        icon: true,
+      },
+    }),
+  ],
   server: {
     port: 5173,
     proxy: {
