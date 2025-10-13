@@ -1,4 +1,3 @@
-// api/client.ts
 import axios, {
   AxiosError,
   AxiosInstance,
