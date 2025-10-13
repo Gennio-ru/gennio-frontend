@@ -31,9 +31,8 @@ export default function BeforeAfterSpring({
   const wrapRef = useRef<HTMLDivElement>(null);
   const pct = useSpring(initial, { stiffness, damping, mass });
 
-  // Двигаем именно линию отсечения (clip-path), а не ширину контейнера
   const clip = useMotionTemplate`polygon(0% 0%, ${pct}% 0%, ${pct}% 100%, 0% 100%)`;
-  const left = useMotionTemplate`${pct}%`; // для ручки
+  const left = useMotionTemplate`${pct}%`;
 
   useMemo(() => {
     const unsub = pct.on("change", (v) => onChange?.(v));
@@ -73,8 +72,9 @@ export default function BeforeAfterSpring({
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     const delta = (e.shiftKey ? 5 : 1) * keyStep;
-    if (e.key === "ArrowLeft") pct.set((v) => clamp(v - delta));
-    else if (e.key === "ArrowRight") pct.set((v) => clamp(v + delta));
+    const current = pct.get(); // <-- получаем текущее значение spring
+    if (e.key === "ArrowLeft") pct.set(clamp(current - delta));
+    else if (e.key === "ArrowRight") pct.set(clamp(current + delta));
     else if (e.key === "Home") pct.set(0);
     else if (e.key === "End") pct.set(100);
   };
@@ -93,7 +93,6 @@ export default function BeforeAfterSpring({
       onKeyDown={onKeyDown}
       style={{ touchAction: "none" }}
     >
-      {/* Оба изображения зафиксированы абсолютно — никакого ресайза при движении */}
       <img
         src={after}
         alt={`${alt} — after`}
@@ -102,7 +101,6 @@ export default function BeforeAfterSpring({
         draggable={false}
       />
 
-      {/* Верхнее (before) не меняет размер, оно просто клипится */}
       <motion.div
         className="absolute inset-0 overflow-hidden will-change-[clip-path]"
         style={{ clipPath: clip }}
@@ -116,7 +114,6 @@ export default function BeforeAfterSpring({
         />
       </motion.div>
 
-      {/* Разделитель и ручка — позиционируем по проценту */}
       <motion.div
         className="absolute inset-y-0 w-px bg-white/80 mix-blend-difference pointer-events-none"
         style={{ left }}
