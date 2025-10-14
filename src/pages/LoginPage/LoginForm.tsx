@@ -143,7 +143,7 @@ export default function LoginForm() {
       </div>
 
       <a
-        href="http://localhost:3000/api/auth/yandex"
+        href={`${import.meta.env.VITE_API_URL}/auth/yandex`}
         className="w-full h-10 flex items-center justify-center rounded-box bg-black text-white cursor-pointer hover:bg-neutral-800 transition-colors"
       >
         <YandexLogo fontSize={24} className="mr-2" />
