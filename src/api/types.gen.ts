@@ -690,11 +690,11 @@ export interface components {
              * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
              */
             outputPreviewFileId: string | null;
-            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.png */
+            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.jpeg */
             inputFileUrl: string | null;
-            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.png */
+            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.jpeg */
             outputFileUrl: string | null;
-            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.png */
+            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.jpeg */
             outputPreviewFileUrl: string | null;
             /** @example OpenAI timeout error */
             error: Record<string, never> | null;

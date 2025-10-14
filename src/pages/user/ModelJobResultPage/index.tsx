@@ -1,4 +1,5 @@
 import { apiGetModelJob, ModelJob } from "@/api/model-job";
+import Button from "@/shared/ui/Button";
 import ImageWithLoader from "@/shared/ui/ImageWithLoader";
 import Loader from "@/shared/ui/Loader";
 import { useEffect, useRef, useState } from "react";
@@ -16,6 +17,7 @@ export default function ModelJobResultPage() {
 
   const [job, setJob] = useState<JobWithUrls | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingOriginal, setIsLoadingOriginal] = useState(false);
   const timerRef = useRef<number | null>(null);
   const cancelledRef = useRef(false);
 
@@ -57,6 +59,30 @@ export default function ModelJobResultPage() {
     };
   }, [modelJobId]);
 
+  const {
+    error,
+    inputFileUrl,
+    outputPreviewFileUrl,
+    outputFileUrl,
+    text,
+    type,
+  } = job || {};
+
+  const handleDownloadOriginal = async () => {
+    setIsLoadingOriginal(true);
+    const response = await fetch(outputFileUrl).finally(() =>
+      setIsLoadingOriginal(false)
+    );
+    const blob = await response.blob();
+
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = "gennio_original.webp";
+    a.click();
+    URL.revokeObjectURL(blobUrl);
+  };
+
   const waitingForResult =
     isLoading || (!!job && !job.error && !job.outputFileUrl);
 
@@ -83,8 +109,6 @@ export default function ModelJobResultPage() {
       </div>
     );
   }
-
-  const { error, inputFileUrl, outputPreviewFileUrl, text, type } = job;
 
   return (
     <div className="mx-auto max-w-2xl p-6 text-center">
@@ -138,6 +162,19 @@ export default function ModelJobResultPage() {
             size="xl"
           />
         </div>
+      )}
+
+      {outputFileUrl && (
+        <Button
+          onClick={handleDownloadOriginal}
+          className="mt-4"
+          disabled={isLoadingOriginal}
+        >
+          Скачать оригинал
+          {isLoadingOriginal && (
+            <span className="loading loading-spinner loading-sm ml-2"></span>
+          )}
+        </Button>
       )}
     </div>
   );
