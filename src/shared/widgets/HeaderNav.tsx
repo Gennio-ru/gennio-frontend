@@ -1,11 +1,15 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAppDispatch } from "@/app/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { logoutThunk } from "@/features/auth/authSlice";
 import ThemeSwitch from "../ui/ThemeSwitch";
 import { useAuth } from "@/features/auth/useAuth";
 import { SidebarToggleButton } from "../layouts/Sidebar";
+import { selectAppTheme } from "@/features/app/appSlice";
+import darkLogo from "../../assets/gennio-logo-dark.png";
+import lightLogo from "../../assets/gennio-logo-light.png";
 
 export default function HeaderNav() {
+  const theme = useAppSelector(selectAppTheme);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,7 +30,10 @@ export default function HeaderNav() {
         <SidebarToggleButton />
 
         <Link to="/" className="text-xl font-bold text-base-content">
-          Gennio
+          <img
+            src={theme === "dark" ? darkLogo : lightLogo}
+            className="h-[30px]"
+          />
         </Link>
       </div>
 

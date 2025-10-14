@@ -1,8 +1,11 @@
+import { setAppTheme } from "@/features/app/appSlice";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 
 const THEME_KEY = "theme";
 
 export default function ThemeSwitch() {
+  const dispatch = useDispatch();
   const [theme, setTheme] = useState<"light" | "dark">(() => {
     const saved = localStorage.getItem(THEME_KEY) as "light" | "dark" | null;
     if (saved) return saved;
@@ -15,7 +18,8 @@ export default function ThemeSwitch() {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem(THEME_KEY, theme);
-  }, [theme]);
+    dispatch(setAppTheme(theme));
+  }, [theme, dispatch]);
 
   return (
     <button
