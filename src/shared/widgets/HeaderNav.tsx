@@ -26,7 +26,7 @@ export default function HeaderNav() {
         <SidebarToggleButton />
 
         <Link to="/" className="text-xl font-bold text-base-content">
-          Gennio 2
+          Gennio
         </Link>
       </div>
 
