@@ -685,10 +685,17 @@ export interface components {
              * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
              */
             outputFileId: string | null;
+            /**
+             * Format: uuid
+             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
+             */
+            outputPreviewFileId: string | null;
             /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.png */
-            inputFileUrl: Record<string, never> | null;
+            inputFileUrl: string | null;
             /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.png */
-            outputFileUrl: Record<string, never> | null;
+            outputFileUrl: string | null;
+            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.png */
+            outputPreviewFileUrl: string | null;
             /** @example OpenAI timeout error */
             error: Record<string, never> | null;
             /** Format: date-time */

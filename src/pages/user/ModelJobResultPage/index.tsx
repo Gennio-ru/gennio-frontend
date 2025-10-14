@@ -84,7 +84,7 @@ export default function ModelJobResultPage() {
     );
   }
 
-  const { error, inputFileUrl, outputFileUrl, text, type } = job;
+  const { error, inputFileUrl, outputPreviewFileUrl, text, type } = job;
 
   return (
     <div className="mx-auto max-w-2xl p-6 text-center">
@@ -111,20 +111,32 @@ export default function ModelJobResultPage() {
       {type === "image-edit-by-prompt-id" && (
         <div className="flex flex-col md:flex-row items-start justify-center gap-4">
           <ImageWithLoader src={inputFileUrl} alt="Оригинал" size="xs" />
-          <ImageWithLoader src={outputFileUrl} alt="Результат" size="xl" />
+          <ImageWithLoader
+            src={outputPreviewFileUrl}
+            alt="Результат"
+            size="xl"
+          />
         </div>
       )}
 
       {type === "image-edit-by-prompt-text" && (
         <div className="flex flex-col md:flex-row items-start justify-center gap-4">
           <ImageWithLoader src={inputFileUrl} alt="Оригинал" size="xs" />
-          <ImageWithLoader src={outputFileUrl} alt="Результат" size="xl" />
+          <ImageWithLoader
+            src={outputPreviewFileUrl}
+            alt="Результат"
+            size="xl"
+          />
         </div>
       )}
 
       {type === "image-generate-by-prompt-text" && (
         <div className="flex items-center justify-center">
-          <ImageWithLoader src={outputFileUrl} alt="Результат" size="xl" />
+          <ImageWithLoader
+            src={outputPreviewFileUrl}
+            alt="Результат"
+            size="xl"
+          />
         </div>
       )}
     </div>
