@@ -1,0 +1,27 @@
+name: 🚀 Deploy Frontend to Stage
+
+on:
+  push:
+    branches:
+      - stage-frontend # или main, если деплоишь оттуда
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Deploy only frontend container
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /opt/gennio/gennio-frontend
+            git pull origin stage
+            cd ../gennio-backend
+            docker compose -f docker-compose.stage.yml build frontend
+            docker compose -f docker-compose.stage.yml up -d frontend
