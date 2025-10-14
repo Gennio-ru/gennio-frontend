@@ -3,7 +3,7 @@ name: 🚀 Deploy Frontend to Stage
 on:
   push:
     branches:
-      - stage-frontend # или main, если деплоишь оттуда
+      - stage
 
 jobs:
   deploy:
