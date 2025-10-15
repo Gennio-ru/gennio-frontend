@@ -65,7 +65,7 @@ export default function ImageUploader<T extends FieldValues>({
                 <img
                   src={currentUrl}
                   alt="preview"
-                  className="w-full h-auto object-contain"
+                  className="w-full h-auto max-h-[300px] object-contain"
                 />
               </div>
               <button

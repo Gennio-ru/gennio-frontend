@@ -25,8 +25,7 @@ const schema = z.object({
   description: z.string().min(1, "Укажите описание"),
   categoryId: z.string().min(1, "Выберите категорию"),
   text: z.string().min(1, "Добавьте текст промпта"),
-  beforeImageId: z.string().min(1, "Загрузите изображение «До»"),
-  afterImageId: z.string().min(1, "Загрузите изображение «После»"),
+  afterImageId: z.string().min(1, "Загрузите изображение"),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -51,7 +50,6 @@ export default function PromptEditForm() {
       description: "",
       categoryId: "",
       text: "",
-      beforeImageId: "",
       afterImageId: "",
     },
     mode: "onSubmit",
@@ -75,7 +73,6 @@ export default function PromptEditForm() {
           description: data.description ?? "",
           categoryId: data.categoryId,
           text: data.text ?? "",
-          beforeImageId: data.beforeImageId ?? "",
           afterImageId: data.afterImageId ?? "",
         });
       } catch (e) {
@@ -238,47 +235,25 @@ export default function PromptEditForm() {
         )}
       </div>
 
-      {/* Изображения */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="relative mb-6">
-          <ImageUploader
-            control={control}
-            name="beforeImageId"
-            label="До"
-            disabled={isBusy}
-            onUpload={async (file: File) => {
-              const id = await upload(file);
-              clearErrors("beforeImageId");
-              return id;
-            }}
-            currentUrl={currentPrompt?.beforeImageUrl ?? null}
-          />
-          {errors.beforeImageId && (
-            <p className="absolute top-full mt-1 text-xs text-error">
-              {errors.beforeImageId.message}
-            </p>
-          )}
-        </div>
-
-        <div className="relative mb-6">
-          <ImageUploader
-            control={control}
-            name="afterImageId"
-            label="После"
-            disabled={isBusy}
-            onUpload={async (file: File) => {
-              const id = await upload(file);
-              clearErrors("afterImageId");
-              return id;
-            }}
-            currentUrl={currentPrompt?.afterImageUrl ?? null}
-          />
-          {errors.afterImageId && (
-            <p className="absolute top-full mt-1 text-xs text-error">
-              {errors.afterImageId.message}
-            </p>
-          )}
-        </div>
+      {/* Изображениe */}
+      <div className="relative mb-6">
+        <ImageUploader
+          control={control}
+          name="afterImageId"
+          label="Изображение"
+          disabled={isBusy}
+          onUpload={async (file: File) => {
+            const id = await upload(file);
+            clearErrors("afterImageId");
+            return id;
+          }}
+          currentUrl={currentPrompt?.afterImageUrl ?? null}
+        />
+        {errors.afterImageId && (
+          <p className="absolute top-full mt-1 text-xs text-error">
+            {errors.afterImageId.message}
+          </p>
+        )}
       </div>
 
       {/* Кнопка */}

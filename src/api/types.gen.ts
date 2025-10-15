@@ -607,8 +607,6 @@ export interface components {
             /** @example Мягкое освещение, крупный план */
             description: string;
             /** @example f47ac10b-58cc-4372-a567-0e02b2c3d479 */
-            beforeImageId: string;
-            /** @example f47ac10b-58cc-4372-a567-0e02b2c3d479 */
             afterImageId: string;
             /** @description Промпт шаблона */
             text: string;
@@ -620,8 +618,6 @@ export interface components {
             title?: string;
             /** @example Мягкое освещение, крупный план */
             description?: string;
-            /** @example f47ac10b-58cc-4372-a567-0e02b2c3d479 */
-            beforeImageId?: string;
             /** @example f47ac10b-58cc-4372-a567-0e02b2c3d479 */
             afterImageId?: string;
             /** @description Промпт шаблона */
