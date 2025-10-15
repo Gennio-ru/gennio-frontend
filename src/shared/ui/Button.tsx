@@ -3,11 +3,13 @@ import { cn } from "@/lib/utils"; // если используешь clsx/tailwi
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: "sm" | "md";
+  color?: "primary" | "secondary" | "ghost";
 };
 
 export default function Button({
   className,
   size = "md",
+  color = "primary",
   ...rest
 }: ButtonProps) {
   const sizeClasses =
@@ -15,12 +17,21 @@ export default function Button({
       ? "h-8 px-3 text-xs" // чуть меньше
       : "h-10 px-4 text-sm"; // стандарт
 
+  const colorClasses =
+    color === "primary"
+      ? "bg-primary color-primary-content hover:bg-primary/80"
+      : color === "secondary"
+      ? "bg-secondary color-secondary-content hover:bg-secondary/80"
+      : // ghost
+        "text-base-content";
+
   return (
     <button
       {...rest}
       className={cn(
-        "rounded-field bg-primary font-medium text-white hover:bg-primary/80 disabled:opacity-70 cursor-pointer",
+        "rounded-field font-medium disabled:opacity-70 cursor-pointer",
         sizeClasses,
+        colorClasses,
         className
       )}
     />

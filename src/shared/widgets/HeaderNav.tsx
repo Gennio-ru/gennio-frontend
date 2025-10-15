@@ -1,28 +1,17 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { logoutThunk } from "@/features/auth/authSlice";
+import { Link, useLocation } from "react-router-dom";
+import { useAppSelector } from "@/app/hooks";
 import ThemeSwitch from "../ui/ThemeSwitch";
 import { useAuth } from "@/features/auth/useAuth";
 import { SidebarToggleButton } from "../layouts/Sidebar";
 import { selectAppTheme } from "@/features/app/appSlice";
 import darkLogo from "../../assets/gennio-logo-dark.png";
 import lightLogo from "../../assets/gennio-logo-light.png";
+import { UserMenu } from "../ui/UserMenu";
 
 export default function HeaderNav() {
   const theme = useAppSelector(selectAppTheme);
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const location = useLocation();
   const { isAuth, user } = useAuth();
-
-  const onLogout = async () => {
-    try {
-      await dispatch(logoutThunk()).unwrap();
-      navigate("/login");
-    } catch {
-      /* no-op */
-    }
-  };
 
   return (
     <div className="flex w-full items-center justify-between py-2">
@@ -45,19 +34,14 @@ export default function HeaderNav() {
             {user?.email && (
               <span className="hidden sm:inline">{user.email}</span>
             )}
-            <button
-              onClick={onLogout}
-              className="rounded-field bg-primary px-3 py-1.5 text-primary-content hover:bg-primary/80"
-            >
-              Выйти
-            </button>
+            <UserMenu />
           </div>
         )}
 
         {!isAuth && location.pathname !== "/login" && (
           <Link
             to="/login"
-            className="rounded-field bg-primary px-3 py-1.5 text-primary-content hover:bg-primary/80"
+            className="rounded-field bg-primary px-3 py-1.5 color-primary-content hover:bg-primary/80"
           >
             Войти
           </Link>
