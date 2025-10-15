@@ -19,9 +19,9 @@ export default function Button({
 
   const colorClasses =
     color === "primary"
-      ? "bg-primary color-primary-content hover:bg-primary/80"
+      ? "bg-primary text-primary-content hover:bg-primary/80"
       : color === "secondary"
-      ? "bg-secondary color-secondary-content hover:bg-secondary/80"
+      ? "bg-secondary text-secondary-content hover:bg-secondary/80"
       : // ghost
         "text-base-content";
 

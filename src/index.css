@@ -62,7 +62,7 @@
 
   /* brand / accents (ярче, чтобы «светились») */
   --color-primary: oklch(70% 0.15 342);
-  --color-primary-content: oklch(18% 0.01 70);
+  --color-primary-content: oklch(98% 0.003 95);
 
   --color-secondary: oklch(66% 0.09 30);
   --color-secondary-content: oklch(18% 0.01 70);
