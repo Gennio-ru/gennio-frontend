@@ -12,6 +12,7 @@ import "./index.css";
 import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
+import toast from "react-hot-toast";
 
 registerPlugin(
   FilePondPluginImageExifOrientation,
@@ -129,6 +130,7 @@ export default function ImageUploader<T extends FieldValues>({
                       setImageUploaded(true);
                       load(id); // сообщаем FilePond об успешной загрузке
                     } catch (e) {
+                      toast.error(e?.message);
                       if (aborted) return; // если отменили — не показываем ошибку
                       console.error("Upload failed", e);
                       field.onChange("");
