@@ -88,11 +88,7 @@ export default function EditImageByPlatformPromptPage() {
       <h1 className="text-lg font-semibold">{currentPrompt.title}</h1>
 
       {/* Референс */}
-      <div className="relative mb-6">
-        <label className="mb-1 block text-sm text-base-content/70">
-          Референс
-        </label>
-
+      <div className="relative mb-8">
         <ImageUploader
           control={control}
           name="inputFileId"
@@ -113,11 +109,7 @@ export default function EditImageByPlatformPromptPage() {
       </div>
 
       {/* Промпт */}
-      <div className="relative mb-6">
-        <label className="mb-1 block text-sm text-base-content/70">
-          Промпт
-        </label>
-
+      <div className="relative mb-8">
         <Controller
           name="text"
           control={control}
@@ -126,11 +118,12 @@ export default function EditImageByPlatformPromptPage() {
               {...field}
               rows={4}
               placeholder="Введите уточняющий промпт, если необходимо"
-              className="w-full rounded-field p-2"
+              className="w-full rounded-field"
               onChange={(e) => {
                 field.onChange(e);
                 clearErrors("text");
               }}
+              errored={!!errors.text}
             />
           )}
         />

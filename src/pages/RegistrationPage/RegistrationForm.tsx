@@ -108,9 +108,9 @@ export default function RegistrationForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="w-full space-y-5 rounded-2xl bg-base-100 p-6"
+      className="w-full rounded-2xl bg-base-100 p-6"
     >
-      <h1 className="text-lg font-semibold">Регистрация</h1>
+      <h1 className="text-lg font-semibold mb-8">Регистрация</h1>
 
       {serverError && (
         <div className="rounded-lg bg-error/10 p-2 text-sm text-error">
@@ -119,7 +119,7 @@ export default function RegistrationForm() {
       )}
 
       {/* Email */}
-      <div className="relative space-y-1">
+      <div className="relative mt-5 mb-8 space-y-1">
         <Controller
           name="email"
           control={control}
@@ -132,6 +132,7 @@ export default function RegistrationForm() {
                 field.onChange(e);
                 clearErrors("email");
               }}
+              errored={!!errors.email}
             />
           )}
         />
@@ -144,7 +145,7 @@ export default function RegistrationForm() {
       </div>
 
       {/* Password */}
-      <div className="space-y-1">
+      <div className="space-y-1 mb-8">
         <div className="relative">
           <Controller
             name="password"
@@ -159,6 +160,7 @@ export default function RegistrationForm() {
                   field.onChange(e);
                   clearErrors("password");
                 }}
+                errored={!!errors.password}
               />
             )}
           />
@@ -177,19 +179,23 @@ export default function RegistrationForm() {
 
         {/* Индикатор силы */}
         <div className="space-y-1">
-          <div className="h-2 w-full overflow-hidden rounded bg-base-200">
-            <div
-              className={[
-                "h-2 transition-all",
-                s <= 2 ? "bg-error" : s === 3 ? "bg-warning" : "bg-success",
-              ].join(" ")}
-              style={{ width: `${(s / 5) * 100}%` }}
-            />
-          </div>
-          <div className="text-xs text-base-content/70">
-            Защита: {strengthLabel(s)}
-          </div>
-          <ul className="text-xs text-base-content/70 space-y-0.5">
+          {passwordValue.trim().length > 0 && (
+            <>
+              <div className="h-2 w-full overflow-hidden rounded bg-base-200">
+                <div
+                  className={[
+                    "h-2 transition-all",
+                    s <= 2 ? "bg-error" : s === 3 ? "bg-warning" : "bg-success",
+                  ].join(" ")}
+                  style={{ width: `${(s / 5) * 100}%` }}
+                />
+              </div>
+              <div className="text-xs text-base-content/70">
+                Защита: {strengthLabel(s)}
+              </div>
+            </>
+          )}
+          <ul className="text-xs text-base-content/70 space-y-0.5 mt-3">
             <li className={passwordValue.length >= 12 ? "text-success" : ""}>
               • Минимум 12 символов
             </li>
@@ -237,6 +243,7 @@ export default function RegistrationForm() {
                 field.onChange(e);
                 clearErrors("confirmPassword");
               }}
+              errored={!!errors.confirmPassword}
             />
           )}
         />
@@ -256,7 +263,7 @@ export default function RegistrationForm() {
         )}
       </div>
 
-      <div className="flex items-center justify-between mt-8">
+      <div className="flex items-center justify-between mt-10">
         <Button disabled={isSubmitting}>
           {isSubmitting ? "Создаём аккаунт…" : "Зарегистрироваться"}
         </Button>

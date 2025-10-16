@@ -15,7 +15,7 @@ export default function Button({
   const sizeClasses =
     size === "sm"
       ? "h-8 px-3 text-xs" // чуть меньше
-      : "h-10 px-4 text-sm"; // стандарт
+      : "h-12 px-4 text-base"; // стандарт
 
   const colorClasses =
     color === "primary"

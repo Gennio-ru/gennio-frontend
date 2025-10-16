@@ -57,7 +57,7 @@ export default function LoginForm() {
       <form
         onSubmit={handleSubmit(onSubmit)}
         autoComplete="no"
-        className="w-full space-y-5 rounded-2xl bg-base-100 p-6"
+        className="w-full space-y-8 rounded-2xl bg-base-100 p-6"
       >
         <h1 className="text-lg font-semibold text-base-content">Вход</h1>
 
@@ -82,6 +82,7 @@ export default function LoginForm() {
                   field.onChange(e);
                   clearErrors("email");
                 }}
+                errored={!!errors.email}
               />
             )}
           />
@@ -107,6 +108,7 @@ export default function LoginForm() {
                   field.onChange(e);
                   clearErrors("password");
                 }}
+                errored={!!errors.password}
               />
             )}
           />

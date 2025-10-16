@@ -45,7 +45,7 @@ export default function CustomSelect({
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
 
-        <SelectContent>
+        <SelectContent className="shadow-lg shadow-base-200">
           {items.map((item) => (
             <SelectItem key={item.value} value={item.value}>
               {item.label}

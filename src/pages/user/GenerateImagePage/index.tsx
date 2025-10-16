@@ -55,10 +55,6 @@ export default function EditImageByCustomPromptPage() {
     >
       {/* Промпт */}
       <div className="relative mb-6">
-        <label className="mb-1 block text-sm text-base-content/70">
-          Промпт
-        </label>
-
         <Controller
           name="text"
           control={control}
@@ -67,11 +63,12 @@ export default function EditImageByCustomPromptPage() {
               {...field}
               rows={4}
               placeholder="Введите промпт для генерации"
-              className="w-full rounded-field p-2"
+              className="w-full rounded-field"
               onChange={(e) => {
                 field.onChange(e);
                 clearErrors("text");
               }}
+              errored={!!errors.text}
             />
           )}
         />

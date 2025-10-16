@@ -10,4 +10,5 @@
 .filepond--drop-label {
   outline: 2px dashed var(--color-base-300);
   border-radius: calc(var(--radius-field) - 1px);
+  color: rgb(from var(--color-base-content) r g b / 0.6);
 }

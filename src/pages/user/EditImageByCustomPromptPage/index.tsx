@@ -34,9 +34,16 @@ export default function EditImageByCustomPromptPage() {
     reValidateMode: "onSubmit",
   });
 
-  const upload = async (file: File) => {
+  const upload = async (file: File | null) => {
+    clearErrors("inputFileId");
+    if (!file) return "";
+
     const res = (await apiUploadFile(file)) as UploadResponse;
-    if (!res.id) throw new Error("Сервер не вернул id файла");
+
+    if (!res.id) {
+      return null;
+    }
+
     return res.id;
   };
 
@@ -64,19 +71,11 @@ export default function EditImageByCustomPromptPage() {
       className="mx-auto w-full max-w-xl space-y-6 rounded-box bg-base-100 p-6 text-base-content"
     >
       {/* Референс */}
-      <div className="relative mb-6">
-        <label className="mb-1 block text-sm text-base-content/70">
-          Референс
-        </label>
-
+      <div className="relative mb-8">
         <ImageUploader
           control={control}
           name="inputFileId"
-          onUpload={async (file) => {
-            const id = await upload(file);
-            clearErrors("inputFileId");
-            return id;
-          }}
+          onUpload={upload}
           disabled={isBusy}
           className="w-full"
         />
@@ -89,11 +88,7 @@ export default function EditImageByCustomPromptPage() {
       </div>
 
       {/* Промпт */}
-      <div className="relative mb-6">
-        <label className="mb-1 block text-sm text-base-content/70">
-          Промпт
-        </label>
-
+      <div className="relative mb-8">
         <Controller
           name="text"
           control={control}
@@ -101,12 +96,13 @@ export default function EditImageByCustomPromptPage() {
             <Textarea
               {...field}
               rows={4}
-              placeholder="Введите уточняющий промпт, если необходимо"
-              className="w-full rounded-field p-2"
+              placeholder="Введите текст промпта"
+              className="w-full rounded-field"
               onChange={(e) => {
                 field.onChange(e);
                 clearErrors("text");
               }}
+              errored={!!errors.text}
             />
           )}
         />
@@ -121,7 +117,7 @@ export default function EditImageByCustomPromptPage() {
       {/* Кнопка */}
       <div className="pt-4 flex justify-center">
         <Button type="submit" disabled={isBusy} className="px-6 w-[200px]">
-          {isSubmitting ? "Обработка…" : isFetching ? "Загрузка…" : "Начать"}
+          {isSubmitting ? "Обработка…" : "Обработать"}
         </Button>
       </div>
     </form>

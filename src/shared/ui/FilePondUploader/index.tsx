@@ -72,7 +72,7 @@ export default function ImageUploader<T extends FieldValues>({
                 type="button"
                 onClick={() => {
                   setShowUploader(true);
-                  field.onChange(null);
+                  field.onChange("");
                 }}
                 className="absolute top-2 right-2 rounded-full bg-black/60 p-1 text-white hover:bg-black/80 cursor-pointer"
               >
@@ -91,6 +91,8 @@ export default function ImageUploader<T extends FieldValues>({
               labelFileProcessingError="Ошибка загрузки"
               labelTapToCancel="Нажмите для отмены"
               labelFileProcessing="Загрузка"
+              labelFileProcessingComplete="Загрузка завершена"
+              labelTapToUndo="Нажмите для удаления"
               allowBrowse={!disabled}
               instantUpload
               server={{
@@ -120,7 +122,7 @@ export default function ImageUploader<T extends FieldValues>({
                     } catch (e) {
                       if (aborted) return; // если отменили — не показываем ошибку
                       console.error("Upload failed", e);
-                      field.onChange(null);
+                      field.onChange("");
                       error("Ошибка загрузки");
                     }
                   })();
@@ -135,7 +137,7 @@ export default function ImageUploader<T extends FieldValues>({
                 },
 
                 revert: (uniqueFileId, load) => {
-                  field.onChange(null);
+                  field.onChange("");
                   load();
                 },
               }}
