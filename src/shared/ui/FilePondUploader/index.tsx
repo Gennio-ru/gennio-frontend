@@ -11,8 +11,13 @@ import "./index.css";
 // Plugins
 import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
-import toast from "react-hot-toast";
-registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
+import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
+
+registerPlugin(
+  FilePondPluginImageExifOrientation,
+  FilePondPluginImagePreview,
+  FilePondPluginFileValidateSize
+);
 
 type UploadFn = (file: File) => Promise<string>;
 
@@ -88,6 +93,9 @@ export default function ImageUploader<T extends FieldValues>({
               credits={false}
               acceptedFileTypes={["image/*"]}
               labelIdle='Перетащите сюда изображение или <span class="filepond--label-action">Выберите</span>'
+              maxFileSize="5MB"
+              labelMaxFileSizeExceeded="Файл слишком большой"
+              labelMaxFileSize="Максимум: {filesize}"
               labelTapToRetry="Нажмите для повтора"
               labelFileProcessingError="Ошибка загрузки"
               labelTapToCancel="Нажмите для отмены"
@@ -121,7 +129,6 @@ export default function ImageUploader<T extends FieldValues>({
                       setImageUploaded(true);
                       load(id); // сообщаем FilePond об успешной загрузке
                     } catch (e) {
-                      toast.error(e?.message);
                       if (aborted) return; // если отменили — не показываем ошибку
                       console.error("Upload failed", e);
                       field.onChange("");
