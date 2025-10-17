@@ -19,6 +19,7 @@ import {
   type CreatePromptPayload,
 } from "@/api/prompts";
 import { apiUploadFile } from "@/api/files";
+import Loader from "@/shared/ui/Loader";
 
 const schema = z.object({
   title: z.string().min(1, "Укажите заголовок"),
@@ -116,6 +117,10 @@ export default function PromptEditForm() {
   };
 
   const isBusy = isFetching || isSubmitting;
+
+  if (isFetching) {
+    return <Loader size="lg" />;
+  }
 
   return (
     <form
