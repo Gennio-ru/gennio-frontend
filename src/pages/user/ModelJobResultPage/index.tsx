@@ -78,7 +78,7 @@ export default function ModelJobResultPage() {
     const blobUrl = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = blobUrl;
-    a.download = "gennio_original.webp";
+    a.download = "gennio_original.jpeg";
     a.click();
     URL.revokeObjectURL(blobUrl);
   };
