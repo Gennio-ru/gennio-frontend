@@ -17,7 +17,7 @@ export default function PromptCard({ prompt }: Props) {
       onClick={handleClick}
       className="group overflow-hidden rounded-2xl bg-base-100 text-base-content cursor-pointer"
     >
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-[1/1] overflow-hidden">
         <img
           src={prompt.afterImageUrl}
           alt={prompt.title}
