@@ -12,12 +12,14 @@ import "./index.css";
 import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
+import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
 import toast from "react-hot-toast";
 
 registerPlugin(
   FilePondPluginImageExifOrientation,
   FilePondPluginImagePreview,
-  FilePondPluginFileValidateSize
+  FilePondPluginFileValidateSize,
+  FilePondPluginFileValidateType
 );
 
 type UploadFn = (file: File) => Promise<string>;
@@ -92,8 +94,23 @@ export default function ImageUploader<T extends FieldValues>({
               allowMultiple={false}
               maxFiles={1}
               credits={false}
-              acceptedFileTypes={["image/*"]}
+              allowFileTypeValidation
+              acceptedFileTypes={[
+                "image/png",
+                "image/jpeg",
+                "image/jpg",
+                "image/webp",
+              ]}
+              labelFileTypeNotAllowed="Неверный формат файла"
+              fileValidateTypeLabelExpectedTypes="Ожидаются: {allTypes}"
+              fileValidateTypeLabelExpectedTypesMap={{
+                "image/png": ".png",
+                "image/jpeg": ".jpeg",
+                "image/jpg": ".jpg",
+                "image/webp": ".webp",
+              }}
               labelIdle='Перетащите сюда изображение или <span class="filepond--label-action">Выберите</span>'
+              allowFileSizeValidation
               maxFileSize="5MB"
               labelMaxFileSizeExceeded="Файл слишком большой"
               labelMaxFileSize="Максимум: {filesize}"
