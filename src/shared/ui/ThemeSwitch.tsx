@@ -1,6 +1,7 @@
 import { setAppTheme } from "@/features/app/appSlice";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { Sun, Moon } from "lucide-react";
 
 const THEME_KEY = "theme";
 
@@ -21,22 +22,37 @@ export default function ThemeSwitch() {
     dispatch(setAppTheme(theme));
   }, [theme, dispatch]);
 
+  const toggle = () =>
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+
   return (
     <button
-      onClick={() => setTheme((prev) => (prev === "light" ? "dark" : "light"))}
+      onClick={toggle}
       className={`
-        relative w-10 h-6 flex items-center rounded-full p-1 transition-colors duration-300
+        relative w-12 h-7 flex items-center rounded-full p-1
+        overflow-hidden transition-colors duration-300
         ${theme === "dark" ? "bg-base-200" : "bg-neutral-300"}
       `}
     >
-      <span
+      <div
         className={`
-          w-4 h-4 ${
-            theme === "dark" ? "bg-stone-400" : "bg-neutral-400"
-          } rounded-full transform transition-transform duration-300
-          ${theme === "dark" ? "translate-x-4" : "translate-x-0"}
+          flex items-center gap-1 w-[150%]
+          transition-transform duration-300
+          ${theme === "dark" ? "translate-x-0" : "-translate-x-5"}
         `}
-      />
+      >
+        <Sun className="w-4 h-4 text-yellow-400 shrink-0" />
+
+        <span
+          className={`
+            w-5 h-5 rounded-full transform
+            transition-transform duration-300 shrink-0
+            ${theme === "dark" ? "bg-stone-400" : "bg-neutral-400"}
+          `}
+        />
+
+        <Moon className="w-4 h-4 text-slate-600 shrink-0" />
+      </div>
     </button>
   );
 }
