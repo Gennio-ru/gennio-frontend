@@ -11,6 +11,9 @@ import {
 import Input from "@/shared/ui/Input";
 import Button from "@/shared/ui/Button";
 import CategoriesSelect from "@/shared/ui/CategoriesSelect";
+import { EditIcon, TrashIcon } from "lucide-react";
+import { apiDeletePrompt } from "@/api/prompts";
+import toast from "react-hot-toast";
 
 export default function PromptsAdminList() {
   const dispatch = useAppDispatch();
@@ -32,6 +35,24 @@ export default function PromptsAdminList() {
     dispatch(resetCategory());
   };
 
+  const handleDelete = useMemo(
+    () => async (id: string) => {
+      const target = items.find((i) => i.id === id);
+      const name = target?.title ?? "Промпт";
+      if (!confirm(`Удалить «${name}»? Это действие нельзя отменить.`)) return;
+
+      try {
+        await apiDeletePrompt(id);
+        toast.success("Удалено");
+        dispatch(fetchAdminPrompts({ page, limit: 50 }));
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "Unknown error";
+        toast.error(`Не удалось удалить. ${msg}`);
+      }
+    },
+    [dispatch, items, page]
+  );
+
   // локальный контрол для поиска + дебаунс
   const [searchLocal, setSearchLocal] = useState(search ?? "");
   const debouncedSearch = useDebounce(searchLocal, 300);
@@ -39,16 +60,13 @@ export default function PromptsAdminList() {
   // подгрузка при изменении страницы/фильтров
   useEffect(() => {
     dispatch(fetchAdminPrompts({ page, limit: 50 }));
-  }, [dispatch, page, categoryId, debouncedSearch]);
+  }, [dispatch, page, categoryId, search]);
 
   // синк дебаунс-поиска в стор
   useEffect(() => {
-    // чтобы не диспатчить на каждый keypress — только по debounce
-    if (debouncedSearch !== (search ?? "")) {
-      dispatch(setSearch(debouncedSearch.trim() ? debouncedSearch : null));
-      // страница сбросится в редьюсере setSearch -> page=1
-    }
-  }, [debouncedSearch, search, dispatch]);
+    dispatch(setSearch(debouncedSearch.trim() ? debouncedSearch : null));
+    // страница может сбрасываться внутри редьюсера
+  }, [debouncedSearch, dispatch]);
 
   const canPrev = page > 1;
   const canNext = page < totalPages;
@@ -58,11 +76,7 @@ export default function PromptsAdminList() {
   const rows = useMemo(
     () =>
       items.map((prompt) => (
-        <tr
-          key={prompt.id}
-          className="cursor-pointer hover:bg-base-200/50"
-          onClick={() => navigate(`/admin/prompts/${prompt.id}`)}
-        >
+        <tr key={prompt.id}>
           <td className="p-3">{prompt.title}</td>
           <td className="p-3 hidden sm:table-cell">{prompt.type}</td>
           <td className="p-3 hidden md:table-cell">
@@ -71,9 +85,28 @@ export default function PromptsAdminList() {
           <td className="p-3 hidden lg:table-cell">
             {new Date(prompt.createdAt).toLocaleString()}
           </td>
+          <td className="p-3">
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                title="Edit"
+                onClick={() => navigate(`/admin/prompts/${prompt.id}`)}
+              >
+                <EditIcon size={16} />
+              </Button>
+
+              <Button
+                size="sm"
+                title="Delete"
+                onClick={() => void handleDelete(prompt.id)}
+              >
+                <TrashIcon size={16} />
+              </Button>
+            </div>
+          </td>
         </tr>
       )),
-    [items, navigate]
+    [items, navigate, handleDelete]
   );
 
   return (
