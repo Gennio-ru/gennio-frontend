@@ -7,6 +7,8 @@ import {
 } from "@/shared/ui/shadcn/select";
 import { cn } from "@/lib/utils";
 import { X as ClearIcon } from "lucide-react";
+import { useAppSelector } from "@/app/hooks";
+import { selectAppTheme } from "@/features/app/appSlice";
 
 interface Item {
   value: string;
@@ -30,6 +32,7 @@ export default function CustomSelect({
   placeholder,
   className,
 }: Props) {
+  const theme = useAppSelector(selectAppTheme);
   const showResetButton = onReset && value;
 
   return (
@@ -45,7 +48,12 @@ export default function CustomSelect({
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
 
-        <SelectContent className="shadow-lg shadow-base-200">
+        <SelectContent
+          className={cn(
+            "shadow-lg",
+            theme === "light" ? "shadow-neutral-900/20" : "shadow-base-200"
+          )}
+        >
           {items.map((item) => (
             <SelectItem key={item.value} value={item.value}>
               {item.label}
