@@ -1,22 +1,37 @@
 import PromptsGrid from "@/pages/user/PromptsPage/PromptsGrid";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { setCategory } from "@/features/prompts/promptSlice";
+import { setCategory, setSearch } from "@/features/prompts/promptSlice";
 import UserCategoriesSelect from "@/shared/ui/UserCategoriesSelect";
+import { GennioSearch } from "@/shared/ui/GennioSearch";
 
 export default function PromptsPage() {
   const dispatch = useAppDispatch();
-  const { categoryId } = useAppSelector((state) => state.prompts.filters);
-
-  const changeValue = (value: string) => {
+  const { categoryId, search } = useAppSelector(
+    (state) => state.prompts.filters
+  );
+  console.log(search);
+  const changeCategory = (value: string) => {
     dispatch(setCategory(value));
+  };
+
+  const changeSearch = (value: string) => {
+    dispatch(setSearch(value));
   };
 
   return (
     <div className="mx-auto w-full">
-      <div className="flex justify-between items-center mb-10">
+      <div className="flex justify-between items-end mb-10">
         <div className="flex flex-col">
           <span className="text-base">Стилизация</span>
-          <UserCategoriesSelect value={categoryId} onChange={changeValue} />
+          <UserCategoriesSelect value={categoryId} onChange={changeCategory} />
+        </div>
+
+        <div className="pb-2">
+          <GennioSearch
+            value={search}
+            placeholder="Поиск по стилизациям"
+            onChange={changeSearch}
+          />
         </div>
       </div>
 

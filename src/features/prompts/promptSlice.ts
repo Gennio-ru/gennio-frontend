@@ -9,6 +9,7 @@ type State = {
   hasMore: boolean;
   filters: {
     categoryId: string | null;
+    search: string | null;
   };
   status: "idle" | "loading" | "failed";
   error?: string;
@@ -20,6 +21,7 @@ const initialState: State = {
   hasMore: true,
   filters: {
     categoryId: null,
+    search: null,
   },
   status: "idle",
 };
@@ -44,6 +46,10 @@ const promptsSlice = createSlice({
     resetCategory(state) {
       state.filters.categoryId = null;
     },
+    setSearch(state, action: PayloadAction<string | null>) {
+      state.filters.search = action.payload;
+      state.page = 1;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -67,6 +73,6 @@ const promptsSlice = createSlice({
   },
 });
 
-export const { resetPrompts, setCategory, resetCategory } =
+export const { resetPrompts, setCategory, resetCategory, setSearch } =
   promptsSlice.actions;
 export default promptsSlice.reducer;

@@ -11,7 +11,7 @@ export default function PromptsGrid() {
     status,
     page,
     hasMore,
-    filters: { categoryId },
+    filters: { categoryId, search },
   } = useAppSelector((s) => s.prompts);
 
   const isLoading = status === "loading" && items.length === 0;
@@ -19,9 +19,9 @@ export default function PromptsGrid() {
 
   useEffect(() => {
     dispatch(
-      fetchPromptsPage({ page: 1, categoryId: categoryId || undefined })
+      fetchPromptsPage({ page: 1, categoryId: categoryId || undefined, search })
     );
-  }, [dispatch, categoryId]);
+  }, [dispatch, categoryId, search]);
 
   const loadMore = useCallback(() => {
     if (!hasMore || status === "loading") return;
