@@ -1,5 +1,5 @@
 import * as React from "react";
-import { MoreHorizontal } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   Popover,
@@ -10,6 +10,7 @@ import { useAppDispatch } from "@/app/hooks";
 import { logoutThunk } from "@/features/auth/authSlice";
 import Button from "./Button";
 import { useAuth } from "@/features/auth/useAuth";
+import ThemeSwitch from "./ThemeSwitch";
 
 export function UserMenu() {
   const { user } = useAuth();
@@ -29,23 +30,53 @@ export function UserMenu() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button size="sm" color="ghost">
-          <MoreHorizontal />
-        </Button>
+        <div
+          className="flex items-center justify-center w-9 h-9 rounded-full text-white font-bold select-none shadow-md"
+          style={{
+            background: `
+          linear-gradient(
+            to top,
+            #C2185B,
+            #DA739B
+          )
+        `,
+          }}
+        >
+          {user.email.slice(0, 2).toUpperCase()}
+        </div>
       </PopoverTrigger>
 
       <PopoverContent
         align="end"
         sideOffset={6}
-        className="flex flex-col gap-2 p-4 min-w-[10rem]"
+        className="flex flex-col mt-1 gap-2 p-4 min-w-[10rem]"
       >
-        {user?.email && <span className="sm:hidden">{user.email}</span>}
+        {user?.email && (
+          <>
+            <div>
+              <span>{user.email}</span>
+            </div>
 
-        <div>Генераций осталось: {user.credits}</div>
+            <div className="divider my-0.5" />
+          </>
+        )}
 
-        <Button onClick={onLogout} className="mt-2">
-          Выйти
-        </Button>
+        <div className="flex justify-between items-center gap-4">
+          <span>Тема оформления</span>
+
+          <ThemeSwitch />
+        </div>
+
+        <div className="mt-1">
+          <Button
+            onClick={onLogout}
+            className="flex items-center gap-3 text-error px-0"
+            color="ghost"
+            size="sm"
+          >
+            <span className="text-base font-normal">Выйти</span> <LogOut />
+          </Button>
+        </div>
       </PopoverContent>
     </Popover>
   );

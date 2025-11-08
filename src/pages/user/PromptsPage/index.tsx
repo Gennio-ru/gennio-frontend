@@ -13,7 +13,7 @@ export default function PromptsPage() {
 
   return (
     <div className="mx-auto w-full">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-10">
         <div className="flex flex-col">
           <span className="text-base">Стилизация</span>
           <UserCategoriesSelect value={categoryId} onChange={changeValue} />

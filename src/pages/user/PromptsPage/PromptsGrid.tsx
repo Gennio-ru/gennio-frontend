@@ -37,6 +37,7 @@ export default function PromptsGrid() {
   if (isLoading) {
     return <div className="p-4 text-base-content/70">Loading…</div>;
   }
+
   if (status === "failed" && items.length === 0) {
     return <div className="p-4 text-error">Failed to load</div>;
   }

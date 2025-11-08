@@ -9,7 +9,7 @@ interface Props {
 export default function Container({
   children,
   className = "",
-  maxWidth = "1000px",
+  maxWidth = "960px",
 }: Props) {
   return (
     <div className={`mx-auto w-full px-4 ${className}`} style={{ maxWidth }}>

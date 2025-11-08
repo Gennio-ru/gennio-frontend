@@ -1,11 +1,11 @@
-import { ReactNode, useMemo } from "react";
+import { ReactNode } from "react";
+import { useLocation } from "react-router-dom";
 import Container from "@/shared/ui/Container";
 import HeaderNav from "@/shared/widgets/HeaderNav";
-import { SidebarDesktop, SidebarMobile } from "@/shared/layouts/Sidebar";
+import { SidebarMobile } from "@/shared/layouts/Sidebar";
 import { AdminButton } from "@/shared/ui/AdminButton";
 import { useAuth } from "@/features/auth/useAuth";
 import { primaryMenu, adminMenu } from "../config/menu";
-import { useLocation } from "react-router-dom";
 
 type Props = { children: ReactNode };
 
@@ -13,36 +13,28 @@ export default function AppLayout({ children }: Props) {
   const { user } = useAuth();
   const location = useLocation();
 
-  const showAdminMenu = useMemo(() => {
-    return user?.role === "admin" && location.pathname.startsWith("/admin");
-  }, [user?.role, location.pathname]);
-
-  const menuItems = useMemo(
-    () => (showAdminMenu ? adminMenu : primaryMenu),
-    [showAdminMenu]
-  );
+  const isAdminPage =
+    user?.role === "admin" && location.pathname.startsWith("/admin");
+  const menuItems = isAdminPage ? adminMenu : primaryMenu;
 
   return (
     <div className="min-h-screen flex flex-col bg-base-200 text-base-content">
-      <header className="sticky top-0 z-40 flex items-center gap-3 border-b border-base-300 bg-base-100 px-4">
-        <div className="flex-1">
-          <Container>
-            <HeaderNav />
-          </Container>
-        </div>
+      {/* Header */}
+      <header className="sticky flex items-center top-0 z-40 bg-base-100 h-[60px]">
+        <Container>
+          <HeaderNav />
+        </Container>
       </header>
 
-      <div className="flex flex-1">
-        <SidebarDesktop items={menuItems} />
+      {/* Main content */}
+      <main className="flex-1 py-6">
+        <Container>
+          {children}
+          {user?.role === "admin" && <AdminButton />}
+        </Container>
+      </main>
 
-        <main className="flex-1 py-6 [@media(min-width:1440px)]:mr-52">
-          <Container>
-            {children}
-            {user?.role === "admin" && <AdminButton />}
-          </Container>
-        </main>
-      </div>
-
+      {/* Mobile menu */}
       <SidebarMobile items={menuItems} />
     </div>
   );

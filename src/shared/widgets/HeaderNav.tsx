@@ -1,52 +1,88 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { useAppSelector } from "@/app/hooks";
-import ThemeSwitch from "../ui/ThemeSwitch";
 import { useAuth } from "@/features/auth/useAuth";
 import { SidebarToggleButton } from "../layouts/Sidebar";
 import { selectAppTheme } from "@/features/app/appSlice";
 import darkLogo from "../../assets/gennio-logo-dark.png";
 import lightLogo from "../../assets/gennio-logo-light.png";
 import { UserMenu } from "../ui/UserMenu";
+import { useMemo } from "react";
+import { adminMenu, primaryMenu } from "../config/menu";
+import { cn } from "@/lib/utils";
 
 export default function HeaderNav() {
   const theme = useAppSelector(selectAppTheme);
   const location = useLocation();
   const { isAuth, user } = useAuth();
 
+  const showAdminMenu = useMemo(() => {
+    return user?.role === "admin" && location.pathname.startsWith("/admin");
+  }, [user?.role, location.pathname]);
+
+  const menuItems = useMemo(
+    () => (showAdminMenu ? adminMenu : primaryMenu),
+    [showAdminMenu]
+  );
+
   return (
-    <div className="flex w-full items-center justify-between py-2">
-      <div className="flex items-center gap-4">
+    <div className="grid grid-cols-12 gap-4 items-center py-2 w-full">
+      {/* 🔹 Левая часть (бургер + логотип) — 2 колонки на md+, 6 на мобилках */}
+      <div className="col-span-6 md:col-span-2 flex items-center gap-4">
         <SidebarToggleButton />
 
         <Link to="/" className="text-xl font-bold text-base-content">
           <img
             src={theme === "dark" ? darkLogo : lightLogo}
-            className="h-[30px]"
+            className="h-[30px] min-w-[97px] w-auto object-contain"
+            alt="Gennio"
           />
         </Link>
       </div>
 
-      <nav className="flex items-center gap-4 text-sm text-base-content/80">
-        <ThemeSwitch />
+      {/* 🔹 Центральная часть (меню) — 8 колонок, скрыто до md */}
+      <nav className="hidden md:flex md:col-span-8 items-center justify-start gap-8 text-sm">
+        {menuItems.map((item) => (
+          <NavLink
+            key={item.label}
+            to={item.href}
+            className={({ isActive }) =>
+              cn(
+                "relative block py-1 text-base transition-colors",
+                isActive
+                  ? "before:absolute before:left-0 before:right-0 before:bottom-[-14px] \
+                 before:h-[2px] before:bg-primary before:content-[''] \
+                 before:scale-x-100 before:origin-left before:transition-transform \
+                 before:duration-200 before:ease-in-out"
+                  : "text-base-content hover:before:absolute hover:before:left-0 hover:before:right-0 \
+                 hover:before:bottom-[-14px] hover:before:h-[2px] hover:before:bg-primary \
+                 hover:before:content-[''] before:scale-x-0 before:origin-left \
+                 before:transition-transform before:duration-200 before:ease-in-out \
+                 hover:before:scale-x-100"
+              )
+            }
+          >
+            {item.label}
+          </NavLink>
+        ))}
+      </nav>
 
-        {isAuth && (
+      {/* 🔹 Правая часть (UserMenu / Войти) — 6 колонок на мобилках, 2 на md+ */}
+      <div className="col-span-6 md:col-span-2 flex justify-end items-center gap-4 text-sm text-base-content/80">
+        {isAuth ? (
           <div className="flex items-center gap-3">
-            {user?.email && (
-              <span className="hidden sm:inline">{user.email}</span>
-            )}
             <UserMenu />
           </div>
+        ) : (
+          location.pathname !== "/login" && (
+            <Link
+              to="/login"
+              className="rounded-field bg-primary px-3 py-1.5 text-primary-content hover:bg-primary/80 transition-colors"
+            >
+              Войти
+            </Link>
+          )
         )}
-
-        {!isAuth && location.pathname !== "/login" && (
-          <Link
-            to="/login"
-            className="rounded-field bg-primary px-3 py-1.5 color-primary-content hover:bg-primary/80"
-          >
-            Войти
-          </Link>
-        )}
-      </nav>
+      </div>
     </div>
   );
 }

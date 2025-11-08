@@ -16,25 +16,6 @@ type SidebarProps = {
   className?: string;
 };
 
-export function SidebarDesktop({ items, className }: SidebarProps) {
-  return (
-    <aside
-      className={cn(
-        "hidden [@media(min-width:1440px)]:flex sticky top-16 h-min w-52 shrink-0 flex-col overflow-auto",
-        "px-6",
-        className
-      )}
-      aria-label="Боковое меню"
-    >
-      <nav className="space-y-1">
-        {items.map((item) => (
-          <MenuItem key={item.label} item={item} />
-        ))}
-      </nav>
-    </aside>
-  );
-}
-
 export function MenuItem({ item }: { item: NavItem }) {
   return item.external ? (
     <a
@@ -76,12 +57,9 @@ export function SidebarToggleButton({
       type="button"
       aria-label={label}
       onClick={() => dispatch(showMobileSidebar())}
-      className={cn(
-        "[@media(min-width:1440px)]:hidden cursor-pointer",
-        className
-      )}
+      className={cn("md:hidden cursor-pointer", className)}
     >
-      <Menu size={24} />
+      <Menu size={28} />
     </button>
   );
 }
@@ -120,28 +98,33 @@ export function SidebarMobile({ items }: SidebarProps) {
         )}
         onClick={() => dispatch(hideMobileSidebar())}
       />
-      {/* panel */}
+
+      {/* glass panel */}
       <aside
         className={cn(
-          "absolute left-0 top-0 h-full w-[82%] max-w-[240px]",
-          "bg-base-100 px-6 py-2",
-          "transition-transform duration-300 ease-in-out",
-          isShownMobileSidebar ? "translate-x-0" : "-translate-x-full"
+          "absolute left-2 top-2 h-[calc(100%-1rem)] w-[82%] max-w-[240px]",
+          "rounded-field backdrop-blur-md bg-base-100/60 border border-white/10 shadow-lg",
+          "px-6 py-3 transition-transform duration-300 ease-in-out",
+          isShownMobileSidebar
+            ? "translate-x-0"
+            : "-translate-x-[calc(100%+1rem)]"
         )}
         role="dialog"
         aria-label="Мобильное меню"
       >
-        <div className="flex justify-end mb-2">
+        {/* header */}
+        <div className="flex justify-end">
           <button
             type="button"
             aria-label="Закрыть меню"
             onClick={() => dispatch(hideMobileSidebar())}
-            className="p-2 cursor-pointer"
+            className="p-2 cursor-pointer relative left-3"
           >
             <XIcon size={24} />
           </button>
         </div>
 
+        {/* nav */}
         <nav className="space-y-1">
           {items.map((item) => (
             <MenuItem key={item.label} item={item} />

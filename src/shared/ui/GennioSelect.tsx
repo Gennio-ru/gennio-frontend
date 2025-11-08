@@ -88,7 +88,8 @@ export function GennioSelect({
       {/* Кнопка */}
       <button
         type="button"
-        className="md:text-[44px] text-4xl font-bold flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+        className="md:text-[44px] text-4xl font-bold flex items-center gap-3 cursor-pointer 
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
         onClick={() => setOpen((o) => !o)}
       >
         <span className="truncate">{selected?.label ?? placeholder}</span>
@@ -111,8 +112,11 @@ export function GennioSelect({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.15 }}
+            onMouseLeave={() => setHighlightedIndex(-1)} // 👈 вот это важно
             className={cn(
-              "absolute text-2xl left-0 mt-2 w-max min-w-full z-10 bg-base-100 rounded-field py-2 shadow-lg",
+              "absolute left-0 mt-2 z-10 min-w-full w-max max-h-[290px] overflow-y-auto \
+     text-2xl rounded-field py-2 shadow-lg \
+     backdrop-blur-md bg-base-100/80 border border-white/10",
               theme === "light" ? "shadow-neutral-900/20" : "shadow-base-200"
             )}
           >
@@ -120,7 +124,7 @@ export function GennioSelect({
               <div
                 key={opt.value}
                 className={cn(
-                  "cursor-pointer px-6 py-1.5 my-1.5 transition-colors duration-200",
+                  "cursor-pointer px-6 py-1.5 my-1.5 transition-colors duration-100",
                   highlightedIndex === i
                     ? "bg-primary text-primary-content"
                     : "hover:bg-primary"
