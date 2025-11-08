@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { Search, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { selectAppTheme } from "@/features/app/appSlice";
+import { useAppSelector } from "@/app/hooks";
 
 interface GennioSearchProps {
   placeholder?: string;
@@ -14,6 +17,7 @@ export function GennioSearch({
   onChange,
   debounceMs = 300,
 }: GennioSearchProps) {
+  const theme = useAppSelector(selectAppTheme);
   const [inputValue, setInputValue] = useState(controlledValue ?? "");
 
   // Синхронизируем локальное значение с внешним при изменении value
@@ -43,7 +47,12 @@ export function GennioSearch({
   };
 
   return (
-    <div className="relative flex items-center w-[320px] h-10 rounded-field border border-base-content/20 bg-base-100">
+    <div
+      className={cn(
+        "relative flex items-center w-[320px] h-10 rounded-field border border-base-content/20",
+        theme === "dark" ? "glass-panel-dark" : "glass-panel-light"
+      )}
+    >
       {/* Лупа */}
       <Search
         size={18}

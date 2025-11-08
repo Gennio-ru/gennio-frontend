@@ -6,14 +6,17 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/shared/ui/shadcn/popover";
-import { useAppDispatch } from "@/app/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { logoutThunk } from "@/features/auth/authSlice";
 import Button from "./Button";
 import { useAuth } from "@/features/auth/useAuth";
 import ThemeSwitch from "./ThemeSwitch";
+import { cn } from "@/lib/utils";
+import { selectAppTheme } from "@/features/app/appSlice";
 
 export function UserMenu() {
   const { user } = useAuth();
+  const theme = useAppSelector(selectAppTheme);
   const [open, setOpen] = React.useState(false);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -49,7 +52,10 @@ export function UserMenu() {
       <PopoverContent
         align="end"
         sideOffset={6}
-        className="flex flex-col mt-1 gap-2 p-4 min-w-[10rem]"
+        className={cn(
+          "flex flex-col mt-1 gap-2 p-4 min-w-[10rem]",
+          theme === "dark" ? "glass-panel-dark" : "glass-panel-light"
+        )}
       >
         {user?.email && (
           <>

@@ -1,4 +1,7 @@
 import type { Prompt } from "@/api/prompts";
+import { useAppSelector } from "@/app/hooks";
+import { selectAppTheme } from "@/features/app/appSlice";
+import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 
 interface Props {
@@ -6,6 +9,7 @@ interface Props {
 }
 
 export default function PromptCard({ prompt }: Props) {
+  const theme = useAppSelector(selectAppTheme);
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -15,7 +19,10 @@ export default function PromptCard({ prompt }: Props) {
   return (
     <article
       onClick={handleClick}
-      className="group overflow-hidden rounded-2xl bg-base-100 text-base-content cursor-pointer"
+      className={cn(
+        "group overflow-hidden rounded-2xl text-base-content cursor-pointer",
+        theme === "dark" ? "glass-panel-dark" : "glass-panel-light"
+      )}
     >
       <div className="relative aspect-[1/1] overflow-hidden">
         <img
@@ -30,11 +37,6 @@ export default function PromptCard({ prompt }: Props) {
         <h3 className="truncate text-sm font-semibold text-base-content">
           {prompt.title}
         </h3>
-        {prompt.description && (
-          <p className="mt-1 line-clamp-2 text-xs text-base-content/70">
-            {prompt.description}
-          </p>
-        )}
       </div>
     </article>
   );

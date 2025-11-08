@@ -1,12 +1,19 @@
 export type NavItem = { label: string; href: string; external?: boolean };
 
-export const primaryMenu: NavItem[] = [
+export const primaryHeaderMenu: NavItem[] = [
   { label: "AI Генерация", href: "/prompts" },
   { label: "Тарифы", href: "/billing" },
   { label: "О проекте", href: "/about-project" },
 ];
 
-export const adminMenu: NavItem[] = [
+export const adminHeaderMenu: NavItem[] = [
   { label: "Промпты", href: "/admin/prompts" },
   { label: "Категории", href: "/admin/categories" },
+];
+
+export const aiGenerationsMenu: NavItem[] = [
+  { label: "Готовые шаблоны", href: "/prompts" },
+  { label: "Генерация картинок", href: "/generate-image" },
+  { label: "Обработка фото", href: "/edit-image" },
+  { label: "Генерация текста", href: "/generate-text" },
 ];

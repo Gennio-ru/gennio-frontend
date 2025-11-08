@@ -65,7 +65,7 @@ export default function PromptsGrid() {
       )}
 
       {items.length === 0 && (
-        <div className="py-10 grid place-items-center text-base-content/60">
+        <div className="py-10 grid place-items-center text-base text-base-content/60">
           Ничего не найдено
         </div>
       )}

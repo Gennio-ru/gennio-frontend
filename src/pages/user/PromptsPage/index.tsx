@@ -9,7 +9,7 @@ export default function PromptsPage() {
   const { categoryId, search } = useAppSelector(
     (state) => state.prompts.filters
   );
-  console.log(search);
+
   const changeCategory = (value: string) => {
     dispatch(setCategory(value));
   };

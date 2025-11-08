@@ -7,7 +7,7 @@ import darkLogo from "../../assets/gennio-logo-dark.png";
 import lightLogo from "../../assets/gennio-logo-light.png";
 import { UserMenu } from "../ui/UserMenu";
 import { useMemo } from "react";
-import { adminMenu, primaryMenu } from "../config/menu";
+import { adminHeaderMenu, primaryHeaderMenu } from "../config/menu";
 import { cn } from "@/lib/utils";
 
 export default function HeaderNav() {
@@ -20,7 +20,7 @@ export default function HeaderNav() {
   }, [user?.role, location.pathname]);
 
   const menuItems = useMemo(
-    () => (showAdminMenu ? adminMenu : primaryMenu),
+    () => (showAdminMenu ? adminHeaderMenu : primaryHeaderMenu),
     [showAdminMenu]
   );
 

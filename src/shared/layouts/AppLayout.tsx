@@ -5,22 +5,36 @@ import HeaderNav from "@/shared/widgets/HeaderNav";
 import { SidebarMobile } from "@/shared/layouts/Sidebar";
 import { AdminButton } from "@/shared/ui/AdminButton";
 import { useAuth } from "@/features/auth/useAuth";
-import { primaryMenu, adminMenu } from "../config/menu";
+import { primaryHeaderMenu, adminHeaderMenu } from "../config/menu";
+import { useAppSelector } from "@/app/hooks";
+import { selectAppTheme } from "@/features/app/appSlice";
+import { cn } from "@/lib/utils";
 
 type Props = { children: ReactNode };
 
 export default function AppLayout({ children }: Props) {
   const { user } = useAuth();
+  const theme = useAppSelector(selectAppTheme);
   const location = useLocation();
 
   const isAdminPage =
     user?.role === "admin" && location.pathname.startsWith("/admin");
-  const menuItems = isAdminPage ? adminMenu : primaryMenu;
+  const menuItems = isAdminPage ? adminHeaderMenu : primaryHeaderMenu;
 
   return (
-    <div className="min-h-screen flex flex-col bg-base-200 text-base-content">
+    <div
+      className={cn(
+        "min-h-screen flex flex-col text-base-content",
+        theme === "dark" && "bg-base-200"
+      )}
+    >
       {/* Header */}
-      <header className="sticky flex items-center top-0 z-40 bg-base-100 h-[60px]">
+      <header
+        className={cn(
+          "sticky flex items-center top-0 z-40 h-[60px]",
+          theme === "dark" ? "glass-panel-dark" : "glass-panel-light"
+        )}
+      >
         <Container>
           <HeaderNav />
         </Container>
@@ -36,6 +50,8 @@ export default function AppLayout({ children }: Props) {
 
       {/* Mobile menu */}
       <SidebarMobile items={menuItems} />
+
+      {theme === "light" && <div className="background"></div>}
     </div>
   );
 }

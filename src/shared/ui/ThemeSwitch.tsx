@@ -30,15 +30,15 @@ export default function ThemeSwitch() {
       onClick={toggle}
       className={`
         relative w-12 h-7 flex items-center rounded-full p-1
-        overflow-hidden transition-colors duration-300
-        ${theme === "dark" ? "bg-base-200" : "bg-neutral-300"}
-      `}
+        overflow-hidden transition-colors duration-300 border-base-content/20 border-[1px]
+        `}
+      // ${theme === "dark" ? "bg-base-200" : "bg-neutral-300"}
     >
       <div
         className={`
           flex items-center gap-1 w-[150%]
           transition-transform duration-300
-          ${theme === "dark" ? "translate-x-0" : "-translate-x-5"}
+          ${theme === "dark" ? "translate-x-[-1px]" : "-translate-x-[20px]"}
         `}
       >
         <Sun className="w-4 h-4 text-yellow-400 shrink-0" />

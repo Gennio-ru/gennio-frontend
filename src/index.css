@@ -107,3 +107,26 @@
 body {
   font-family: "Roboto", sans-serif;
 }
+
+/* Фон на весь экран, без прокрутки */
+.background {
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  z-index: -1;
+
+  background-image: url("@/assets/background.webp");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+@layer components {
+  .glass-panel-light {
+    @apply backdrop-blur-md bg-base-100/40 border border-white/10;
+  }
+
+  .glass-panel-dark {
+    @apply backdrop-blur-md bg-base-100/70 border border-white/10;
+  }
+}

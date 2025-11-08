@@ -26,7 +26,7 @@ function PopoverContent({
         sideOffset={sideOffset}
         className={cn(
           // цвета и контейнер (как в Select)
-          "bg-base-100 text-base-content relative z-50 rounded-md shadow-md",
+          "text-base-content relative z-50 rounded-md shadow-md",
           // размеры и прокрутка
           "min-w-[8rem] max-h-(--radix-popover-content-available-height) overflow-x-hidden overflow-y-auto",
           // анимации и появление

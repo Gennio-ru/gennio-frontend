@@ -115,9 +115,9 @@ export function GennioSelect({
             onMouseLeave={() => setHighlightedIndex(-1)} // 👈 вот это важно
             className={cn(
               "absolute left-0 mt-2 z-10 min-w-full w-max max-h-[290px] overflow-y-auto \
-     text-2xl rounded-field py-2 shadow-lg \
-     backdrop-blur-md bg-base-100/80 border border-white/10",
-              theme === "light" ? "shadow-neutral-900/20" : "shadow-base-200"
+              text-2xl rounded-field py-2 shadow-lg",
+              theme === "light" ? "shadow-neutral-900/20" : "shadow-base-200",
+              theme === "dark" ? "glass-panel-dark" : "glass-panel-light"
             )}
           >
             {filteredOptions.map((opt, i) => (
