@@ -19,7 +19,7 @@
   --color-base-content: oklch(22% 0.015 70); /* ОСНОВНОЙ текст */
 
   /* brand / accents */
-  --color-primary: oklch(0.5874 0.15 342);
+  --color-primary: oklch(0.586 0.2015 5.62);
   --color-primary-content: oklch(98% 0.003 95); /* текст на primary */
 
   --color-secondary: oklch(0.804 0.0387 232.06);
@@ -61,7 +61,7 @@
   --color-base-content: oklch(97% 0.003 95); /* ОСНОВНОЙ текст */
 
   /* brand / accents (ярче, чтобы «светились») */
-  --color-primary: oklch(70% 0.15 342);
+  --color-primary: oklch(0.586 0.2015 5.62);
   --color-primary-content: oklch(98% 0.003 95);
 
   --color-secondary: oklch(66% 0.09 30);
@@ -122,11 +122,27 @@ body {
 }
 
 @layer components {
+  /* ─────────── БАЗОВОЕ СТЕКЛО ─────────── */
   .glass-panel-light {
-    @apply backdrop-blur-md bg-base-100/40 border border-white/10;
+    @apply backdrop-blur-md bg-base-100/40 border border-white/10 
+           transition-all duration-200 ease-in-out;
   }
 
   .glass-panel-dark {
-    @apply backdrop-blur-md bg-base-100/70 border border-white/10;
+    @apply backdrop-blur-md bg-base-100/70 border border-white/10 
+           transition-all duration-200 ease-in-out;
+  }
+
+  /* ─────────── ИНТЕРАКТИВНОСТЬ ─────────── */
+  .glass-interactive-light {
+    @apply hover:bg-base-100/50 hover:border-white/20;
+    @apply focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-0;
+    @apply active:bg-base-100/60 active:border-white/30;
+  }
+
+  .glass-interactive-dark {
+    @apply hover:bg-base-100/90 hover:border-white/20;
+    @apply focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-0;
+    @apply active:bg-base-100/90 active:border-white/30;
   }
 }

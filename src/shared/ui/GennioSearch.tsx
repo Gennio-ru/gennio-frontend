@@ -49,7 +49,7 @@ export function GennioSearch({
   return (
     <div
       className={cn(
-        "relative flex items-center w-[320px] h-10 rounded-field border border-base-content/20",
+        "relative flex items-center w-[320px] h-10 rounded-field border border-white/10",
         theme === "dark" ? "glass-panel-dark" : "glass-panel-light"
       )}
     >
@@ -62,7 +62,7 @@ export function GennioSearch({
       {/* Поле ввода */}
       <input
         type="text"
-        value={inputValue}
+        value={inputValue || ""}
         onChange={handleChange}
         placeholder={placeholder}
         className="

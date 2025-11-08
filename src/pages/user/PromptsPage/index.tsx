@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { setCategory, setSearch } from "@/features/prompts/promptSlice";
 import UserCategoriesSelect from "@/shared/ui/UserCategoriesSelect";
 import { GennioSearch } from "@/shared/ui/GennioSearch";
+import { AIGenerationsMenu } from "@/shared/ui/AIGenerationsMenu";
 
 export default function PromptsPage() {
   const dispatch = useAppDispatch();
@@ -20,6 +21,8 @@ export default function PromptsPage() {
 
   return (
     <div className="mx-auto w-full">
+      <AIGenerationsMenu />
+
       <div className="flex justify-between items-end mb-10">
         <div className="flex flex-col">
           <span className="text-base">Стилизация</span>
