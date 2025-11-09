@@ -1,7 +1,7 @@
 import { apiGetModelJob, ModelJob } from "@/api/model-job";
 import Button from "@/shared/ui/Button";
+import GennioGenerationLoader from "@/shared/ui/GennioGenerationLoader";
 import ImageWithLoader from "@/shared/ui/ImageWithLoader";
-import Loader from "@/shared/ui/Loader";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -97,7 +97,7 @@ export default function ModelJobResultPage() {
   if (waitingForResult) {
     return (
       <div className="mx-auto w-full p-6 text-center">
-        <Loader />
+        <GennioGenerationLoader />
       </div>
     );
   }
