@@ -22,12 +22,7 @@ export default function AppLayout({ children }: Props) {
   const menuItems = isAdminPage ? adminHeaderMenu : primaryHeaderMenu;
 
   return (
-    <div
-      className={cn(
-        "min-h-screen flex flex-col text-base-content",
-        theme === "dark" && "bg-base-200"
-      )}
-    >
+    <div className={cn("min-h-screen flex flex-col text-base-content")}>
       {/* Header */}
       <header
         className={cn(
@@ -51,7 +46,11 @@ export default function AppLayout({ children }: Props) {
       {/* Mobile menu */}
       <SidebarMobile items={menuItems} />
 
-      {theme === "light" && <div className="background"></div>}
+      <div
+        className={cn(
+          theme === "light" ? "background-light" : "background-dark"
+        )}
+      />
     </div>
   );
 }

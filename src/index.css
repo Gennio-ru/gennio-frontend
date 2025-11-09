@@ -109,13 +109,36 @@ body {
 }
 
 /* Фон на весь экран, без прокрутки */
-.background {
+.background-light {
   position: fixed;
   inset: 0;
   height: 100vh;
   z-index: -1;
 
   background-image: url("@/assets/background.webp");
+  background-color: rgb(
+    88 185 32 / 38%
+  ); /* ← регулируй прозрачность затемнения */
+  background-blend-mode: luminosity;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.background-dark {
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  z-index: -1;
+
+  background-image: url("@/assets/background-dark.webp");
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.48
+  ); /* ← регулируй прозрачность затемнения */
+  background-blend-mode: luminosity;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -129,7 +152,7 @@ body {
   }
 
   .glass-panel-dark {
-    @apply backdrop-blur-md bg-base-100/70 border border-white/10 
+    @apply backdrop-blur-md bg-base-100/40 border border-white/10 
            transition-all duration-200 ease-in-out;
   }
 
