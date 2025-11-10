@@ -22,7 +22,7 @@ export function AIGenerationsMenu() {
             onClick={() => navigate(item.href)}
             className={cn(
               "px-3 sm:px-6 py-1.5 sm:py-2 rounded-full text-base sm:text-base transition-all duration-200",
-              "text-base-content/90 cursor-pointer",
+              "text-base-content/90 cursor-pointer text-nowrap",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
               isActive && "text-base-content",
               // Активный пункт (разные фоны для тем)
