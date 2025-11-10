@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { fetchPromptsPage } from "@/features/prompts/promptSlice";
 import PromptCard from "./PromptCard";
 import { useInfiniteObserver } from "@/shared/hooks/useInfiniteObserver";
+import NotFound from "@/shared/ui/NotFound";
 
 export default function PromptsGrid() {
   const dispatch = useAppDispatch();
@@ -60,15 +61,11 @@ export default function PromptsGrid() {
 
       {!hasMore && items.length > 0 && (
         <div className="py-10 grid place-items-center text-base-content/60">
-          Больше ничего нет
+          Больше ничего не нашлось
         </div>
       )}
 
-      {items.length === 0 && (
-        <div className="py-10 grid place-items-center text-base text-base-content/60">
-          Ничего не найдено
-        </div>
-      )}
+      {items.length === 0 && <NotFound />}
     </>
   );
 }

@@ -12,7 +12,7 @@ export function AIGenerationsMenu() {
   const location = useLocation();
 
   return (
-    <nav className="flex flex-wrap gap-4 pt-5 pb-10">
+    <nav className="flex flex-wrap gap-2 sm:gap-4 pt-2 sm:pt-5 pb-7 sm:pb-10">
       {aiGenerationsMenu.map((item) => {
         const isActive = location.pathname === item.href;
 
@@ -21,7 +21,7 @@ export function AIGenerationsMenu() {
             key={item.href}
             onClick={() => navigate(item.href)}
             className={cn(
-              "px-6 py-2 rounded-full text-base transition-all duration-200",
+              "px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-base sm:text-base transition-all duration-200",
               "text-base-content/90 cursor-pointer",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
               isActive && "text-base-content font-medium",
