@@ -49,7 +49,7 @@ export function GennioSearch({
   return (
     <div
       className={cn(
-        "relative flex items-center w-[320px] h-10 rounded-field border border-white/10",
+        "relative flex items-center justify-self-end w-full max-w-[320px] h-10 rounded-field border border-white/10",
         theme === "dark" ? "glass-panel-dark" : "glass-panel-light"
       )}
     >
@@ -78,10 +78,10 @@ export function GennioSearch({
         <button
           type="button"
           onClick={handleClear}
-          className="absolute right-2 text-base-content/50 hover:text-base-content transition-colors"
+          className="absolute right-2 text-base-content/50 hover:text-base-content transition-colors cursor-pointer"
           aria-label="Очистить"
         >
-          <X size={16} />
+          <X size={20} />
         </button>
       )}
     </div>

@@ -23,13 +23,13 @@ export default function PromptsPage() {
     <div className="mx-auto w-full">
       <AIGenerationsMenu />
 
-      <div className="flex justify-between items-end mb-10">
+      <div className="flex justify-between items-end mb-10 gap-4">
         <div className="flex flex-col">
           <span className="text-base">Стилизация</span>
           <UserCategoriesSelect value={categoryId} onChange={changeCategory} />
         </div>
 
-        <div className="pb-2">
+        <div className="pb-2 hidden sm:block w-full flex">
           <GennioSearch
             value={search}
             placeholder="Поиск по стилизациям"

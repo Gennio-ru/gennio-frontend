@@ -9,6 +9,7 @@ import { UserMenu } from "../ui/UserMenu";
 import { useMemo } from "react";
 import { adminHeaderMenu, primaryHeaderMenu } from "../config/menu";
 import { cn } from "@/lib/utils";
+import ThemeSwitch from "../ui/ThemeSwitch";
 
 export default function HeaderNav() {
   const theme = useAppSelector(selectAppTheme);
@@ -68,6 +69,8 @@ export default function HeaderNav() {
 
       {/* 🔹 Правая часть (UserMenu / Войти) — 6 колонок на мобилках, 2 на md+ */}
       <div className="col-span-6 md:col-span-2 flex justify-end items-center gap-4 text-sm text-base-content/80">
+        <ThemeSwitch />
+
         {isAuth ? (
           <div className="flex items-center gap-3">
             <UserMenu />

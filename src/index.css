@@ -140,25 +140,21 @@ body {
 @layer components {
   /* ─────────── БАЗОВОЕ СТЕКЛО ─────────── */
   .glass-panel-light {
-    @apply backdrop-blur-md bg-base-100/40 border border-white/10 
-           transition-all duration-200 ease-in-out;
+    @apply backdrop-blur-md bg-base-100/40 border border-white/10;
   }
 
   .glass-panel-dark {
-    @apply backdrop-blur-md bg-base-100/40 border border-white/10 
-           transition-all duration-200 ease-in-out;
+    @apply backdrop-blur-md bg-base-100/40 border border-white/10;
   }
 
   /* ─────────── ИНТЕРАКТИВНОСТЬ ─────────── */
   .glass-interactive-light {
+    @apply transition-[background-color,border-color,box-shadow] duration-200 ease-in-out;
     @apply hover:bg-base-100/50 hover:border-white/20;
-    @apply focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-0;
-    @apply active:bg-base-100/60 active:border-white/30;
   }
 
   .glass-interactive-dark {
+    @apply transition-[background-color,border-color,box-shadow] duration-200 ease-in-out;
     @apply hover:bg-base-100/90 hover:border-white/20;
-    @apply focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-0;
-    @apply active:bg-base-100/90 active:border-white/30;
   }
 }

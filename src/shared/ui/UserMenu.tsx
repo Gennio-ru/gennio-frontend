@@ -10,7 +10,6 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { logoutThunk } from "@/features/auth/authSlice";
 import Button from "./Button";
 import { useAuth } from "@/features/auth/useAuth";
-import ThemeSwitch from "./ThemeSwitch";
 import { cn } from "@/lib/utils";
 import { selectAppTheme } from "@/features/app/appSlice";
 
@@ -34,7 +33,8 @@ export function UserMenu() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <div
-          className="flex items-center justify-center w-9 h-9 rounded-full text-white font-bold select-none shadow-md"
+          className="flex items-center justify-center w-9 h-9 rounded-full text-white
+          font-bold select-none shadow-md cursor-pointer"
           style={{
             background: `
           linear-gradient(
@@ -67,13 +67,7 @@ export function UserMenu() {
           </>
         )}
 
-        <div className="flex justify-between items-center gap-4">
-          <span>Тема оформления</span>
-
-          <ThemeSwitch />
-        </div>
-
-        <div className="mt-1">
+        <div>
           <Button
             onClick={onLogout}
             className="flex items-center gap-3 text-error px-0"
