@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Lottie from "lottie-react";
 import { apiGetModelJob, ModelJob } from "@/api/model-job";
@@ -6,13 +6,13 @@ import Button from "@/shared/ui/Button";
 import GennioGenerationLoader from "@/shared/ui/GennioGenerationLoader";
 import ImageWithLoader from "@/shared/ui/ImageWithLoader";
 import spinnerAnimation from "@/assets/loader-white.json";
+import { socket } from "@/api/socket";
+import { MODEL_JOB_EVENTS } from "@/api/model-job-events";
 
 type JobWithUrls = ModelJob & {
   inputFileUrl?: string | null;
   outputFileUrl?: string | null;
 };
-
-const POLL_MS = 3000;
 
 export default function ModelJobResultPage() {
   const { modelJobId } = useParams<{ modelJobId: string }>();
@@ -20,44 +20,25 @@ export default function ModelJobResultPage() {
   const [job, setJob] = useState<JobWithUrls | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingOriginal, setIsLoadingOriginal] = useState(false);
-  const timerRef = useRef<number | null>(null);
-  const cancelledRef = useRef(false);
 
   useEffect(() => {
-    if (!modelJobId) {
-      setIsLoading(false);
-      return;
-    }
+    if (!modelJobId) return;
 
-    cancelledRef.current = false;
+    apiGetModelJob(modelJobId)
+      .then((data) => setJob(data as JobWithUrls))
+      .finally(() => setIsLoading(false));
 
-    const fetchOnce = async () => {
-      try {
-        const result = (await apiGetModelJob(modelJobId)) as JobWithUrls;
-        if (cancelledRef.current) return;
-        setJob(result);
+    socket.emit(MODEL_JOB_EVENTS.SUBSCRIBE, modelJobId);
 
-        const isDone = result.status === "succeeded" || Boolean(result.error);
-        if (!isDone) {
-          timerRef.current = window.setTimeout(fetchOnce, POLL_MS);
-        }
-      } catch {
-        if (!cancelledRef.current) {
-          timerRef.current = window.setTimeout(fetchOnce, POLL_MS);
-        }
-      } finally {
-        if (!cancelledRef.current) setIsLoading(false);
-      }
+    const onUpdate = (updatedJob: JobWithUrls) => {
+      setJob(updatedJob);
     };
 
-    fetchOnce();
+    socket.on(MODEL_JOB_EVENTS.UPDATE, onUpdate);
 
     return () => {
-      cancelledRef.current = true;
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
+      socket.off(MODEL_JOB_EVENTS.UPDATE, onUpdate);
+      socket.emit(MODEL_JOB_EVENTS.UNSUBSCRIBE, modelJobId);
     };
   }, [modelJobId]);
 
@@ -71,18 +52,18 @@ export default function ModelJobResultPage() {
   } = job || {};
 
   const handleDownloadOriginal = async () => {
+    if (!job?.outputFileUrl) return;
     setIsLoadingOriginal(true);
-    const response = await fetch(outputFileUrl).finally(() =>
+    const res = await fetch(job.outputFileUrl).finally(() =>
       setIsLoadingOriginal(false)
     );
-    const blob = await response.blob();
-
-    const blobUrl = URL.createObjectURL(blob);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = blobUrl;
+    a.href = url;
     a.download = "gennio_original.jpeg";
     a.click();
-    URL.revokeObjectURL(blobUrl);
+    URL.revokeObjectURL(url);
   };
 
   const waitingForResult =
