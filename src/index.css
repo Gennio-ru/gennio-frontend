@@ -108,31 +108,29 @@ body {
   font-family: "Roboto", sans-serif;
 }
 
-/* Фон на весь экран, без прокрутки */
-.background-light {
+/* общий слой фона */
+body::before {
+  content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
-
-  background-image: url("@/assets/background.webp");
-  background-color: rgb(88 185 32 / 38%);
-  background-blend-mode: luminosity;
+  pointer-events: none;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+  background-blend-mode: luminosity;
 }
 
-.background-dark {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
+/* светлая тема */
+:root[data-theme="light"] body::before {
+  background-image: url("@/assets/background.webp");
+  background-color: rgb(88 185 32 / 38%);
+}
 
+/* тёмная тема */
+:root[data-theme="dark"] body::before {
   background-image: url("@/assets/background-dark.webp");
-  background-color: rgba(0, 0, 0, 0.48);
-  background-blend-mode: luminosity;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
+  background-color: rgb(0 0 0 / 60%);
 }
 
 @layer components {

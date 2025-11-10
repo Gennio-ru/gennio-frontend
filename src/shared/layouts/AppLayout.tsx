@@ -23,13 +23,6 @@ export default function AppLayout({ children }: Props) {
 
   return (
     <div className={cn("min-h-screen flex flex-col text-base-content")}>
-      {/* background */}
-      <div
-        className={cn(
-          theme === "light" ? "background-light" : "background-dark"
-        )}
-      />
-
       {/* Header */}
       <header
         className={cn(
