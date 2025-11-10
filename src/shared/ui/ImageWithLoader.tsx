@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import Loader from "./Loader";
 
 type Props = React.ImgHTMLAttributes<HTMLImageElement> & {
   loaderSize?: number;
@@ -12,21 +13,14 @@ const sizeClasses: Record<NonNullable<Props["size"]>, string> = {
   xl: "h-[500px] min-w-[200px]",
 };
 
-export default function ImageWithLoader({
-  loaderSize = 40,
-  size = "xl",
-  ...props
-}: Props) {
+export default function ImageWithLoader({ size = "xl", ...props }: Props) {
   const [loading, setLoading] = useState(true);
 
   return (
     <div className="relative flex items-center justify-center">
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <span
-            className="loading loading-spinner text-base-content/50"
-            style={{ width: loaderSize, height: loaderSize }}
-          />
+          <Loader />
         </div>
       )}
 

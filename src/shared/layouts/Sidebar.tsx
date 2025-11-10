@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import {
   hideMobileSidebar,
+  selectAppTheme,
   selectShowMobileSidebar,
   showMobileSidebar,
 } from "@/features/app/appSlice";
@@ -17,6 +18,8 @@ type SidebarProps = {
 };
 
 export function MenuItem({ item }: { item: NavItem }) {
+  const dispatch = useAppDispatch();
+
   return item.external ? (
     <a
       key={item.label}
@@ -31,9 +34,10 @@ export function MenuItem({ item }: { item: NavItem }) {
     <NavLink
       key={item.label}
       to={item.href}
+      onClick={() => dispatch(hideMobileSidebar())}
       className={({ isActive }) =>
         cn(
-          "block transition-colors text-base py-1.5",
+          "block transition-colors text-lg py-2",
           isActive ? "text-primary" : "text-base-content hover:text-primary"
         )
       }
@@ -65,6 +69,7 @@ export function SidebarToggleButton({
 }
 
 export function SidebarMobile({ items }: SidebarProps) {
+  const theme = useAppSelector(selectAppTheme);
   const dispatch = useAppDispatch();
   const isShownMobileSidebar = useAppSelector(selectShowMobileSidebar);
 
@@ -103,8 +108,9 @@ export function SidebarMobile({ items }: SidebarProps) {
       <aside
         className={cn(
           "absolute left-2 top-2 h-[calc(100%-1rem)] w-[82%] max-w-[240px]",
-          "rounded-field backdrop-blur-md bg-base-100/60 border border-white/10 shadow-lg",
+          "rounded-field",
           "px-6 py-3 transition-transform duration-300 ease-in-out",
+          theme === "dark" ? "glass-panel-dark" : "glass-panel-light",
           isShownMobileSidebar
             ? "translate-x-0"
             : "-translate-x-[calc(100%+1rem)]"

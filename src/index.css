@@ -137,11 +137,23 @@ body::before {
 @layer components {
   /* ─────────── БАЗОВОЕ СТЕКЛО ─────────── */
   .glass-panel-light {
-    @apply backdrop-blur-md bg-base-100/40 border border-white/10;
+    /* @apply backdrop-blur-md bg-base-100/40 border border-white/10; */
+
+    --glass-bg: color-mix(in oklab, transparent 80%, transparent);
+    --glass-border: color-mix(in oklab, var(--glass-bg) 90%, white);
+    @apply border-[0px] border-(--glass-border) shadow-xl/5 inset-shadow-sm inset-shadow-black/15 backdrop-blur-sm bg-base-100/40 inset-shadow-sm;
+
+    --tw-inset-shadow: inset 0 0 4px var(--tw-inset-shadow-color);
   }
 
   .glass-panel-dark {
-    @apply backdrop-blur-md bg-base-100/40 border border-white/10;
+    /* @apply backdrop-blur-md bg-base-100/40 border border-white/10; */
+
+    --glass-bg: color-mix(in oklab, transparent 80%, transparent);
+    --glass-border: color-mix(in oklab, var(--glass-bg) 90%, white);
+    @apply border-[0.5px] border-(--glass-border) shadow-xl/5 inset-shadow-sm inset-shadow-current/10 backdrop-blur-sm bg-base-100/40 inset-shadow-sm;
+
+    --tw-inset-shadow: inset 0 0 4px var(--tw-inset-shadow-color);
   }
 
   /* ─────────── ИНТЕРАКТИВНОСТЬ ─────────── */
@@ -152,6 +164,6 @@ body::before {
 
   .glass-interactive-dark {
     @apply transition-[background-color,border-color,box-shadow] duration-200 ease-in-out;
-    @apply hover:bg-base-100/90 hover:border-white/20;
+    @apply hover:bg-base-100/60 hover:border-white/20;
   }
 }

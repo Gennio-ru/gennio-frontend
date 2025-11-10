@@ -115,8 +115,7 @@ export function GennioSelect({
             onMouseLeave={() => setHighlightedIndex(-1)} // 👈 вот это важно
             className={cn(
               "absolute left-0 mt-2 z-10 min-w-[300px] sm:min-w-[360px] w-full max-h-[290px] overflow-y-auto \
-              text-2xl rounded-field py-2 shadow-lg",
-              theme === "light" ? "shadow-neutral-900/20" : "shadow-base-200",
+              text-2xl rounded-field py-2",
               theme === "dark" ? "glass-panel-dark" : "glass-panel-light"
             )}
           >
@@ -126,7 +125,7 @@ export function GennioSelect({
                 className={cn(
                   "cursor-pointer px-6 py-1.5 my-1.5 transition-colors duration-100",
                   highlightedIndex === i
-                    ? "bg-primary text-primary-content"
+                    ? "bg-primary/70 text-primary-content"
                     : "hover:bg-primary"
                 )}
                 onClick={() => {

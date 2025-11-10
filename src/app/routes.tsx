@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import AdminRoute from "@/shared/routes/AdminRoute";
+import Loader from "@/shared/ui/Loader";
 
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
 const RegistrationPage = lazy(() => import("@/pages/RegistrationPage"));
@@ -29,13 +30,7 @@ const CategoriesAdminList = lazy(
 
 export function AppRoutes() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex h-[40vh] items-center justify-center">
-          <span className="loading loading-spinner loading-lg" />
-        </div>
-      }
-    >
+    <Suspense fallback={<Loader />}>
       <Routes>
         {/* публичные */}
         <Route path="/login" element={<LoginPage />} />

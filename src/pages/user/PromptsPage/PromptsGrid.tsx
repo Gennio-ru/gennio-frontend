@@ -52,11 +52,7 @@ export default function PromptsGrid() {
         ))}
       </div>
 
-      {isLoadingMore && (
-        <div className="flex justify-center py-6">
-          <span className="loading loading-spinner loading-md text-base-content/50" />
-        </div>
-      )}
+      {isLoadingMore && <Loader />}
 
       <div ref={sentinelRef} className="h-1" />
 
