@@ -45,12 +45,6 @@ export default function AppLayout({ children }: Props) {
 
       {/* Mobile menu */}
       <SidebarMobile items={menuItems} />
-
-      <div
-        className={cn(
-          theme === "light" ? "background-light" : "background-dark"
-        )}
-      />
     </div>
   );
 }
