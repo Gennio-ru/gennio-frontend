@@ -48,7 +48,7 @@ export default function HeaderNav() {
             to={item.href}
             className={({ isActive }) =>
               cn(
-                "relative block py-1 text-base transition-colors",
+                "relative block py-1 text-base transition-colors text-nowrap",
                 isActive
                   ? "before:absolute before:left-0 before:right-0 before:bottom-[-14px] \
                  before:h-[2px] before:bg-primary before:content-[''] \

@@ -29,7 +29,7 @@ export default function PromptsPage() {
           <UserCategoriesSelect value={categoryId} onChange={changeCategory} />
         </div>
 
-        <div className="pb-2 hidden sm:block w-full flex">
+        <div className="sm:pb-1 md:pb-2 hidden sm:flex w-full justify-end">
           <GennioSearch
             value={search}
             placeholder="Поиск по стилизациям"

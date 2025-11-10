@@ -49,7 +49,7 @@ export function GennioSearch({
   return (
     <div
       className={cn(
-        "relative flex items-center justify-self-end w-full max-w-[320px] h-10 rounded-field border border-white/10",
+        "relative flex items-center w-full max-w-[320px] h-10 rounded-field border border-white/10",
         theme === "dark" ? "glass-panel-dark" : "glass-panel-light"
       )}
     >
