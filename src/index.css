@@ -112,7 +112,6 @@ body {
 .background-light {
   position: fixed;
   inset: 0;
-  height: 100vh;
   z-index: -1;
 
   background-image: url("@/assets/background.webp");
@@ -126,7 +125,6 @@ body {
 .background-dark {
   position: fixed;
   inset: 0;
-  height: 100vh;
   z-index: -1;
 
   background-image: url("@/assets/background-dark.webp");
