@@ -116,9 +116,7 @@ body {
   z-index: -1;
 
   background-image: url("@/assets/background.webp");
-  background-color: rgb(
-    88 185 32 / 38%
-  ); /* ← регулируй прозрачность затемнения */
+  background-color: rgb(88 185 32 / 38%);
   background-blend-mode: luminosity;
   background-size: cover;
   background-repeat: no-repeat;
@@ -132,12 +130,7 @@ body {
   z-index: -1;
 
   background-image: url("@/assets/background-dark.webp");
-  background-color: rgba(
-    0,
-    0,
-    0,
-    0.48
-  ); /* ← регулируй прозрачность затемнения */
+  background-color: rgba(0, 0, 0, 0.48);
   background-blend-mode: luminosity;
   background-size: cover;
   background-repeat: no-repeat;
