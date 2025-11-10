@@ -14,6 +14,7 @@ import CategoriesSelect from "@/shared/ui/CategoriesSelect";
 import { EditIcon, TrashIcon } from "lucide-react";
 import { apiDeletePrompt } from "@/api/prompts";
 import toast from "react-hot-toast";
+import Loader from "@/shared/ui/Loader";
 
 export default function PromptsAdminList() {
   const dispatch = useAppDispatch();
@@ -164,11 +165,7 @@ export default function PromptsAdminList() {
         </table>
       </div>
 
-      {isLoading && (
-        <div className="flex justify-center py-6">
-          <span className="loading loading-spinner loading-md text-base-content/50" />
-        </div>
-      )}
+      {isLoading && <Loader />}
 
       <div className="mt-4 flex items-center justify-between text-sm text-base-content/70">
         <div>

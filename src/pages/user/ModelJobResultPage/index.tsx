@@ -1,9 +1,11 @@
+import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import Lottie from "lottie-react";
 import { apiGetModelJob, ModelJob } from "@/api/model-job";
 import Button from "@/shared/ui/Button";
 import GennioGenerationLoader from "@/shared/ui/GennioGenerationLoader";
 import ImageWithLoader from "@/shared/ui/ImageWithLoader";
-import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import spinnerAnimation from "@/assets/loader-white.json";
 
 type JobWithUrls = ModelJob & {
   inputFileUrl?: string | null;
@@ -170,10 +172,16 @@ export default function ModelJobResultPage() {
           className="mt-4"
           disabled={isLoadingOriginal}
         >
-          Скачать оригинал
-          {isLoadingOriginal && (
-            <span className="loading loading-spinner loading-sm ml-2"></span>
-          )}
+          <div className="flex gap-1">
+            Скачать оригинал
+            {isLoadingOriginal && (
+              <Lottie
+                animationData={spinnerAnimation}
+                loop
+                className="w-6 h-6 ml-2"
+              />
+            )}
+          </div>
         </Button>
       )}
     </div>

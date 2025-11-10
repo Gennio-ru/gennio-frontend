@@ -4,6 +4,7 @@ import { fetchPromptsPage } from "@/features/prompts/promptSlice";
 import PromptCard from "./PromptCard";
 import { useInfiniteObserver } from "@/shared/hooks/useInfiniteObserver";
 import NotFound from "@/shared/ui/NotFound";
+import Loader from "@/shared/ui/Loader";
 
 export default function PromptsGrid() {
   const dispatch = useAppDispatch();
@@ -36,7 +37,7 @@ export default function PromptsGrid() {
   );
 
   if (isLoading) {
-    return <div className="p-4 text-base-content/70">Loading…</div>;
+    return <Loader />;
   }
 
   if (status === "failed" && items.length === 0) {

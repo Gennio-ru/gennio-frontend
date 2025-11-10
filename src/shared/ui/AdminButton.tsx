@@ -1,3 +1,4 @@
+import { Lock } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export function AdminButton() {
@@ -24,7 +25,7 @@ export function AdminButton() {
         if (e.key === "Enter" || e.key === " ") goToAdmin();
       }}
     >
-      <img src="/settings.svg" alt="Редактировать" className="w-16 h-16" />
+      <Lock size={40} className="text-base-content/60" />
     </div>
   );
 }

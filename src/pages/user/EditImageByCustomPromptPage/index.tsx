@@ -55,7 +55,6 @@ export default function EditImageByCustomPromptPage() {
         model: "OPENAI",
       });
       navigate(`/model-job/${res.id}`);
-      toast.success("Задача запущена!");
     } catch (e) {
       toast.error(e?.message || "Не удалось создать задачу");
     } finally {
