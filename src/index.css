@@ -110,7 +110,8 @@ body {
 }
 
 /* общий слой фона */
-#page-bg {
+body::before {
+  content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
@@ -122,13 +123,13 @@ body {
 }
 
 /* светлая тема */
-:root[data-theme="light"] #page-bg {
+:root[data-theme="light"] body::before {
   background-image: url("@/assets/background.webp");
   background-color: rgb(88 185 32 / 38%);
 }
 
 /* тёмная тема */
-:root[data-theme="dark"] #page-bg {
+:root[data-theme="dark"] body::before {
   background-image: url("@/assets/background-dark.webp");
   background-color: rgb(0 0 0 / 60%);
 }
