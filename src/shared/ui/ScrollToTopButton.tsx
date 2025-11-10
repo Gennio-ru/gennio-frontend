@@ -33,7 +33,7 @@ export function ScrollToTopButton() {
       size="lg"
       onClick={handleClick}
       aria-label="Прокрутить наверх"
-      className="fixed bottom-10 left-10 z-50 hover:scale-105 active:scale-95"
+      className="fixed bottom-5 sm:bottom-10 left-5 sm:left-10 z-50 hover:scale-105 active:scale-95"
     />
   );
 }
