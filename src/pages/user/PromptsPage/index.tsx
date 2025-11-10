@@ -4,6 +4,7 @@ import { setCategory, setSearch } from "@/features/prompts/promptSlice";
 import UserCategoriesSelect from "@/shared/ui/UserCategoriesSelect";
 import { GennioSearch } from "@/shared/ui/GennioSearch";
 import { AIGenerationsMenu } from "@/shared/ui/AIGenerationsMenu";
+import { ScrollToTopButton } from "@/shared/ui/ScrollToTopButton";
 
 export default function PromptsPage() {
   const dispatch = useAppDispatch();
@@ -39,6 +40,8 @@ export default function PromptsPage() {
       </div>
 
       <PromptsGrid />
+
+      <ScrollToTopButton />
     </div>
   );
 }
