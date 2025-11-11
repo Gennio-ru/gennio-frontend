@@ -2,6 +2,7 @@ import { apiUploadFile } from "@/api/files";
 import { apiStartImageEditByPromptText } from "@/api/model-job";
 import Button from "@/shared/ui/Button";
 import ImageUploader from "@/shared/ui/FilePondUploader";
+import GlassCard from "@/shared/ui/GlassCard";
 import Textarea from "@/shared/ui/Textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -65,60 +66,57 @@ export default function EditImageByCustomPromptPage() {
   const isBusy = isFetching || isSubmitting;
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="mx-auto w-full max-w-xl space-y-6 rounded-box bg-base-100 p-6 text-base-content"
-    >
-      {/* Референс */}
-      <div className="relative mb-8">
-        <ImageUploader
-          control={control}
-          name="inputFileId"
-          onUpload={upload}
-          disabled={isBusy}
-          className="w-full"
-        />
+    <GlassCard className="mx-auto w-full max-w-xl">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-6 text-base-content"
+      >
+        {/* Референс */}
+        <div className="relative mb-8">
+          <ImageUploader
+            control={control}
+            name="inputFileId"
+            onUpload={upload}
+            disabled={isBusy}
+            className="w-full"
+          />
 
-        {errors.inputFileId && (
-          <p className="absolute top-full mt-1 text-xs text-error">
-            {errors.inputFileId.message}
-          </p>
-        )}
-      </div>
-
-      {/* Промпт */}
-      <div className="relative mb-8">
-        <Controller
-          name="text"
-          control={control}
-          render={({ field }) => (
-            <Textarea
-              {...field}
-              rows={4}
-              placeholder="Введите текст промпта"
-              className="w-full rounded-field"
-              onChange={(e) => {
-                field.onChange(e);
-                clearErrors("text");
-              }}
-              errored={!!errors.text}
-            />
+          {errors.inputFileId && (
+            <p className="absolute top-full mt-1 text-xs text-error">
+              {errors.inputFileId.message}
+            </p>
           )}
-        />
+        </div>
 
-        {errors.text && (
-          <p className="absolute top-full mt-1 text-xs text-error">
-            {errors.text.message}
-          </p>
-        )}
-      </div>
+        {/* Промпт */}
+        <div className="relative mb-8">
+          <Controller
+            name="text"
+            control={control}
+            render={({ field }) => (
+              <Textarea
+                {...field}
+                rows={4}
+                placeholder="Введите текст промпта"
+                className="w-full rounded-field"
+                onChange={(e) => {
+                  field.onChange(e);
+                  clearErrors("text");
+                }}
+                errored={!!errors.text}
+                errorMessage={errors.text?.message}
+              />
+            )}
+          />
+        </div>
 
-      {/* Кнопка */}
-      <div className="pt-4 flex justify-center">
-        <Button type="submit" disabled={isBusy} className="px-6 w-[200px]">
-          {isSubmitting ? "Обработка…" : "Обработать"}
-        </Button>
-      </div>
-    </form>
+        {/* Кнопка */}
+        <div className="pt-4 flex justify-center">
+          <Button type="submit" disabled={isBusy} className="px-6 w-[200px]">
+            {isSubmitting ? "Обработка…" : "Обработать"}
+          </Button>
+        </div>
+      </form>
+    </GlassCard>
   );
 }

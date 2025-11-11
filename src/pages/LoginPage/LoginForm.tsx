@@ -55,7 +55,7 @@ export default function LoginForm() {
 
   return (
     <>
-      <GlassCard>
+      <GlassCard className="w-full h-full">
         <form
           onSubmit={handleSubmit(onSubmit)}
           autoComplete="no"
@@ -85,14 +85,10 @@ export default function LoginForm() {
                     clearErrors("email");
                   }}
                   errored={!!errors.email}
+                  errorMessage={errors.email?.message}
                 />
               )}
             />
-            {errors.email && (
-              <p className="absolute top-full mt-0.5 text-xs text-error">
-                {errors.email.message}
-              </p>
-            )}
           </div>
 
           {/* Password */}
@@ -111,6 +107,7 @@ export default function LoginForm() {
                     clearErrors("password");
                   }}
                   errored={!!errors.password}
+                  errorMessage={errors.password?.message}
                 />
               )}
             />
@@ -123,12 +120,6 @@ export default function LoginForm() {
             >
               {showPwd ? <EyeClosedIcon size={20} /> : <EyeIcon size={20} />}
             </button>
-
-            {errors.password && (
-              <p className="absolute top-full mt-0.5 text-xs text-error">
-                {errors.password.message}
-              </p>
-            )}
           </div>
 
           <div className="flex items-center justify-between mt-8">

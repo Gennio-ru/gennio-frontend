@@ -5,15 +5,17 @@ import { ReactNode } from "react";
 
 interface Props {
   children: ReactNode;
+  className?: string;
 }
 
-export default function GlassCard({ children }: Props) {
+export default function GlassCard({ children, className }: Props) {
   const theme = useAppSelector(selectAppTheme);
 
   return (
     <div
       className={cn(
-        "w-full h-full p-6 rounded-box",
+        "p-6 rounded-box",
+        className,
         theme === "dark" ? "glass-panel-dark" : "glass-panel-light"
       )}
     >

@@ -3,6 +3,7 @@ import { apiStartImageEditByPromptId } from "@/api/model-job";
 import { apiGetPrompt, type Prompt } from "@/api/prompts";
 import Button from "@/shared/ui/Button";
 import ImageUploader from "@/shared/ui/FilePondUploader";
+import GlassCard from "@/shared/ui/GlassCard";
 import Loader from "@/shared/ui/Loader";
 import Textarea from "@/shared/ui/Textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -80,66 +81,63 @@ export default function EditImageByPlatformPromptPage() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="mx-auto w-full max-w-xl space-y-6 rounded-box bg-base-100 p-6 text-base-content"
-    >
-      <h1 className="text-lg font-semibold">{currentPrompt.title}</h1>
+    <GlassCard className="mx-auto w-full max-w-xl">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="mx-auto w-full max-w-xl space-y-6 text-base-content"
+      >
+        <h1 className="text-lg font-semibold">{currentPrompt.title}</h1>
 
-      {/* Референс */}
-      <div className="relative mb-8">
-        <ImageUploader
-          control={control}
-          name="inputFileId"
-          onUpload={async (file) => {
-            const id = await upload(file);
-            clearErrors("inputFileId");
-            return id;
-          }}
-          disabled={isBusy}
-          className="w-full"
-        />
+        {/* Референс */}
+        <div className="relative mb-8">
+          <ImageUploader
+            control={control}
+            name="inputFileId"
+            onUpload={async (file) => {
+              const id = await upload(file);
+              clearErrors("inputFileId");
+              return id;
+            }}
+            disabled={isBusy}
+            className="w-full"
+          />
 
-        {errors.inputFileId && (
-          <p className="absolute top-full mt-1 text-xs text-error">
-            {errors.inputFileId.message}
-          </p>
-        )}
-      </div>
-
-      {/* Промпт */}
-      <div className="relative mb-8">
-        <Controller
-          name="text"
-          control={control}
-          render={({ field }) => (
-            <Textarea
-              {...field}
-              rows={4}
-              placeholder="Введите уточняющий промпт, если необходимо"
-              className="w-full rounded-field"
-              onChange={(e) => {
-                field.onChange(e);
-                clearErrors("text");
-              }}
-              errored={!!errors.text}
-            />
+          {errors.inputFileId && (
+            <p className="absolute top-full mt-1 text-xs text-error">
+              {errors.inputFileId.message}
+            </p>
           )}
-        />
+        </div>
 
-        {errors.text && (
-          <p className="absolute top-full mt-1 text-xs text-error">
-            {errors.text.message}
-          </p>
-        )}
-      </div>
+        {/* Промпт */}
+        <div className="relative mb-8">
+          <Controller
+            name="text"
+            control={control}
+            render={({ field }) => (
+              <Textarea
+                {...field}
+                rows={4}
+                placeholder="Введите уточняющий промпт, если необходимо"
+                className="w-full rounded-field"
+                onChange={(e) => {
+                  field.onChange(e);
+                  clearErrors("text");
+                }}
+                errored={!!errors.text}
+                errorMessage={errors.text?.message}
+              />
+            )}
+          />
+        </div>
 
-      {/* Кнопка */}
-      <div className="pt-4 flex justify-center">
-        <Button type="submit" disabled={isBusy} className="px-6 w-[200px]">
-          {isSubmitting ? "Обработка…" : isFetching ? "Загрузка…" : "Начать"}
-        </Button>
-      </div>
-    </form>
+        {/* Кнопка */}
+        <div className="pt-4 flex justify-center">
+          <Button type="submit" disabled={isBusy} className="px-6 w-[200px]">
+            {isSubmitting ? "Обработка…" : isFetching ? "Загрузка…" : "Начать"}
+          </Button>
+        </div>
+      </form>
+    </GlassCard>
   );
 }

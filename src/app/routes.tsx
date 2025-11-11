@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import AdminRoute from "@/shared/routes/AdminRoute";
 import Loader from "@/shared/ui/Loader";
+import { AIGenerationsLayout } from "@/shared/layouts/AiGenerationLayout";
 
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
 const RegistrationPage = lazy(() => import("@/pages/RegistrationPage"));
@@ -13,6 +14,7 @@ const EditImageByCustomPromptPage = lazy(
   () => import("@/pages/user/EditImageByCustomPromptPage")
 );
 const GenerateImagePage = lazy(() => import("@/pages/user/GenerateImagePage"));
+const GenerateTextPage = lazy(() => import("@/pages/user/GenerateTextPage"));
 const ModelJobResultPage = lazy(
   () => import("@/pages/user/ModelJobResultPage")
 );
@@ -35,19 +37,27 @@ export function AppRoutes() {
         {/* публичные */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/registration" element={<RegistrationPage />} />
-        <Route path="/" element={<Navigate to="/prompts" replace />} />
-        <Route path="/prompts" element={<PromptsPage />} />
-        {/* Обработка по промпту платформы */}
-        <Route
-          path="/prompt/:promptId/edit-image"
-          element={<EditImageByPlatformPromptPage />}
-        />
-        {/* Обработка по промпту пользователя */}
-        <Route path="/edit-image" element={<EditImageByCustomPromptPage />} />
-        {/* Генерация по промпту пользователя */}
-        <Route path="/generate-image" element={<GenerateImagePage />} />
-        {/* Результат генерации */}
-        <Route path="/model-job/:modelJobId" element={<ModelJobResultPage />} />
+
+        <Route element={<AIGenerationsLayout />}>
+          <Route path="/" element={<Navigate to="/prompts" replace />} />
+          <Route path="/prompts" element={<PromptsPage />} />
+          {/* Обработка изображения по промпту платформы */}
+          <Route
+            path="/prompt/:promptId/edit-image"
+            element={<EditImageByPlatformPromptPage />}
+          />
+          {/* Обработка изображения по промпту пользователя */}
+          <Route path="/edit-image" element={<EditImageByCustomPromptPage />} />
+          {/* Генерация изображения по промпту пользователя */}
+          <Route path="/generate-image" element={<GenerateImagePage />} />
+          {/* Генерация текста по промпту пользователя */}
+          <Route path="/generate-text" element={<GenerateTextPage />} />
+          {/* Результат генерации */}
+          <Route
+            path="/model-job/:modelJobId"
+            element={<ModelJobResultPage />}
+          />
+        </Route>
 
         {/* админка */}
         <Route path="/admin" element={<AdminRoute />}>

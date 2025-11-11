@@ -166,14 +166,11 @@ export default function EditCategoryModal({
                   }}
                   disabled={isBusy}
                   autoFocus
+                  errored={!!errors.name}
+                  errorMessage={errors.name?.message}
                 />
               )}
             />
-            {errors.name && (
-              <p className="absolute top-full mt-1 text-xs text-destructive">
-                {errors.name.message}
-              </p>
-            )}
           </div>
 
           {/* Описание */}
@@ -195,14 +192,11 @@ export default function EditCategoryModal({
                     clearErrors("description");
                   }}
                   disabled={isBusy}
+                  errored={!!errors.description}
+                  errorMessage={errors.description?.message}
                 />
               )}
             />
-            {errors.description && (
-              <p className="absolute top-full mt-1 text-xs text-destructive">
-                {errors.description.message}
-              </p>
-            )}
           </div>
         </form>
 

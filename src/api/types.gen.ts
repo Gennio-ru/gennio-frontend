@@ -387,6 +387,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/model-job/start-text-generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ModelJobController_startTextGenerate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/categories": {
         parameters: {
             query?: never;
@@ -658,7 +674,7 @@ export interface components {
         /** @enum {string} */
         ModelType: "OPENAI";
         /** @enum {string} */
-        ModelJobType: "image-edit-by-prompt-id" | "image-edit-by-prompt-text" | "image-generate-by-prompt-text";
+        ModelJobType: "image-edit-by-prompt-id" | "image-edit-by-prompt-text" | "image-generate-by-prompt-text" | "text-generate";
         /** @enum {string} */
         ModelJobStatusType: "queued" | "processing" | "succeeded" | "failed";
         ModelJobDto: {
@@ -692,6 +708,7 @@ export interface components {
             outputFileUrl: string | null;
             /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.jpeg */
             outputPreviewFileUrl: string | null;
+            outputText: string | null;
             /** @example OpenAI timeout error */
             error: Record<string, never> | null;
             /** Format: date-time */
@@ -708,19 +725,36 @@ export interface components {
         StartImageEditByPromptIdDto: {
             model: components["schemas"]["ModelType"];
             promptId: string;
-            /** @example Мягкое освещение, крупный план */
+            /**
+             * @description Не более 500 символов
+             * @example Мягкое освещение, крупный план
+             */
             text: string;
             inputFileId: string;
         };
         StartImageEditByPromptTextDto: {
             model: components["schemas"]["ModelType"];
-            /** @example Мягкое освещение, крупный план */
+            /**
+             * @description Не более 500 символов
+             * @example Мягкое освещение, крупный план
+             */
             text: string;
             inputFileId: string;
         };
         StartImageGenerateByPromptTextDto: {
             model: components["schemas"]["ModelType"];
-            /** @example Мягкое освещение, крупный план */
+            /**
+             * @description Не более 500 символов
+             * @example Мягкое освещение, крупный план
+             */
+            text: string;
+        };
+        StartTextGenerateDto: {
+            model: components["schemas"]["ModelType"];
+            /**
+             * @description Не более 500 символов
+             * @example Сгенерируй текст новогоднего поздравления
+             */
             text: string;
         };
         CreateCategoryDto: {
@@ -1356,6 +1390,30 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["StartImageGenerateByPromptTextDto"];
+            };
+        };
+        responses: {
+            /** @description Генерация запущена */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelJobDto"];
+                };
+            };
+        };
+    };
+    ModelJobController_startTextGenerate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartTextGenerateDto"];
             };
         };
         responses: {

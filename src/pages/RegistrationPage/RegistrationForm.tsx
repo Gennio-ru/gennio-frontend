@@ -107,7 +107,7 @@ export default function RegistrationForm() {
   };
 
   return (
-    <GlassCard>
+    <GlassCard className="w-full h-full">
       <form onSubmit={handleSubmit(onSubmit)} className="w-full">
         <h1 className="text-lg font-semibold mb-8">Регистрация</h1>
 
@@ -132,15 +132,10 @@ export default function RegistrationForm() {
                   clearErrors("email");
                 }}
                 errored={!!errors.email}
+                errorMessage={errors.email?.message}
               />
             )}
           />
-
-          {errors.email && (
-            <p className="absolute top-full text-xs text-error">
-              {errors.email.message}
-            </p>
-          )}
         </div>
 
         {/* Password */}
@@ -247,6 +242,7 @@ export default function RegistrationForm() {
                   clearErrors("confirmPassword");
                 }}
                 errored={!!errors.confirmPassword}
+                errorMessage={errors.confirmPassword?.message}
               />
             )}
           />
@@ -258,12 +254,6 @@ export default function RegistrationForm() {
           >
             {showPwd2 ? <EyeClosedIcon size={20} /> : <EyeIcon size={20} />}
           </button>
-
-          {errors.confirmPassword && (
-            <p className="absolute top-full mt-1 text-xs text-error">
-              {errors.confirmPassword.message}
-            </p>
-          )}
         </div>
 
         <div className="flex items-center justify-between mt-10">

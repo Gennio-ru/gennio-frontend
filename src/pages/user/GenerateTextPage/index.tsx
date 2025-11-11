@@ -1,4 +1,4 @@
-import { apiStartImageGenerateByPromptText } from "@/api/model-job";
+import { apiStartTextGenerate } from "@/api/model-job";
 import Button from "@/shared/ui/Button";
 import GlassCard from "@/shared/ui/GlassCard";
 import Textarea from "@/shared/ui/Textarea";
@@ -15,7 +15,7 @@ const modelJobSchema = z.object({
 
 type ModelJobFormValues = z.infer<typeof modelJobSchema>;
 
-export default function GenerateImagePage() {
+export default function GenerateTextPage() {
   const navigate = useNavigate();
   const [isFetching, setIsFetching] = useState(false);
 
@@ -34,7 +34,7 @@ export default function GenerateImagePage() {
   const onSubmit = async (data: ModelJobFormValues) => {
     try {
       setIsFetching(true);
-      const res = await apiStartImageGenerateByPromptText({
+      const res = await apiStartTextGenerate({
         ...data,
         model: "OPENAI",
       });
@@ -49,10 +49,10 @@ export default function GenerateImagePage() {
   const isBusy = isFetching || isSubmitting;
 
   return (
-    <GlassCard className="mx-auto w-full max-w-xl">
+    <GlassCard className="mx-auto max-w-xl">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="space-y-6 text-base-content"
+        className="space-y-6 rounded-box text-base-content"
       >
         {/* Промпт */}
         <div className="relative mb-6">
@@ -65,12 +65,13 @@ export default function GenerateImagePage() {
                 rows={4}
                 placeholder="Введите промпт для генерации"
                 className="w-full rounded-field"
+                maxLength={300}
+                errored={!!errors.text}
+                errorMessage={errors.text?.message}
                 onChange={(e) => {
                   field.onChange(e);
                   clearErrors("text");
                 }}
-                errored={!!errors.text}
-                errorMessage={errors.text?.message}
               />
             )}
           />

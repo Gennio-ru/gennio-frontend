@@ -148,14 +148,11 @@ export default function PromptEditForm() {
                 field.onChange(e);
                 clearErrors("title");
               }}
+              errored={!!errors.title}
+              errorMessage={errors.title?.message}
             />
           )}
         />
-        {errors.title && (
-          <p className="absolute top-full mt-1 text-xs text-error">
-            {errors.title.message}
-          </p>
-        )}
       </div>
 
       {/* Описание */}
@@ -176,14 +173,11 @@ export default function PromptEditForm() {
                 field.onChange(e);
                 clearErrors("description");
               }}
+              errored={!!errors.description}
+              errorMessage={errors.description?.message}
             />
           )}
         />
-        {errors.description && (
-          <p className="absolute top-full mt-1 text-xs text-error">
-            {errors.description.message}
-          </p>
-        )}
       </div>
 
       {/* Категория */}
