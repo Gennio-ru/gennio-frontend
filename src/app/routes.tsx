@@ -2,7 +2,7 @@ import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import AdminRoute from "@/shared/routes/AdminRoute";
 import Loader from "@/shared/ui/Loader";
-import { AIGenerationsLayout } from "@/shared/layouts/AiGenerationLayout";
+import AIGenerationsLayout from "@/shared/layouts/AIGenerationsLayout";
 
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
 const RegistrationPage = lazy(() => import("@/pages/RegistrationPage"));
