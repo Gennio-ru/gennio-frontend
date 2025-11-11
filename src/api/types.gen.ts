@@ -677,6 +677,11 @@ export interface components {
         ModelJobType: "image-edit-by-prompt-id" | "image-edit-by-prompt-text" | "image-generate-by-prompt-text" | "text-generate";
         /** @enum {string} */
         ModelJobStatusType: "queued" | "processing" | "succeeded" | "failed";
+        /**
+         * @description Тариф, по которому считали стоимость задачи
+         * @enum {string}
+         */
+        ModelTariffCode: "TEXT_BASIC" | "TEXT_PRO" | "IMAGE_BASIC_GENERATE" | "IMAGE_BASIC_EDIT" | "IMAGE_PRO_GENERATE" | "IMAGE_PRO_EDIT";
         ModelJobDto: {
             model: components["schemas"]["ModelType"];
             type: components["schemas"]["ModelJobType"];
@@ -709,6 +714,12 @@ export interface components {
             /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.jpeg */
             outputPreviewFileUrl: string | null;
             outputText: string | null;
+            tariffCode: components["schemas"]["ModelTariffCode"];
+            /**
+             * @description Сколько кредитов списано за эту задачу
+             * @example 8
+             */
+            creditsCharged: number;
             /** @example OpenAI timeout error */
             error: Record<string, never> | null;
             /** Format: date-time */
