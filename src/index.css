@@ -124,7 +124,7 @@ body::before {
 
 /* светлая тема */
 :root[data-theme="light"] body::before {
-  background-image: url("@/assets/background.webp");
+  background-image: url("@/assets/background-light.webp");
   background-color: rgb(88 185 32 / 38%);
 }
 
@@ -141,7 +141,7 @@ body::before {
 
     --glass-bg: color-mix(in oklab, transparent 80%, transparent);
     --glass-border: color-mix(in oklab, var(--glass-bg) 90%, white);
-    @apply border-[0px] border-(--glass-border) shadow-xl/5 inset-shadow-sm inset-shadow-black/15 backdrop-blur-sm bg-base-100/40 inset-shadow-sm;
+    @apply shadow-xl/5 inset-shadow-sm inset-shadow-black/15 backdrop-blur-sm bg-base-100/40 inset-shadow-sm;
 
     --tw-inset-shadow: inset 0 0 4px var(--tw-inset-shadow-color);
   }
@@ -151,7 +151,7 @@ body::before {
 
     --glass-bg: color-mix(in oklab, transparent 80%, transparent);
     --glass-border: color-mix(in oklab, var(--glass-bg) 90%, white);
-    @apply border-[0.5px] border-(--glass-border) shadow-xl/5 inset-shadow-sm inset-shadow-current/10 backdrop-blur-sm bg-base-100/40 inset-shadow-sm;
+    @apply shadow-xl/5 inset-shadow-sm inset-shadow-current/10 backdrop-blur-sm bg-base-100/40 inset-shadow-sm;
 
     --tw-inset-shadow: inset 0 0 4px var(--tw-inset-shadow-color);
   }
