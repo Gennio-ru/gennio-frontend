@@ -2,7 +2,7 @@
   "CREDITS_NOT_ENOUGH": "Недостаточно кредитов",
   "MODEL_JOB_NOT_FOUND": "Генерация не найдена",
   "MODEL_UNAVAILABLE": "Модель недоступна",
-  "UNAUTHORIZED": "Необходима авторизация",
+  "UNAUTHORIZED": "Войдите в аккаунт",
   "FORBIDDEN": "Доступ запрещен",
   "VALIDATION_FAILED": "Ошибка валидации",
   "INTERNAL_SERVER_ERROR": "Внутренняя ошибка сервера"

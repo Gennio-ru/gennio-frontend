@@ -41,7 +41,7 @@ export default function HeaderNav() {
       </div>
 
       {/* 🔹 Центральная часть (меню) — 8 колонок, скрыто до md */}
-      <nav className="hidden md:flex md:col-span-8 items-center justify-start gap-8 text-sm">
+      <nav className="hidden md:flex md:col-span-6 items-center justify-start gap-8 text-sm">
         {menuItems.map((item) => (
           <NavLink
             key={item.label}
@@ -68,7 +68,11 @@ export default function HeaderNav() {
       </nav>
 
       {/* 🔹 Правая часть (UserMenu / Войти) — 6 колонок на мобилках, 2 на md+ */}
-      <div className="col-span-6 md:col-span-2 flex justify-end items-center gap-4 text-sm text-base-content/80">
+      <div className="col-span-6 md:col-span-4 flex justify-end items-center gap-4 text-sm text-base-content/80">
+        {isAuth && (
+          <span className="text-nowrap text-base">Кредиты: {user.credits}</span>
+        )}
+
         <ThemeSwitch />
 
         {isAuth ? (
