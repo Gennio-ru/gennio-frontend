@@ -743,6 +743,29 @@ export interface components {
             text: string;
             inputFileId: string;
         };
+        /** @enum {string} */
+        ErrorCode: "CREDITS_NOT_ENOUGH" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "UNAUTHORIZED" | "FORBIDDEN" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
+        ErrorInfoDto: {
+            code: components["schemas"]["ErrorCode"];
+            /**
+             * @description Может быть undefined для бизнес-ошибок, фронт сам локализует по code
+             * @example Internal server error
+             */
+            message?: string;
+            /** @description Доп. детали, например { required: 10 } */
+            details?: Record<string, never>;
+        };
+        ErrorResponseDto: {
+            /** @example false */
+            success: boolean;
+            /** @example 400 */
+            statusCode: number;
+            error: components["schemas"]["ErrorInfoDto"];
+            /** @example /api/model-job/start-image-edit-by-prompt-id */
+            path: string;
+            /** @example 2025-11-12T22:31:59.153Z */
+            timestamp: string;
+        };
         StartImageEditByPromptTextDto: {
             model: components["schemas"]["ModelType"];
             /**
@@ -1365,6 +1388,15 @@ export interface operations {
                     "application/json": components["schemas"]["ModelJobDto"];
                 };
             };
+            /** @description Бизнес-ошибка (например, не хватает кредитов) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
         };
     };
     ModelJobController_startImageEditByPromptText: {
@@ -1387,6 +1419,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ModelJobDto"];
+                };
+            };
+            /** @description Бизнес-ошибка (например, не хватает кредитов) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
         };
@@ -1413,6 +1454,15 @@ export interface operations {
                     "application/json": components["schemas"]["ModelJobDto"];
                 };
             };
+            /** @description Бизнес-ошибка (например, не хватает кредитов) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
         };
     };
     ModelJobController_startTextGenerate: {
@@ -1435,6 +1485,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ModelJobDto"];
+                };
+            };
+            /** @description Бизнес-ошибка (например, не хватает кредитов) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
         };

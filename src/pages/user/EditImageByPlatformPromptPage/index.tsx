@@ -1,6 +1,7 @@
 import { apiUploadFile } from "@/api/files";
 import { apiStartImageEditByPromptId } from "@/api/model-job";
 import { apiGetPrompt, type Prompt } from "@/api/prompts";
+import { customToast } from "@/lib/customToast";
 import Button from "@/shared/ui/Button";
 import ImageUploader from "@/shared/ui/FilePondUploader";
 import GlassCard from "@/shared/ui/GlassCard";
@@ -9,7 +10,6 @@ import Textarea from "@/shared/ui/Textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import z from "zod";
 
@@ -68,7 +68,7 @@ export default function EditImageByPlatformPromptPage() {
       });
       navigate(`/model-job/${res.id}`);
     } catch (e) {
-      toast.error(e?.message || "Не удалось создать задачу");
+      customToast.error(e);
     } finally {
       setIsFetching(false);
     }
