@@ -9,6 +9,7 @@ import { socket } from "@/api/socket";
 import { MODEL_JOB_EVENTS } from "@/api/model-job-events";
 import { ModelJobImageResult } from "./ModelJobImageResult";
 import { ModelJobTextResult } from "./ModelJobTextResult";
+import ModerationBlockedNotice from "./ModerationBlockNotice";
 
 export type JobWithUrls = ModelJob & {
   inputFileUrl?: string | null;
@@ -101,6 +102,13 @@ export default function ModelJobResultPage() {
         <GennioGenerationLoader />
       </div>
     );
+  }
+
+  const isModerationBlocked =
+    job?.error === "MODERATION_BLOCKED" || job?.error === "moderation_blocked";
+
+  if (isModerationBlocked) {
+    return <ModerationBlockedNotice prompt={job.text ?? undefined} />;
   }
 
   return (

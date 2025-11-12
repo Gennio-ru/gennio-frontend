@@ -721,7 +721,7 @@ export interface components {
              */
             creditsCharged: number;
             /** @example OpenAI timeout error */
-            error: Record<string, never> | null;
+            error: string | null;
             /** Format: date-time */
             startedAt: string | null;
             /** Format: date-time */
@@ -744,7 +744,7 @@ export interface components {
             inputFileId: string;
         };
         /** @enum {string} */
-        ErrorCode: "CREDITS_NOT_ENOUGH" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "UNAUTHORIZED" | "FORBIDDEN" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
+        ErrorCode: "CREDITS_NOT_ENOUGH" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "MODERATION_BLOCKED" | "UNAUTHORIZED" | "FORBIDDEN" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
         ErrorInfoDto: {
             code: components["schemas"]["ErrorCode"];
             /**
