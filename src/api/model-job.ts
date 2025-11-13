@@ -7,6 +7,8 @@ import type { operations } from "./types.gen";
 
 export type ModelJob =
   operations["ModelJobController_startImageEditByPromptId"]["responses"]["201"]["content"]["application/json"];
+export type ModelJobFull =
+  operations["ModelJobController_findOne"]["responses"]["200"]["content"]["application/json"];
 
 // Пейлоады
 export type StartImageEditByPromptIdPayload =
@@ -15,8 +17,6 @@ export type StartImageEditByPromptTextPayload =
   operations["ModelJobController_startImageEditByPromptText"]["requestBody"]["content"]["application/json"];
 export type StartImageGenerateByPromptTextPayload =
   operations["ModelJobController_startImageGenerateByPromptText"]["requestBody"]["content"]["application/json"];
-export type StartTextGeneratePayload =
-  operations["ModelJobController_startTextGenerate"]["requestBody"]["content"]["application/json"];
 
 //
 // ==== API ====
@@ -53,16 +53,6 @@ export async function apiStartImageGenerateByPromptText(
 ): Promise<ModelJob> {
   const { data } = await api.post<ModelJob>(
     "/model-job/start-image-generate",
-    payload
-  );
-  return data;
-}
-
-export async function apiStartTextGenerate(
-  payload: StartTextGeneratePayload
-): Promise<ModelJob> {
-  const { data } = await api.post<ModelJob>(
-    "/model-job/start-text-generate",
     payload
   );
   return data;

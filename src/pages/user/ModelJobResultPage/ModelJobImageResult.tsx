@@ -1,13 +1,20 @@
 import ImageWithLoader from "@/shared/ui/ImageWithLoader";
-import type { JobWithUrls } from "./index";
 import GlassCard from "@/shared/ui/GlassCard";
+import { ModelJobFull } from "@/api/model-job";
 
 type Props = {
-  job: JobWithUrls;
+  job: ModelJobFull;
 };
 
 export function ModelJobImageResult({ job }: Props) {
-  const { inputFileUrl, outputPreviewFileUrl, text, type } = job;
+  const {
+    inputFileUrl,
+    outputPreviewFileUrl,
+    text,
+    type,
+    inputFile,
+    outputPreviewFile,
+  } = job;
 
   const showPrompt =
     !!text &&
@@ -30,22 +37,40 @@ export function ModelJobImageResult({ job }: Props) {
 
       {type === "image-edit-by-prompt-id" && (
         <div className="flex flex-col md:flex-row items-start justify-center gap-4">
-          <ImageWithLoader src={inputFileUrl} alt="Оригинал" size="xs" />
           <ImageWithLoader
-            src={outputPreviewFileUrl}
+            src={inputFileUrl ?? undefined}
+            alt="Оригинал"
+            size="xs"
+            widthPx={inputFile.widthPx ?? undefined}
+            heightPx={inputFile.heightPx ?? undefined}
+          />
+
+          <ImageWithLoader
+            src={outputPreviewFileUrl ?? undefined}
             alt="Результат"
             size="xl"
+            widthPx={outputPreviewFile.widthPx ?? undefined}
+            heightPx={outputPreviewFile.heightPx ?? undefined}
           />
         </div>
       )}
 
       {type === "image-edit-by-prompt-text" && (
         <div className="flex flex-col md:flex-row items-start justify-center gap-4">
-          <ImageWithLoader src={inputFileUrl} alt="Оригинал" size="xs" />
           <ImageWithLoader
-            src={outputPreviewFileUrl}
+            src={inputFileUrl ?? undefined}
+            alt="Оригинал"
+            size="xs"
+            widthPx={inputFile.widthPx ?? undefined}
+            heightPx={inputFile.heightPx ?? undefined}
+          />
+
+          <ImageWithLoader
+            src={outputPreviewFileUrl ?? undefined}
             alt="Результат"
             size="xl"
+            widthPx={outputPreviewFile.widthPx ?? undefined}
+            heightPx={outputPreviewFile.heightPx ?? undefined}
           />
         </div>
       )}
@@ -53,9 +78,11 @@ export function ModelJobImageResult({ job }: Props) {
       {type === "image-generate-by-prompt-text" && (
         <div className="flex items-center justify-center">
           <ImageWithLoader
-            src={outputPreviewFileUrl}
+            src={outputPreviewFileUrl ?? undefined}
             alt="Результат"
             size="xl"
+            widthPx={outputPreviewFile.widthPx ?? undefined}
+            heightPx={outputPreviewFile.heightPx ?? undefined}
           />
         </div>
       )}

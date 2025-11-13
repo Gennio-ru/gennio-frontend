@@ -531,12 +531,12 @@ export interface components {
              * @description Ширина файла в пикселях
              * @example 1024
              */
-            widthPx?: Record<string, never> | null;
+            widthPx?: number | null;
             /**
              * @description Высота файла в пикселях
              * @example 768
              */
-            heightPx?: Record<string, never> | null;
+            heightPx?: number | null;
             /** @example user-123 */
             ownerId?: Record<string, never> | null;
             /** @example {
@@ -686,6 +686,71 @@ export interface components {
          * @enum {string}
          */
         ModelTariffCode: "TEXT_BASIC" | "TEXT_PRO" | "IMAGE_BASIC_GENERATE" | "IMAGE_BASIC_EDIT" | "IMAGE_PRO_GENERATE" | "IMAGE_PRO_EDIT";
+        ModelJobFullDto: {
+            model: components["schemas"]["ModelType"];
+            type: components["schemas"]["ModelJobType"];
+            status: components["schemas"]["ModelJobStatusType"];
+            /** @example Мягкое освещение, крупный план */
+            text: string | null;
+            /** @example Мягкое освещение, крупный план */
+            promptId: string | null;
+            /** @example user-123 */
+            userId: string;
+            user: components["schemas"]["UserDto"] | null;
+            /**
+             * Format: uuid
+             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
+             */
+            inputFileId: string | null;
+            /**
+             * Format: uuid
+             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
+             */
+            outputFileId: string | null;
+            /**
+             * Format: uuid
+             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
+             */
+            outputPreviewFileId: string | null;
+            outputText: string | null;
+            tariffCode: components["schemas"]["ModelTariffCode"];
+            /**
+             * @description Сколько кредитов списано за эту задачу
+             * @example 8
+             */
+            creditsCharged: number;
+            /** @example OpenAI timeout error */
+            error: string | null;
+            /** Format: date-time */
+            startedAt: string | null;
+            /** Format: date-time */
+            finishedAt: string | null;
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            inputFile: components["schemas"]["FileDto"] | null;
+            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.jpeg */
+            inputFileUrl: string | null;
+            outputFile: components["schemas"]["FileDto"] | null;
+            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.jpeg */
+            outputFileUrl: string | null;
+            outputPreviewFile: components["schemas"]["FileDto"] | null;
+            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.jpeg */
+            outputPreviewFileUrl: string | null;
+        };
+        StartImageEditByPromptIdDto: {
+            model: components["schemas"]["ModelType"];
+            promptId: string;
+            /**
+             * @description Не более 500 символов
+             * @example Мягкое освещение, крупный план
+             */
+            text: string;
+            inputFileId: string;
+        };
         ModelJobDto: {
             model: components["schemas"]["ModelType"];
             type: components["schemas"]["ModelJobType"];
@@ -731,16 +796,6 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-        };
-        StartImageEditByPromptIdDto: {
-            model: components["schemas"]["ModelType"];
-            promptId: string;
-            /**
-             * @description Не более 500 символов
-             * @example Мягкое освещение, крупный план
-             */
-            text: string;
-            inputFileId: string;
         };
         /** @enum {string} */
         ErrorCode: "CREDITS_NOT_ENOUGH" | "MODEJ_JOB_TYPE_NOT_FOUND" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "MODERATION_BLOCKED" | "UNAUTHORIZED" | "FORBIDDEN" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
@@ -1345,7 +1400,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ModelJobDto"];
+                    "application/json": components["schemas"]["ModelJobFullDto"];
                 };
             };
             /** @description Процесс не найден */

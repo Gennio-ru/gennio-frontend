@@ -1,30 +1,22 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Lottie from "lottie-react";
-import { apiGetModelJob, ModelJob } from "@/api/model-job";
+import { apiGetModelJob, ModelJobFull } from "@/api/model-job";
 import Button from "@/shared/ui/Button";
 import GennioGenerationLoader from "@/shared/ui/GennioGenerationLoader";
 import spinnerAnimation from "@/assets/loader-white.json";
 import { socket } from "@/api/socket";
 import { MODEL_JOB_EVENTS } from "@/api/model-job-events";
 import { ModelJobImageResult } from "./ModelJobImageResult";
-import { ModelJobTextResult } from "./ModelJobTextResult";
 import ModerationBlockedNotice from "./ModerationBlockNotice";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/features/auth/authSlice";
-
-export type JobWithUrls = ModelJob & {
-  inputFileUrl?: string | null;
-  outputFileUrl?: string | null;
-  outputPreviewFileUrl?: string | null;
-  outputText?: string | null;
-};
 
 export default function ModelJobResultPage() {
   const dispatch = useDispatch();
   const { modelJobId } = useParams<{ modelJobId: string }>();
 
-  const [job, setJob] = useState<JobWithUrls | null>(null);
+  const [job, setJob] = useState<ModelJobFull | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingOriginal, setIsLoadingOriginal] = useState(false);
 
@@ -32,12 +24,12 @@ export default function ModelJobResultPage() {
     if (!modelJobId) return;
 
     apiGetModelJob(modelJobId)
-      .then((data) => setJob(data as JobWithUrls))
+      .then((data) => setJob(data as ModelJobFull))
       .finally(() => setIsLoading(false));
 
     socket.emit(MODEL_JOB_EVENTS.SUBSCRIBE, modelJobId);
 
-    const onUpdate = (updatedJob: JobWithUrls) => {
+    const onUpdate = (updatedJob: ModelJobFull) => {
       setJob(updatedJob);
 
       if (updatedJob.user) {
@@ -149,8 +141,6 @@ export default function ModelJobResultPage() {
           )}
         </>
       )}
-
-      {isTextJob && <ModelJobTextResult job={job} />}
 
       {!isImageJob && !isTextJob && (
         <div className="mt-4 text-sm text-base-content/70">
