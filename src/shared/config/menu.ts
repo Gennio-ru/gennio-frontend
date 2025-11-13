@@ -15,5 +15,5 @@ export const aiGenerationsMenu: NavItem[] = [
   { label: "Готовые шаблоны", href: "/prompts" },
   { label: "Генерация картинок", href: "/generate-image" },
   { label: "Обработка фото", href: "/edit-image" },
-  { label: "Генерация текста", href: "/generate-text" },
+  // { label: "Генерация текста", href: "/generate-text" },
 ];

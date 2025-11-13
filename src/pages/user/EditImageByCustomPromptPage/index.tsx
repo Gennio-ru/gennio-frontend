@@ -1,5 +1,6 @@
 import { apiUploadFile } from "@/api/files";
 import { apiStartImageEditByPromptText } from "@/api/model-job";
+import { setUser } from "@/features/auth/authSlice";
 import { customToast } from "@/lib/customToast";
 import Button from "@/shared/ui/Button";
 import ImageUploader from "@/shared/ui/FilePondUploader";
@@ -8,6 +9,7 @@ import Textarea from "@/shared/ui/Textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import z from "zod";
 
@@ -20,6 +22,7 @@ type ModelJobFormValues = z.infer<typeof modelJobSchema>;
 type UploadResponse = { id?: string; key?: string };
 
 export default function EditImageByCustomPromptPage() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isFetching, setIsFetching] = useState(false);
 
@@ -55,6 +58,7 @@ export default function EditImageByCustomPromptPage() {
         ...data,
         model: "OPENAI",
       });
+      dispatch(setUser(res.user));
       navigate(`/model-job/${res.id}`);
     } catch (e) {
       customToast.error(e);

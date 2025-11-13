@@ -387,22 +387,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/model-job/start-text-generate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["ModelJobController_startTextGenerate"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/categories": {
         parameters: {
             query?: never;
@@ -529,20 +513,30 @@ export interface components {
         FileDto: {
             /** @example uploads/2025/09/04/photo.png */
             key: string;
+            /** @example my-bucket */
+            bucket: string;
             /**
              * Format: uri
              * @example https://cdn.example.com/uploads/2025/09/04/photo.png
              */
-            url?: Record<string, never> | null;
+            url?: string | null;
             /** @example image/png */
-            contentType?: Record<string, never> | null;
+            contentType?: string;
             /**
              * @description Размер файла в байтах
              * @example 204800
              */
-            size?: Record<string, never>;
-            /** @example my-bucket */
-            bucket: string;
+            size?: number;
+            /**
+             * @description Ширина файла в пикселях
+             * @example 1024
+             */
+            widthPx?: Record<string, never> | null;
+            /**
+             * @description Высота файла в пикселях
+             * @example 768
+             */
+            heightPx?: Record<string, never> | null;
             /** @example user-123 */
             ownerId?: Record<string, never> | null;
             /** @example {
@@ -651,7 +645,7 @@ export interface components {
             /** @example uploads/2025/09/04/file.png */
             key: string;
             /** @example https://cdn.example.com/uploads/2025/09/04/file.png */
-            url: Record<string, never> | null;
+            url: string;
             /** @example image/png */
             contentType: Record<string, never> | null;
             /**
@@ -659,6 +653,16 @@ export interface components {
              * @example 204800
              */
             size: Record<string, never>;
+            /**
+             * @description Ширина файла в пикселях
+             * @example 1024
+             */
+            widthPx?: Record<string, never> | null;
+            /**
+             * @description Высота файла в пикселях
+             * @example 768
+             */
+            heightPx?: Record<string, never> | null;
             /** Format: date-time */
             createdAt: string;
         };
@@ -692,6 +696,7 @@ export interface components {
             promptId: string | null;
             /** @example user-123 */
             userId: string;
+            user: components["schemas"]["UserDto"] | null;
             /**
              * Format: uuid
              * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
@@ -707,12 +712,6 @@ export interface components {
              * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
              */
             outputPreviewFileId: string | null;
-            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.jpeg */
-            inputFileUrl: string | null;
-            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.jpeg */
-            outputFileUrl: string | null;
-            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.jpeg */
-            outputPreviewFileUrl: string | null;
             outputText: string | null;
             tariffCode: components["schemas"]["ModelTariffCode"];
             /**
@@ -744,7 +743,7 @@ export interface components {
             inputFileId: string;
         };
         /** @enum {string} */
-        ErrorCode: "CREDITS_NOT_ENOUGH" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "MODERATION_BLOCKED" | "UNAUTHORIZED" | "FORBIDDEN" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
+        ErrorCode: "CREDITS_NOT_ENOUGH" | "MODEJ_JOB_TYPE_NOT_FOUND" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "MODERATION_BLOCKED" | "UNAUTHORIZED" | "FORBIDDEN" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
         ErrorInfoDto: {
             code: components["schemas"]["ErrorCode"];
             /**
@@ -780,14 +779,6 @@ export interface components {
             /**
              * @description Не более 500 символов
              * @example Мягкое освещение, крупный план
-             */
-            text: string;
-        };
-        StartTextGenerateDto: {
-            model: components["schemas"]["ModelType"];
-            /**
-             * @description Не более 500 символов
-             * @example Сгенерируй текст новогоднего поздравления
              */
             text: string;
         };
@@ -1442,39 +1433,6 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["StartImageGenerateByPromptTextDto"];
-            };
-        };
-        responses: {
-            /** @description Генерация запущена */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ModelJobDto"];
-                };
-            };
-            /** @description Бизнес-ошибка (например, не хватает кредитов) */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponseDto"];
-                };
-            };
-        };
-    };
-    ModelJobController_startTextGenerate: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["StartTextGenerateDto"];
             };
         };
         responses: {

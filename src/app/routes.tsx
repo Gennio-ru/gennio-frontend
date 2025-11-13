@@ -14,7 +14,7 @@ const EditImageByCustomPromptPage = lazy(
   () => import("@/pages/user/EditImageByCustomPromptPage")
 );
 const GenerateImagePage = lazy(() => import("@/pages/user/GenerateImagePage"));
-const GenerateTextPage = lazy(() => import("@/pages/user/GenerateTextPage"));
+// const GenerateTextPage = lazy(() => import("@/pages/user/GenerateTextPage"));
 const ModelJobResultPage = lazy(
   () => import("@/pages/user/ModelJobResultPage")
 );
@@ -51,7 +51,7 @@ export function AppRoutes() {
           {/* Генерация изображения по промпту пользователя */}
           <Route path="/generate-image" element={<GenerateImagePage />} />
           {/* Генерация текста по промпту пользователя */}
-          <Route path="/generate-text" element={<GenerateTextPage />} />
+          {/* <Route path="/generate-text" element={<GenerateTextPage />} /> */}
           {/* Результат генерации */}
           <Route
             path="/model-job/:modelJobId"

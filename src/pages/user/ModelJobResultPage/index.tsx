@@ -10,6 +10,8 @@ import { MODEL_JOB_EVENTS } from "@/api/model-job-events";
 import { ModelJobImageResult } from "./ModelJobImageResult";
 import { ModelJobTextResult } from "./ModelJobTextResult";
 import ModerationBlockedNotice from "./ModerationBlockNotice";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/features/auth/authSlice";
 
 export type JobWithUrls = ModelJob & {
   inputFileUrl?: string | null;
@@ -19,6 +21,7 @@ export type JobWithUrls = ModelJob & {
 };
 
 export default function ModelJobResultPage() {
+  const dispatch = useDispatch();
   const { modelJobId } = useParams<{ modelJobId: string }>();
 
   const [job, setJob] = useState<JobWithUrls | null>(null);
@@ -36,6 +39,10 @@ export default function ModelJobResultPage() {
 
     const onUpdate = (updatedJob: JobWithUrls) => {
       setJob(updatedJob);
+
+      if (updatedJob.user) {
+        dispatch(setUser(updatedJob.user));
+      }
     };
 
     socket.on(MODEL_JOB_EVENTS.UPDATE, onUpdate);
@@ -44,7 +51,7 @@ export default function ModelJobResultPage() {
       socket.off(MODEL_JOB_EVENTS.UPDATE, onUpdate);
       socket.emit(MODEL_JOB_EVENTS.UNSUBSCRIBE, modelJobId);
     };
-  }, [modelJobId]);
+  }, [modelJobId, dispatch]);
 
   const handleDownloadOriginal = async () => {
     if (!job?.outputFileUrl) return;
