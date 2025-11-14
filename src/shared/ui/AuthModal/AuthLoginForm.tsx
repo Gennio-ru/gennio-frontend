@@ -8,6 +8,7 @@ import { EyeClosedIcon, EyeIcon } from "lucide-react";
 import { useAppDispatch } from "@/app/hooks";
 import { loginThunk, meThunk } from "@/features/auth/authSlice";
 import YandexLogo from "@/assets/yandex-logo.svg?react";
+import { useLocation } from "react-router-dom";
 
 // схема валидации
 const schema = z.object({
@@ -23,8 +24,11 @@ type Props = {
 
 export function AuthLoginForm({ onSuccess }: Props) {
   const dispatch = useAppDispatch();
+  const location = useLocation();
   const [serverError, setServerError] = useState<string | null>(null);
   const [showPwd, setShowPwd] = useState(false);
+
+  const returnUrl = location.pathname + location.search + location.hash;
 
   const {
     control,
@@ -127,11 +131,13 @@ export function AuthLoginForm({ onSuccess }: Props) {
       <div className="divider my-8">или</div>
 
       <a
-        href={`${import.meta.env.VITE_API_URL}/auth/yandex`}
+        href={`${
+          import.meta.env.VITE_API_URL
+        }/auth/yandex?returnUrl=${encodeURIComponent(returnUrl)}`}
         className="w-full h-12 flex items-center justify-center rounded-box bg-black text-white cursor-pointer hover:bg-neutral-800 transition-colors"
       >
         <YandexLogo fontSize={24} className="mr-2" />
-        Войти c Яндекс ID
+        Войти с Яндекс ID
       </a>
     </form>
   );
