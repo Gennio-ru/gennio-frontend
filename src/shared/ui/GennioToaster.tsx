@@ -9,6 +9,7 @@ export default function GennioToaster() {
   return (
     <Toaster
       position="top-right"
+      containerStyle={{ marginTop: "48px" }}
       toastOptions={{
         success: {
           className: cn(
