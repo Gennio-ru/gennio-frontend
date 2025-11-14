@@ -32,7 +32,6 @@ export default function ThemeSwitch() {
         relative w-12 min-w-12 h-7 flex items-center rounded-full p-1 cursor-pointer
         overflow-hidden transition-colors duration-300 border-base-content/20 border-[1px]
         `}
-      // ${theme === "dark" ? "bg-base-200" : "bg-neutral-300"}
     >
       <div
         className={`

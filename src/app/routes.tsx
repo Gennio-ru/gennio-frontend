@@ -42,7 +42,7 @@ export function AppRoutes() {
           <Route path="/prompts" element={<PromptsPage />} />
           {/* Обработка изображения по промпту платформы */}
           <Route
-            path="/prompt/:promptId/edit-image"
+            path="/prompts/:promptId/edit-image"
             element={<EditImageByPlatformPromptPage />}
           />
           {/* Обработка изображения по промпту пользователя */}

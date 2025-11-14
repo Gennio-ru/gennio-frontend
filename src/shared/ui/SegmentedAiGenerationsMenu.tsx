@@ -31,7 +31,9 @@ export function SegmentedAIGenerationsMenu({ className }: Props) {
         )}
       >
         {aiGenerationsMenu.map((item) => {
-          const isActive = currentPath === item.href;
+          const isActive =
+            currentPath === item.href ||
+            currentPath.startsWith(item.href + "/");
 
           const handleClick = () => {
             if (item.external) window.open(item.href, "_blank");

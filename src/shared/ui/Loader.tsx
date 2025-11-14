@@ -32,7 +32,6 @@ export default function Loader({
         className={cn(sizeMap[size], className)}
         aria-label="Загрузка"
       />
-      <span className="sr-only">Загрузка…</span>
     </div>
   );
 }

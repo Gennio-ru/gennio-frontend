@@ -1,6 +1,8 @@
 import { Outlet } from "react-router-dom";
 import { AIGenerationsMenu } from "../ui/AIGenerationsMenu";
 import { SegmentedAIGenerationsMenu } from "../ui/SegmentedAiGenerationsMenu";
+import { Suspense } from "react";
+import Loader from "../ui/Loader";
 
 export default function AIGenerationsLayout() {
   return (
@@ -9,7 +11,9 @@ export default function AIGenerationsLayout() {
 
       <AIGenerationsMenu className="flex sm:hidden" />
 
-      <Outlet />
+      <Suspense fallback={<Loader />}>
+        <Outlet />
+      </Suspense>
     </>
   );
 }

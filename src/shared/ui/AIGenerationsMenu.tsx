@@ -15,6 +15,8 @@ export function AIGenerationsMenu({ className }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const currentPath = location.pathname;
+
   return (
     <nav
       className={cn(
@@ -23,7 +25,8 @@ export function AIGenerationsMenu({ className }: Props) {
       )}
     >
       {aiGenerationsMenu.map((item) => {
-        const isActive = location.pathname === item.href;
+        const isActive =
+          currentPath === item.href || currentPath.startsWith(item.href + "/");
 
         return (
           <button

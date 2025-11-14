@@ -1,5 +1,7 @@
 import { useAppSelector } from "@/app/hooks";
+import { Suspense } from "react";
 import { Navigate, useLocation, Outlet } from "react-router-dom";
+import Loader from "../ui/Loader";
 
 export default function AdminRoute() {
   const { user, authReady } = useAppSelector((s) => s.auth);
@@ -21,5 +23,9 @@ export default function AdminRoute() {
     return <div className="p-6">403 — Forbidden</div>;
   }
 
-  return <Outlet />;
+  return (
+    <Suspense fallback={<Loader />}>
+      <Outlet />
+    </Suspense>
+  );
 }

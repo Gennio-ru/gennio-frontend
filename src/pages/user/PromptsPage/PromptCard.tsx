@@ -13,7 +13,7 @@ export default function PromptCard({ prompt }: Props) {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/prompt/${prompt.id}/edit-image`);
+    navigate(`/prompts/${prompt.id}/edit-image`);
   };
 
   return (
