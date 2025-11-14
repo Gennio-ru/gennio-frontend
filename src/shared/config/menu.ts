@@ -2,8 +2,8 @@ export type NavItem = { label: string; href: string; external?: boolean };
 
 export const primaryHeaderMenu: NavItem[] = [
   { label: "AI Генерация", href: "/prompts" },
-  { label: "Тарифы", href: "/billing" },
-  { label: "О проекте", href: "/about-project" },
+  { label: "Тарифы", href: "/pricing" },
+  { label: "О проекте", href: "/about" },
 ];
 
 export const adminHeaderMenu: NavItem[] = [
