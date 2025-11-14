@@ -29,7 +29,7 @@ export default function Button({
     <button
       {...rest}
       className={cn(
-        "rounded-field font-medium disabled:opacity-70 cursor-pointer",
+        "rounded-field font-medium disabled:opacity-70 cursor-pointer focus:outline-none focus:ring-0",
         sizeClasses,
         colorClasses,
         className
