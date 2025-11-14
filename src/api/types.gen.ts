@@ -719,6 +719,11 @@ export interface components {
              * @example 8
              */
             creditsCharged: number;
+            /** @example {
+             *       "width": 400,
+             *       "height": 300
+             *     } */
+            usedTokens: Record<string, never> | null;
             /** @example OpenAI timeout error */
             error: string | null;
             /** Format: date-time */
@@ -784,6 +789,11 @@ export interface components {
              * @example 8
              */
             creditsCharged: number;
+            /** @example {
+             *       "width": 400,
+             *       "height": 300
+             *     } */
+            usedTokens: Record<string, never> | null;
             /** @example OpenAI timeout error */
             error: string | null;
             /** Format: date-time */
