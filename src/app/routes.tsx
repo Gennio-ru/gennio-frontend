@@ -4,8 +4,6 @@ import AdminRoute from "@/shared/routes/AdminRoute";
 import Loader from "@/shared/ui/Loader";
 import AIGenerationsLayout from "@/shared/layouts/AIGenerationsLayout";
 
-const LoginPage = lazy(() => import("@/pages/LoginPage"));
-const RegistrationPage = lazy(() => import("@/pages/RegistrationPage"));
 const PromptsPage = lazy(() => import("@/pages/user/PromptsPage"));
 const EditImageByPlatformPromptPage = lazy(
   () => import("@/pages/user/EditImageByPlatformPromptPage")
@@ -34,10 +32,6 @@ export function AppRoutes() {
   return (
     <Suspense fallback={<Loader />}>
       <Routes>
-        {/* публичные */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/registration" element={<RegistrationPage />} />
-
         <Route element={<AIGenerationsLayout />}>
           <Route path="/" element={<Navigate to="/prompts" replace />} />
           <Route path="/prompts" element={<PromptsPage />} />

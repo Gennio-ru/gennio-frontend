@@ -1,5 +1,5 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { useAppSelector } from "@/app/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useAuth } from "@/features/auth/useAuth";
 import { SidebarToggleButton } from "../layouts/Sidebar";
 import { selectAppTheme } from "@/features/app/appSlice";
@@ -10,8 +10,11 @@ import { useMemo } from "react";
 import { adminHeaderMenu, primaryHeaderMenu } from "../config/menu";
 import { cn } from "@/lib/utils";
 import ThemeSwitch from "../ui/ThemeSwitch";
+import Button from "../ui/Button";
+import { setAuthModalOpen } from "@/features/auth/authSlice";
 
 export default function HeaderNav() {
+  const dispatch = useAppDispatch();
   const theme = useAppSelector(selectAppTheme);
   const location = useLocation();
   const { isAuth, user } = useAuth();
@@ -70,7 +73,7 @@ export default function HeaderNav() {
       {/* 🔹 Правая часть (UserMenu / Войти) — 6 колонок на мобилках, 2 на md+ */}
       <div className="col-span-6 md:col-span-4 flex justify-end items-center gap-4 text-sm text-base-content/80">
         {isAuth && (
-          <span className="text-nowrap text-base">Кредиты: {user.credits}</span>
+          <span className="text-nowrap text-base">Токены: {user.credits}</span>
         )}
 
         <ThemeSwitch />
@@ -81,12 +84,13 @@ export default function HeaderNav() {
           </div>
         ) : (
           location.pathname !== "/login" && (
-            <Link
-              to="/login"
-              className="rounded-field bg-primary px-3 py-1.5 text-primary-content hover:bg-primary/80 transition-colors"
+            <Button
+              color="primary"
+              size="sm"
+              onClick={() => dispatch(setAuthModalOpen(true))}
             >
               Войти
-            </Link>
+            </Button>
           )
         )}
       </div>

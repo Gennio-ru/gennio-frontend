@@ -1,6 +1,5 @@
 import * as React from "react";
 import { LogOut } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import {
   Popover,
   PopoverTrigger,
@@ -18,12 +17,10 @@ export function UserMenu() {
   const theme = useAppSelector(selectAppTheme);
   const [open, setOpen] = React.useState(false);
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
 
   const onLogout = async () => {
     try {
       await dispatch(logoutThunk()).unwrap();
-      navigate("/login");
     } catch {
       /* no-op */
     }

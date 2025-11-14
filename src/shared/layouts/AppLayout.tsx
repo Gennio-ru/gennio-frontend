@@ -9,6 +9,7 @@ import { primaryHeaderMenu, adminHeaderMenu } from "../config/menu";
 import { useAppSelector } from "@/app/hooks";
 import { selectAppTheme } from "@/features/app/appSlice";
 import { cn } from "@/lib/utils";
+import AuthModal from "../ui/AuthModal/AuthModal";
 
 type Props = { children: ReactNode };
 
@@ -45,6 +46,8 @@ export default function AppLayout({ children }: Props) {
 
       {/* Mobile menu */}
       <SidebarMobile items={menuItems} />
+
+      <AuthModal />
     </div>
   );
 }

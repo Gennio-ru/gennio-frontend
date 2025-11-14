@@ -14,7 +14,7 @@ export default function Button({
 }: ButtonProps) {
   const sizeClasses =
     size === "sm"
-      ? "h-8 px-3 text-xs" // чуть меньше
+      ? "h-8 px-3 text-sm" // чуть меньше
       : "h-12 px-4 text-base"; // стандарт
 
   const colorClasses =

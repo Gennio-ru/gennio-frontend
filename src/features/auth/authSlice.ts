@@ -7,12 +7,14 @@ type User = components["schemas"]["UserDto"] | null;
 
 type State = {
   user: User;
+  authModalOpen: boolean;
   status: "idle" | "loading" | "failed";
   authReady: boolean; // <- признак, что проверка сессии завершена
 };
 
 const initialState: State = {
   user: null,
+  authModalOpen: false,
   status: "idle",
   authReady: false,
 };
@@ -72,6 +74,9 @@ const slice = createSlice({
     logout(state) {
       state.user = null;
     },
+    setAuthModalOpen(state, action: PayloadAction<boolean>) {
+      state.authModalOpen = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -129,11 +134,12 @@ const slice = createSlice({
   },
 });
 
-export const { setUser, logout } = slice.actions;
+export const { setUser, logout, setAuthModalOpen } = slice.actions;
 export default slice.reducer;
 
 // ----- Селекторы -----
 export const selectUser = (s: RootState) => s.auth.user;
+export const selectAuthModalOpen = (s: RootState) => s.auth.authModalOpen;
 export const selectIsAuthenticated = (s: RootState) => Boolean(s.auth.user);
 export const selectAuthReady = (s: RootState) => s.auth.authReady;
 export const selectAuthStatus = (s: RootState) => s.auth.status;

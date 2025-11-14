@@ -14,7 +14,7 @@ export default function AdminRoute() {
   }
 
   if (!user) {
-    return <Navigate to="/login" state={{ from: loc }} replace />;
+    return <Navigate to="/" state={{ from: loc }} replace />;
   }
 
   if (user.role !== "admin") {

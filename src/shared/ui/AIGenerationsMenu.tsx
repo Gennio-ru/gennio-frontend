@@ -12,7 +12,7 @@ export function AIGenerationsMenu() {
   const location = useLocation();
 
   return (
-    <nav className="flex flex-wrap gap-2 sm:gap-4 pt-2 sm:pt-5 pb-7 sm:pb-10">
+    <nav className="flex justify-center flex-wrap gap-2 sm:gap-4 pt-2 sm:pt-5 pb-7 sm:pb-10">
       {aiGenerationsMenu.map((item) => {
         const isActive = location.pathname === item.href;
 
