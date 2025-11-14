@@ -34,7 +34,7 @@ export default function HeaderNav() {
       <div className="col-span-6 md:col-span-2 flex items-center gap-4">
         <SidebarToggleButton />
 
-        <Link to="/" className="text-xl font-bold text-base-content">
+        <Link to="/prompts" className="text-xl font-bold text-base-content">
           <img
             src={theme === "dark" ? darkLogo : lightLogo}
             className="h-[30px] min-w-[97px] w-auto object-contain"
