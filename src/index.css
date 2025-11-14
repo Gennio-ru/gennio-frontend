@@ -124,13 +124,13 @@ body::before {
 
 /* светлая тема */
 :root[data-theme="light"] body::before {
-  background-image: url("@/assets/background-light.webp");
+  background-image: url("/background-light.webp");
   background-color: rgb(88 185 32 / 38%);
 }
 
 /* тёмная тема */
 :root[data-theme="dark"] body::before {
-  background-image: url("@/assets/background-dark.webp");
+  background-image: url("/background-dark.webp");
   background-color: rgb(0 0 0 / 60%);
 }
 
