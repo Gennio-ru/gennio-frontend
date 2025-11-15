@@ -24,11 +24,20 @@ function extractErrorInfo(err: unknown): {
   handled: boolean;
 } {
   const axiosErr = err as AxiosLikeError;
-  const data = axiosErr?.response?.data;
+  const data = axiosErr?.response?.data as ApiErrorPayload & {
+    code?: string;
+    message?: string;
+    handled?: boolean;
+  };
 
-  const code = data?.error?.code;
-  const msgFromPayload = data?.error?.message;
-  const isHandled = Boolean(code);
+  // поддерживаем оба варианта:
+  // 1) { error: { code, message } }
+  // 2) { code, message, handled }
+  const errorObj = data?.error ?? data;
+
+  const code = errorObj?.code;
+  const msgFromPayload = errorObj?.message;
+  const isHandled = Boolean(code ?? data?.handled);
 
   const fallbackMessage =
     msgFromPayload ||

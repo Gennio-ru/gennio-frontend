@@ -13,7 +13,6 @@ import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orien
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
-import { customToast } from "@/lib/customToast";
 
 registerPlugin(
   FilePondPluginImageExifOrientation,
@@ -146,8 +145,7 @@ export default function ImageUploader<T extends FieldValues>({
                       field.onChange(id);
                       setImageUploaded(true);
                       load(id); // сообщаем FilePond об успешной загрузке
-                    } catch (e) {
-                      customToast.error(e);
+                    } catch {
                       if (aborted) return; // если отменили — не показываем ошибку
                       field.onChange("");
                       error("Ошибка загрузки");

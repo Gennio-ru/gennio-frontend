@@ -1,6 +1,5 @@
 import { apiStartImageGenerateByPromptText } from "@/api/model-job";
 import { setUser } from "@/features/auth/authSlice";
-import { customToast } from "@/lib/customToast";
 import Button from "@/shared/ui/Button";
 import GlassCard from "@/shared/ui/GlassCard";
 import Textarea from "@/shared/ui/Textarea";
@@ -43,8 +42,6 @@ export default function GenerateImagePage() {
       });
       dispatch(setUser(res.user));
       navigate(`/model-job/${res.id}`);
-    } catch (e) {
-      customToast.error(e);
     } finally {
       setIsFetching(false);
     }
