@@ -16,18 +16,34 @@ import { DialogClose } from "@radix-ui/react-dialog";
 import { AuthLoginForm } from "./AuthLoginForm";
 import { AuthRegistrationForm } from "./AuthRegistrationForm";
 import { selectAppTheme } from "@/features/app/appSlice";
+import { AuthEmailConfirmationPanel } from "./AuthEmailConfirmationPanel";
 
-type Mode = "login" | "register";
+type Mode = "login" | "register" | "confirmEmail";
 
 export default function AuthModal() {
   const theme = useAppSelector(selectAppTheme);
   const dispatch = useAppDispatch();
   const authModalOpen = useAppSelector(selectAuthModalOpen);
+
   const [mode, setMode] = useState<Mode>("login");
+  const [confirmEmail, setConfirmEmail] = useState<string | null>(null);
+  const [lockResendInitially, setLockResendInitially] = useState(false);
 
   const handleClose = () => {
     dispatch(setAuthModalOpen(false));
-    setMode("login"); // при закрытии возвращаем модалку на "Вход"
+    setMode("login");
+    setConfirmEmail(null);
+    setLockResendInitially(false);
+  };
+
+  const openConfirmTab = (email: string, lockResend: boolean) => {
+    setConfirmEmail(email);
+    setLockResendInitially(lockResend);
+    setMode("confirmEmail");
+  };
+
+  const handleBackToLogin = () => {
+    setMode("login");
   };
 
   return (
@@ -82,10 +98,30 @@ export default function AuthModal() {
           </DialogClose>
         </DialogHeader>
 
-        {mode === "login" ? (
-          <AuthLoginForm onSuccess={handleClose} />
-        ) : (
-          <AuthRegistrationForm onSuccess={handleClose} />
+        {mode === "login" && (
+          <AuthLoginForm
+            onSuccess={handleClose}
+            onRequireEmailConfirm={(email, lockResend) =>
+              openConfirmTab(email, lockResend)
+            }
+          />
+        )}
+
+        {mode === "register" && (
+          <AuthRegistrationForm
+            onSuccess={() => {
+              // успешная регистрация обрабатывается через onRequireEmailConfirm
+            }}
+            onRequireEmailConfirm={(email) => openConfirmTab(email, true)}
+          />
+        )}
+
+        {mode === "confirmEmail" && confirmEmail && (
+          <AuthEmailConfirmationPanel
+            email={confirmEmail}
+            lockResendInitially={lockResendInitially}
+            onBackToLogin={handleBackToLogin}
+          />
         )}
       </DialogContent>
     </Dialog>

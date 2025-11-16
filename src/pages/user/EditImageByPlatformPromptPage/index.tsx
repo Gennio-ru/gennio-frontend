@@ -2,6 +2,7 @@ import { apiUploadFile } from "@/api/files";
 import { apiStartImageEditByPromptId } from "@/api/model-job";
 import { apiGetPrompt, type Prompt } from "@/api/prompts";
 import { setUser } from "@/features/auth/authSlice";
+import { customToast } from "@/lib/customToast";
 import Button from "@/shared/ui/Button";
 import ImageUploader from "@/shared/ui/FilePondUploader";
 import GlassCard from "@/shared/ui/GlassCard";
@@ -70,6 +71,8 @@ export default function EditImageByPlatformPromptPage() {
       });
       dispatch(setUser(res.user));
       navigate(`/model-job/${res.id}`);
+    } catch (e) {
+      customToast.error(e);
     } finally {
       setIsFetching(false);
     }

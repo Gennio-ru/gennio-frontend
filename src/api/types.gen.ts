@@ -476,6 +476,10 @@ export interface components {
              */
             password?: string;
         };
+        ResendConfirmEmailDto: {
+            /** @example user@example.com */
+            email: string;
+        };
         LoginByEmailDto: {
             /** @example user@example.com */
             email: string;
@@ -808,7 +812,7 @@ export interface components {
             updatedAt: string;
         };
         /** @enum {string} */
-        ErrorCode: "CREDITS_NOT_ENOUGH" | "MODEJ_JOB_TYPE_NOT_FOUND" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "MODERATION_BLOCKED" | "UNAUTHORIZED" | "FORBIDDEN" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
+        ErrorCode: "CREDITS_NOT_ENOUGH" | "MODEJ_JOB_TYPE_NOT_FOUND" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "MODERATION_BLOCKED" | "UNAUTHORIZED" | "EMAIL_NOT_CONFIRMED" | "FORBIDDEN" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
         ErrorInfoDto: {
             code: components["schemas"]["ErrorCode"];
             /**
@@ -956,9 +960,13 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResendConfirmEmailDto"];
+            };
+        };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1115,7 +1123,9 @@ export interface operations {
     };
     AuthController_redirectToYandex: {
         parameters: {
-            query?: never;
+            query: {
+                returnUrl: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;

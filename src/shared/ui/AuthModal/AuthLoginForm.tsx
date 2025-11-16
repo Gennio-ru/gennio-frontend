@@ -9,6 +9,7 @@ import { useAppDispatch } from "@/app/hooks";
 import { loginThunk, meThunk } from "@/features/auth/authSlice";
 import YandexLogo from "@/assets/yandex-logo.svg?react";
 import { useLocation } from "react-router-dom";
+import { isErrorResponseDto } from "@/api/isErrorResponse";
 
 // схема валидации
 const schema = z.object({
@@ -19,10 +20,12 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 type Props = {
-  onSuccess?: () => void; // закроем модалку после успешного логина
+  onSuccess?: () => void;
+  // при ошибке EMAIL_NOT_CONFIRMED переключаемся на таб подтверждения
+  onRequireEmailConfirm?: (email: string, lockResend: boolean) => void;
 };
 
-export function AuthLoginForm({ onSuccess }: Props) {
+export function AuthLoginForm({ onSuccess, onRequireEmailConfirm }: Props) {
   const dispatch = useAppDispatch();
   const location = useLocation();
   const [serverError, setServerError] = useState<string | null>(null);
@@ -42,18 +45,26 @@ export function AuthLoginForm({ onSuccess }: Props) {
     reValidateMode: "onSubmit",
   });
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (formValues: FormValues) => {
     setServerError(null);
+
     try {
-      await dispatch(loginThunk(data)).unwrap();
-      await dispatch(meThunk());
+      await dispatch(loginThunk(formValues)).unwrap();
+      await dispatch(meThunk()).unwrap();
       onSuccess?.();
     } catch (e: unknown) {
+      // бизнес-ошибка: email не подтверждён
+      if (isErrorResponseDto(e) && e.error.code === "EMAIL_NOT_CONFIRMED") {
+        onRequireEmailConfirm?.(formValues.email, false);
+        return;
+      }
+
       if (e instanceof Error) {
         setServerError(e.message);
-      } else {
-        setServerError("Вход не удался");
+        return;
       }
+
+      setServerError("Вход не удался");
     }
   };
 

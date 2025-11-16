@@ -8,6 +8,8 @@ export type RegisterByEmailPayload =
   operations["AuthController_registerByEmail"]["requestBody"]["content"]["application/json"];
 export type LoginByEmailPayload =
   operations["AuthController_loginByEmail"]["requestBody"]["content"]["application/json"];
+export type ResendConfirmLinkPayload =
+  operations["AuthController_resendConfirmLink"]["requestBody"]["content"]["application/json"];
 
 export async function apiRegister(
   payload: RegisterByEmailPayload
@@ -39,4 +41,10 @@ export async function apiLogout(): Promise<void> {
   } finally {
     setAccessToken(null);
   }
+}
+
+export async function resendConfirmLink(
+  payload: ResendConfirmLinkPayload
+): Promise<void> {
+  await api.post("auth/email/confirm/resend", payload);
 }

@@ -1,7 +1,11 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { apiLogin, apiMe, apiLogout } from "@/api/auth";
+import { apiLogin, apiMe, apiLogout, LoginByEmailPayload } from "@/api/auth";
 import type { components } from "@/api/types.gen";
 import type { RootState } from "@/app/store";
+import { AuthResponseDto } from "@/api/client";
+import { ErrorResponseDto } from "@/api/types";
+import axios from "axios";
+import { isErrorResponseDto } from "@/api/isErrorResponse";
 
 type User = components["schemas"]["UserDto"] | null;
 
@@ -19,11 +23,27 @@ const initialState: State = {
   authReady: false,
 };
 
-export const loginThunk = createAsyncThunk(
-  "auth/login",
-  async ({ email, password }: { email: string; password: string }) =>
-    apiLogin({ email, password })
-);
+export const loginThunk = createAsyncThunk<
+  AuthResponseDto, // что возвращаем в случае успеха
+  LoginByEmailPayload, // аргумент
+  { rejectValue: ErrorResponseDto } // тип payload при ошибке
+>("auth/login", async (payload, { rejectWithValue }) => {
+  try {
+    const result = await apiLogin(payload);
+    return result;
+  } catch (e: unknown) {
+    // если это axios-ошибка и там есть наш dto — вернуть его как rejectValue
+    if (axios.isAxiosError(e)) {
+      const data = e.response?.data;
+      if (isErrorResponseDto(data)) {
+        return rejectWithValue(data);
+      }
+    }
+
+    // всё остальное — пробрасываем как есть (упадёт как обычный Error/SerializedError)
+    throw e;
+  }
+});
 
 // аккуратно вытаскиваем http-статус без any
 function getHttpStatus(e: unknown): number {

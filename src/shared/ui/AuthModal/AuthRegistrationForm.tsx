@@ -4,10 +4,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Input from "@/shared/ui/Input";
 import Button from "@/shared/ui/Button";
-import { useAppDispatch } from "@/app/hooks";
-import { loginThunk, meThunk } from "@/features/auth/authSlice";
-import { apiRegister } from "@/api/auth";
 import { EyeIcon, EyeClosedIcon } from "lucide-react";
+import { apiRegister } from "@/api/auth";
 
 // Требования к паролю: мин. 12 символов, латиница (верх/низ), цифра, спецсимвол, без пробелов.
 const passwordSchema = z
@@ -31,6 +29,12 @@ const schema = z
   });
 
 type FormValues = z.infer<typeof schema>;
+
+type Props = {
+  onSuccess?: () => void;
+  // После успешной регистрации сразу показываем таб подтверждения почты
+  onRequireEmailConfirm?: (email: string) => void;
+};
 
 function scorePassword(pw: string) {
   let score = 0;
@@ -60,12 +64,10 @@ function strengthLabel(score: number) {
   }
 }
 
-type Props = {
-  onSuccess?: () => void;
-};
-
-export function AuthRegistrationForm({ onSuccess }: Props) {
-  const dispatch = useAppDispatch();
+export function AuthRegistrationForm({
+  onSuccess,
+  onRequireEmailConfirm,
+}: Props) {
   const [serverError, setServerError] = useState<string | null>(null);
   const [showPwd, setShowPwd] = useState(false);
   const [showPwd2, setShowPwd2] = useState(false);
@@ -92,11 +94,11 @@ export function AuthRegistrationForm({ onSuccess }: Props) {
   const onSubmit = async (data: FormValues) => {
     setServerError(null);
     try {
+      // TODO: apiRegister должен на бэке отправлять письмо с подтверждением
       await apiRegister({ email: data.email, password: data.password });
-      await dispatch(
-        loginThunk({ email: data.email, password: data.password })
-      ).unwrap();
-      await dispatch(meThunk());
+
+      // После успешной регистрации переходим на таб подтверждения
+      onRequireEmailConfirm?.(data.email);
       onSuccess?.();
     } catch (e: unknown) {
       if (e instanceof Error) {

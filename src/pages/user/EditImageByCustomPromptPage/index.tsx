@@ -1,6 +1,7 @@
 import { apiUploadFile } from "@/api/files";
 import { apiStartImageEditByPromptText } from "@/api/model-job";
 import { setUser } from "@/features/auth/authSlice";
+import { customToast } from "@/lib/customToast";
 import Button from "@/shared/ui/Button";
 import ImageUploader from "@/shared/ui/FilePondUploader";
 import GlassCard from "@/shared/ui/GlassCard";
@@ -59,6 +60,8 @@ export default function EditImageByCustomPromptPage() {
       });
       dispatch(setUser(res.user));
       navigate(`/model-job/${res.id}`);
+    } catch (e) {
+      customToast.error(e);
     } finally {
       setIsFetching(false);
     }

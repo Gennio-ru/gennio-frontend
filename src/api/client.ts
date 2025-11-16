@@ -2,131 +2,108 @@ import axios, {
   AxiosError,
   AxiosInstance,
   InternalAxiosRequestConfig,
-  AxiosHeaders,
   AxiosRequestConfig,
+  AxiosHeaders,
 } from "axios";
-import { customToast } from "@/lib/customToast";
-import { components } from "./types.gen";
+import type { components } from "./types.gen";
+
 export type AuthResponseDto = components["schemas"]["AuthResponseDto"];
 
-// Ваши основные настройки для axios
 export const API_URL =
   import.meta.env.VITE_API_URL ?? import.meta.env.VITE_API_BASE_URL;
 
-// Токен авторизации
+// ==== access token in-memory ====
 let accessToken: string | null = null;
-export const setAccessToken = (token: string | null) => (accessToken = token);
-export const getAccessToken = () => accessToken;
+export function setAccessToken(token: string | null) {
+  accessToken = token;
+}
+export function getAccessToken() {
+  return accessToken;
+}
 
-// Основной axios клиент с интерсепторами
+// ==== основной axios c интерсепторами ====
 const api: AxiosInstance = axios.create({
   baseURL: API_URL,
   withCredentials: true,
 });
 
-// Интерсептор для запроса, добавление Authorization токена
+// request: подставляем Bearer
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   if (accessToken) {
-    // Берём текущие заголовки, приводим к AxiosHeaders
     const headers = AxiosHeaders.from(config.headers);
-    // Добавляем Authorization
     headers.set("Authorization", `Bearer ${accessToken}`);
-    // Возвращаем обратно в конфиг
     config.headers = headers;
   }
-
   return config;
 });
 
-// Клиент для выполнения запросов без интерсепторов — только для refresh
+// вспомогательный «сырой» клиент БЕЗ интерсепторов — только для refresh
 const raw = axios.create({
   baseURL: API_URL,
   withCredentials: true,
 });
 
-// Переменные для асинхронной обработки refresh
+// ---- refresh serialization
+type RetryConfig<D = unknown> = InternalAxiosRequestConfig<D> & {
+  _retry?: boolean;
+};
 let refreshing = false;
-let waiters: Array<(token: string | null) => void> = [];
-
-const onWait = (cb: (token: string | null) => void) => waiters.push(cb);
-const notifyAll = (token: string | null) => {
-  waiters.forEach((cb) => cb(token));
+let waiters: Array<(t: string | null) => void> = [];
+const onWait = (cb: (t: string | null) => void) => waiters.push(cb);
+const notifyAll = (t: string | null) => {
+  waiters.forEach((cb) => cb(t));
   waiters = [];
 };
 
-// Функция для выполнения refresh токена
 async function doRefresh(): Promise<string | null> {
   try {
+    // ВАЖНО: используем raw, чтобы не сработал этот же интерсептор
     const { data } = await raw.post<AuthResponseDto>("/auth/refresh", {});
     const token = data?.accessToken ?? null;
     setAccessToken(token);
-    return token;
+    return token; // null => refresh не сработал (нет куки/просрочен)
   } catch {
-    setAccessToken(null); // Если refresh не удался — очищаем токен
+    setAccessToken(null);
     return null;
   }
 }
 
-// Интерсептор для обработки ответов
+// response: на 401 пробуем refresh
 api.interceptors.response.use(
-  // Успешный ответ — просто возвращаем
-  (response) => response,
-
-  // Обработка ошибок
+  (r) => r,
   async (error: AxiosError) => {
-    const originalRequest = error.config as AxiosRequestConfig & {
-      _retry?: boolean;
-    };
+    const original = error.config as RetryConfig | undefined;
 
-    // Проверяем, если ошибка 401 (неавторизован)
-    if (
-      error.response?.status === 401 &&
-      originalRequest &&
-      !originalRequest._retry
-    ) {
-      originalRequest._retry = true; // Устанавливаем флаг, чтобы не было бесконечных циклов
+    if (error.response?.status === 401 && original && !original._retry) {
+      original._retry = true;
 
       if (!refreshing) {
-        refreshing = true; // Блокируем последующие запросы до завершения refresh
-
-        const token = await doRefresh();
-        notifyAll(token); // Уведомляем всех, кто ждал refresh
+        refreshing = true;
+        const t = await doRefresh();
+        notifyAll(t);
         refreshing = false;
 
-        if (!token) {
-          // Если refresh не удался — возвращаем ошибку
+        if (!t) {
+          // refresh не сработал — считаем гость; не роняем приложение
+          // Возвращаем отклонённый промис, НО его ловит ваш thunk и обрабатывает как "не залогинен"
           return Promise.reject(error);
         }
 
-        // Повторяем исходный запрос с новым токеном
-        return api(originalRequest);
+        // получили новый access — повторяем исходный запрос
+        return api(original as AxiosRequestConfig);
       }
 
-      // Если refresh уже происходит — ждём его завершения
+      // уже идёт refresh — ждём результата
       return new Promise((resolve, reject) => {
-        onWait((token) => {
-          if (!token) return reject(error);
-          resolve(api(originalRequest));
+        onWait((t) => {
+          if (!t) return reject(error);
+          resolve(api(original as AxiosRequestConfig));
         });
       });
     }
 
-    // Если не 401, то обрабатываем ошибки глобально
-    handleApiError(error);
-
-    // Возвращаем ошибку дальше
     return Promise.reject(error);
   }
 );
-
-// Функция для обработки ошибок API и отображения тостов
-function handleApiError(error: AxiosError) {
-  try {
-    customToast.error(error); // Пытаемся передать ошибку в кастомный тост
-  } catch (e) {
-    // Если что-то пошло не так — не ломаем приложение
-    console.error("Error handling API error: ", e);
-  }
-}
 
 export default api;
