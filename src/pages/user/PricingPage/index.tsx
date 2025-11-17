@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import GlassCard from "@/shared/ui/GlassCard";
 
 type Pack = {
@@ -138,10 +139,30 @@ export default function PricingPage() {
             })}
           </div>
 
-          <p className="text-xs sm:text-sm text-base-content/60">
-            Точные цены пакетов указываются при оплате. В&nbsp;дальнейшем тарифы
-            могут корректироваться по&nbsp;мере развития платформы.
-          </p>
+          <div className="space-y-1 text-xs sm:text-sm text-base-content/60">
+            <p>
+              Точные цены пакетов указываются при оплате. В&nbsp;дальнейшем
+              тарифы могут корректироваться по&nbsp;мере развития платформы.
+            </p>
+            <p>
+              Оплачивая пакет токенов, вы подтверждаете, что ознакомились
+              и&nbsp;согласны с&nbsp;условиями{" "}
+              <Link
+                to="/legal/offer"
+                className="underline decoration-dotted underline-offset-2"
+              >
+                Пользовательского соглашения
+              </Link>{" "}
+              и{" "}
+              <Link
+                to="/legal/privacy"
+                className="underline decoration-dotted underline-offset-2"
+              >
+                Политики конфиденциальности
+              </Link>
+              .
+            </p>
+          </div>
         </section>
       </GlassCard>
     </div>

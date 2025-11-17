@@ -4,19 +4,25 @@ import AdminRoute from "@/shared/routes/AdminRoute";
 import AIGenerationsLayout from "@/shared/layouts/AIGenerationsLayout";
 import Loader from "@/shared/ui/Loader";
 
-const AboutProjectPage = lazy(() => import("@/pages/AboutProjectPage"));
-const PricingPage = lazy(() => import("@/pages/PricingPage"));
-const PromptsPage = lazy(() => import("@/pages/user/PromptsPage"));
+const AboutProjectPage = lazy(() => import("@/pages/user/AboutProjectPage"));
+const PricingPage = lazy(() => import("@/pages/user/PricingPage"));
+const LegalOfferPage = lazy(() => import("@/pages/user/LegalOfferPage"));
+const PrivacyPolicyPage = lazy(() => import("@/pages/user/PrivacyPolicyPage"));
+const PromptsPage = lazy(
+  () => import("@/pages/user/ai-generations/PromptsPage")
+);
 const EditImageByPlatformPromptPage = lazy(
-  () => import("@/pages/user/EditImageByPlatformPromptPage")
+  () => import("@/pages/user/ai-generations/EditImageByPlatformPromptPage")
 );
 const EditImageByCustomPromptPage = lazy(
-  () => import("@/pages/user/EditImageByCustomPromptPage")
+  () => import("@/pages/user/ai-generations/EditImageByCustomPromptPage")
 );
-const GenerateImagePage = lazy(() => import("@/pages/user/GenerateImagePage"));
+const GenerateImagePage = lazy(
+  () => import("@/pages/user/ai-generations/GenerateImagePage")
+);
 // const GenerateTextPage = lazy(() => import("@/pages/user/GenerateTextPage"));
 const ModelJobResultPage = lazy(
-  () => import("@/pages/user/ModelJobResultPage")
+  () => import("@/pages/user/ai-generations/ModelJobResultPage")
 );
 
 // админские
@@ -46,6 +52,22 @@ export function AppRoutes() {
         element={
           <Suspense fallback={<Loader />}>
             <PricingPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/legal/offer"
+        element={
+          <Suspense fallback={<Loader />}>
+            <LegalOfferPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/legal/privacy"
+        element={
+          <Suspense fallback={<Loader />}>
+            <PrivacyPolicyPage />
           </Suspense>
         }
       />
