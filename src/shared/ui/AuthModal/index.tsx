@@ -17,8 +17,9 @@ import { AuthLoginForm } from "./AuthLoginForm";
 import { AuthRegistrationForm } from "./AuthRegistrationForm";
 import { selectAppTheme } from "@/features/app/appSlice";
 import { AuthEmailConfirmationPanel } from "./AuthEmailConfirmationPanel";
+import { AuthResetPasswordForm } from "./AuthResetPasswordForm";
 
-type Mode = "login" | "register" | "confirmEmail";
+type Mode = "login" | "register" | "confirmEmail" | "reset";
 
 export default function AuthModal() {
   const theme = useAppSelector(selectAppTheme);
@@ -61,7 +62,7 @@ export default function AuthModal() {
         className={cn("sm:max-w-md", theme === "dark" && "bg-base-100/70")}
         showCloseButton={false}
       >
-        <DialogHeader className="relative pb-4">
+        <DialogHeader className="relative">
           <DialogTitle className="mx-auto mb-5 flex gap-10">
             <button
               type="button"
@@ -75,6 +76,7 @@ export default function AuthModal() {
             >
               Вход
             </button>
+
             <button
               type="button"
               className={cn(
@@ -90,7 +92,7 @@ export default function AuthModal() {
           </DialogTitle>
 
           <DialogClose
-            className="absolute cursor-pointer top-0 right-0"
+            className="absolute cursor-pointer top-0 right-0 focus:outline-none focus:ring-0"
             onClick={handleClose}
           >
             <XIcon size={24} />
@@ -104,14 +106,12 @@ export default function AuthModal() {
             onRequireEmailConfirm={(email, lockResend) =>
               openConfirmTab(email, lockResend)
             }
+            onForgotPassword={() => setMode("reset")}
           />
         )}
 
         {mode === "register" && (
           <AuthRegistrationForm
-            onSuccess={() => {
-              // успешная регистрация обрабатывается через onRequireEmailConfirm
-            }}
             onRequireEmailConfirm={(email) => openConfirmTab(email, true)}
           />
         )}
@@ -122,6 +122,10 @@ export default function AuthModal() {
             lockResendInitially={lockResendInitially}
             onBackToLogin={handleBackToLogin}
           />
+        )}
+
+        {mode === "reset" && (
+          <AuthResetPasswordForm onBackToLogin={handleBackToLogin} />
         )}
       </DialogContent>
     </Dialog>

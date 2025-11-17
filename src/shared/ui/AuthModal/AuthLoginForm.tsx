@@ -5,11 +5,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Input from "@/shared/ui/Input";
 import Button from "@/shared/ui/Button";
 import { EyeClosedIcon, EyeIcon } from "lucide-react";
-import { useAppDispatch } from "@/app/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { loginThunk, meThunk } from "@/features/auth/authSlice";
 import YandexLogo from "@/assets/yandex-logo.svg?react";
 import { useLocation } from "react-router-dom";
 import { isErrorResponseDto } from "@/api/isErrorResponse";
+import { cn } from "@/lib/utils";
+import { selectAppTheme } from "@/features/app/appSlice";
 
 // схема валидации
 const schema = z.object({
@@ -21,11 +23,16 @@ type FormValues = z.infer<typeof schema>;
 
 type Props = {
   onSuccess?: () => void;
-  // при ошибке EMAIL_NOT_CONFIRMED переключаемся на таб подтверждения
   onRequireEmailConfirm?: (email: string, lockResend: boolean) => void;
+  onForgotPassword?: () => void;
 };
 
-export function AuthLoginForm({ onSuccess, onRequireEmailConfirm }: Props) {
+export function AuthLoginForm({
+  onSuccess,
+  onRequireEmailConfirm,
+  onForgotPassword,
+}: Props) {
+  const theme = useAppSelector(selectAppTheme);
   const dispatch = useAppDispatch();
   const location = useLocation();
   const [serverError, setServerError] = useState<string | null>(null);
@@ -122,6 +129,18 @@ export function AuthLoginForm({ onSuccess, onRequireEmailConfirm }: Props) {
             />
           )}
         />
+
+        <div
+          className={cn(
+            "cursor-pointer absolute right-0 top-full mt-1 text-sm",
+            theme === "dark"
+              ? "text-primary hover:text-primary/80"
+              : "text-base-content hover:text-base-content/80"
+          )}
+          onClick={onForgotPassword}
+        >
+          <span>Не помню пароль</span>
+        </div>
 
         <button
           type="button"

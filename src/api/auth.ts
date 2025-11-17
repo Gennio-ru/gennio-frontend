@@ -10,6 +10,10 @@ export type LoginByEmailPayload =
   operations["AuthController_loginByEmail"]["requestBody"]["content"]["application/json"];
 export type ResendConfirmLinkPayload =
   operations["AuthController_resendConfirmLink"]["requestBody"]["content"]["application/json"];
+export type RequestPasswordResetPayload =
+  operations["AuthController_requestPasswordReset"]["requestBody"]["content"]["application/json"];
+export type ConfirmPasswordResetPayload =
+  operations["AuthController_confirmPasswordReset"]["requestBody"]["content"]["application/json"];
 
 export async function apiRegister(
   payload: RegisterByEmailPayload
@@ -47,4 +51,16 @@ export async function resendConfirmLink(
   payload: ResendConfirmLinkPayload
 ): Promise<void> {
   await api.post("auth/email/confirm/resend", payload);
+}
+
+export async function apiRequestPasswordReset(
+  payload: RequestPasswordResetPayload
+): Promise<void> {
+  await api.post("/auth/password/reset/request", payload);
+}
+
+export async function apiConfirmPasswordReset(
+  payload: ConfirmPasswordResetPayload
+): Promise<void> {
+  await api.post("/auth/password/reset/confirm", payload);
 }

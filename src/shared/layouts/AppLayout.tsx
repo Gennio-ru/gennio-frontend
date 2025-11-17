@@ -9,7 +9,8 @@ import { primaryHeaderMenu, adminHeaderMenu } from "../config/menu";
 import { useAppSelector } from "@/app/hooks";
 import { selectAppTheme } from "@/features/app/appSlice";
 import { cn } from "@/lib/utils";
-import AuthModal from "../ui/AuthModal/AuthModal";
+import AuthModal from "../ui/AuthModal";
+import PasswordResetModal from "../ui/PasswordResetModal";
 
 type Props = { children: ReactNode };
 
@@ -48,6 +49,7 @@ export default function AppLayout({ children }: Props) {
       <SidebarMobile items={menuItems} />
 
       <AuthModal />
+      <PasswordResetModal />
     </div>
   );
 }

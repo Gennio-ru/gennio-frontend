@@ -235,6 +235,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/password/reset/request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Запросить письмо для восстановления пароля */
+        post: operations["AuthController_requestPasswordReset"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/password/reset/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Подтвердить восстановление пароля */
+        post: operations["AuthController_confirmPasswordReset"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/prompts": {
         parameters: {
             query?: never;
@@ -506,6 +540,21 @@ export interface components {
             phone: string;
             /** @example 123456 */
             code: string;
+        };
+        RequestPasswordResetDto: {
+            /** @example user@example.com */
+            email: string;
+        };
+        ConfirmPasswordResetDto: {
+            /** @example f4581a6a-a33a-48cd-a07b-5638d9f7c649 */
+            userId: string;
+            /** @example b471548384c7428bb90a8e8e5c2b9c2f1e3b4a8760f8d12e8fa7b2c2f48a8d91 */
+            token: string;
+            /**
+             * @description Новый пароль пользователя
+             * @example NewStrongPassword123!
+             */
+            password: string;
         };
         PaginationMetaDto: {
             totalItems: number;
@@ -1156,6 +1205,52 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    AuthController_requestPasswordReset: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestPasswordResetDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    AuthController_confirmPasswordReset: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmPasswordResetDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
             };
         };
     };

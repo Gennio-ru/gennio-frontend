@@ -12,6 +12,7 @@ type User = components["schemas"]["UserDto"] | null;
 type State = {
   user: User;
   authModalOpen: boolean;
+  resetPasswordModalOpen: boolean;
   status: "idle" | "loading" | "failed";
   authReady: boolean; // <- признак, что проверка сессии завершена
 };
@@ -19,6 +20,7 @@ type State = {
 const initialState: State = {
   user: null,
   authModalOpen: false,
+  resetPasswordModalOpen: false,
   status: "idle",
   authReady: false,
 };
@@ -97,6 +99,9 @@ const slice = createSlice({
     setAuthModalOpen(state, action: PayloadAction<boolean>) {
       state.authModalOpen = action.payload;
     },
+    setResetPasswordModalOpen(state, action: PayloadAction<boolean>) {
+      state.resetPasswordModalOpen = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -154,12 +159,15 @@ const slice = createSlice({
   },
 });
 
-export const { setUser, logout, setAuthModalOpen } = slice.actions;
+export const { setUser, logout, setAuthModalOpen, setResetPasswordModalOpen } =
+  slice.actions;
 export default slice.reducer;
 
 // ----- Селекторы -----
 export const selectUser = (s: RootState) => s.auth.user;
 export const selectAuthModalOpen = (s: RootState) => s.auth.authModalOpen;
+export const selectResetPasswordModalOpen = (s: RootState) =>
+  s.auth.resetPasswordModalOpen;
 export const selectIsAuthenticated = (s: RootState) => Boolean(s.auth.user);
 export const selectAuthReady = (s: RootState) => s.auth.authReady;
 export const selectAuthStatus = (s: RootState) => s.auth.status;
