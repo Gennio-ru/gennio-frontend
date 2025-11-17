@@ -1,4 +1,4 @@
-import PromptsGrid from "@/pages/user/PromptsPage/PromptsGrid";
+import PromptsGrid from "@/pages/user/ai-generations/PromptsPage/PromptsGrid";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { setCategory, setSearch } from "@/features/prompts/promptSlice";
 import UserCategoriesSelect from "@/shared/ui/UserCategoriesSelect";
