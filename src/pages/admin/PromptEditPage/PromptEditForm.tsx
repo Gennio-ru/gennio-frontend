@@ -17,8 +17,8 @@ import {
   apiUpdatePrompt,
   type Prompt,
   type CreatePromptPayload,
-} from "@/api/prompts";
-import { apiUploadFile } from "@/api/files";
+} from "@/api/modules/prompts";
+import { apiUploadFile } from "@/api/modules/files";
 import Loader from "@/shared/ui/Loader";
 
 const schema = z.object({

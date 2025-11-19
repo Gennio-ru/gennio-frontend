@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Lottie from "lottie-react";
-import { apiGetModelJob, ModelJobFull } from "@/api/model-job";
+import { apiGetModelJob, ModelJobFull } from "@/api/modules/model-job";
 import Button from "@/shared/ui/Button";
 import GennioGenerationLoader from "@/shared/ui/GennioGenerationLoader";
 import spinnerAnimation from "@/assets/loader-white.json";
-import { socket } from "@/api/socket";
-import { MODEL_JOB_EVENTS } from "@/api/model-job-events";
+import { socket } from "@/api/socket/socket";
+import { MODEL_JOB_EVENTS } from "@/api/socket/model-job-events";
 import { ModelJobImageResult } from "./ModelJobImageResult";
 import ModerationBlockedNotice from "./ModerationBlockNotice";
 import { useDispatch } from "react-redux";

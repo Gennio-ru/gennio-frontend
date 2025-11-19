@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { loginThunk, meThunk } from "@/features/auth/authSlice";
 import YandexLogo from "@/assets/yandex-logo.svg?react";
 import { useLocation } from "react-router-dom";
-import { isErrorResponseDto } from "@/api/isErrorResponse";
+import { isErrorResponseDto } from "@/lib/helpers";
 import { cn } from "@/lib/utils";
 import { selectAppTheme } from "@/features/app/appSlice";
 

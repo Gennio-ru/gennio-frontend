@@ -1,4 +1,4 @@
-import type { Prompt } from "@/api/prompts";
+import type { Prompt } from "@/api/modules/prompts";
 import { useAppSelector } from "@/app/hooks";
 import { selectAppTheme } from "@/features/app/appSlice";
 import { cn } from "@/lib/utils";

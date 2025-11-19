@@ -12,7 +12,7 @@ import Input from "@/shared/ui/Input";
 import Button from "@/shared/ui/Button";
 import CategoriesSelect from "@/shared/ui/CategoriesSelect";
 import { EditIcon, TrashIcon } from "lucide-react";
-import { apiDeletePrompt } from "@/api/prompts";
+import { apiDeletePrompt } from "@/api/modules/prompts";
 import toast from "react-hot-toast";
 import Loader from "@/shared/ui/Loader";
 

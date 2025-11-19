@@ -4,7 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Input from "@/shared/ui/Input";
 import Button from "@/shared/ui/Button";
-import { apiRequestPasswordReset } from "@/api/auth";
+import { apiRequestPasswordReset } from "@/api/modules/auth";
 
 const schema = z.object({
   email: z.string().email("Некорректный email"),

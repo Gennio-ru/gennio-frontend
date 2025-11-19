@@ -1,5 +1,5 @@
 {
-  "CREDITS_NOT_ENOUGH": "Credits not enough",
+  "TOKENS_NOT_ENOUGH": "Tokens not enough",
   "MODEL_JOB_NOT_FOUND": "Generation not found",
   "MODEL_UNAVAILABLE": "Model unavailable",
   "UNAUTHORIZED": "Login to your account",

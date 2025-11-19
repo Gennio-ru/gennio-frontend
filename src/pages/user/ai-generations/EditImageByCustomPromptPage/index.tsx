@@ -1,7 +1,9 @@
-import { apiUploadFile } from "@/api/files";
-import { apiStartImageEditByPromptText } from "@/api/model-job";
+import { apiUploadFile } from "@/api/modules/files";
+import { apiStartImageEditByPromptText } from "@/api/modules/model-job";
+import { setPaymentModalOpen } from "@/features/app/appSlice";
 import { setUser } from "@/features/auth/authSlice";
 import { customToast } from "@/lib/customToast";
+import { checkApiResponseErrorCode } from "@/lib/helpers";
 import Button from "@/shared/ui/Button";
 import ImageUploader from "@/shared/ui/FilePondUploader";
 import GlassCard from "@/shared/ui/GlassCard";
@@ -61,6 +63,11 @@ export default function EditImageByCustomPromptPage() {
       dispatch(setUser(res.user));
       navigate(`/model-job/${res.id}`);
     } catch (e) {
+      if (checkApiResponseErrorCode(e, "TOKENS_NOT_ENOUGH")) {
+        dispatch(setPaymentModalOpen(true));
+        return;
+      }
+
       customToast.error(e);
     } finally {
       setIsFetching(false);

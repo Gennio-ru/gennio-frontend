@@ -1,5 +1,5 @@
-import api, { setAccessToken } from "./client";
-import type { components, operations } from "./types.gen";
+import api, { setAccessToken } from "../client";
+import type { components, operations } from "../types.gen";
 
 export type User = components["schemas"]["UserDto"];
 export type AuthResponse = components["schemas"]["AuthResponseDto"];

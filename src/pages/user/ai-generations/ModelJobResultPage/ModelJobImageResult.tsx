@@ -1,6 +1,6 @@
 import ImageWithLoader from "@/shared/ui/ImageWithLoader";
 import GlassCard from "@/shared/ui/GlassCard";
-import { ModelJobFull } from "@/api/model-job";
+import { ModelJobFull } from "@/api/modules/model-job";
 
 type Props = {
   job: ModelJobFull;

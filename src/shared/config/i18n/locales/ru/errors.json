@@ -1,5 +1,5 @@
 {
-  "CREDITS_NOT_ENOUGH": "Недостаточно токенов",
+  "TOKENS_NOT_ENOUGH": "Недостаточно токенов",
   "MODEL_JOB_NOT_FOUND": "Генерация не найдена",
   "MODEL_UNAVAILABLE": "Модель недоступна",
   "UNAUTHORIZED": "Войдите в аккаунт",

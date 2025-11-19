@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { apiGetPrompts, type Prompt } from "@/api/prompts";
+import { apiGetPrompts, type Prompt } from "@/api/modules/prompts";
 import type { PaginationResult } from "@/api/types";
 import type { RootState } from "@/app/store";
 

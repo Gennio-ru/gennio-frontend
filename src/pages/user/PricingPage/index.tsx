@@ -1,48 +1,38 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import GlassCard from "@/shared/ui/GlassCard";
-
-type Pack = {
-  id: string;
-  name: string;
-  tokens: number;
-  generations: number;
-  discountPercent: number; // 0, 5, 10
-  highlight?: boolean;
-};
-
-const PACKS: Pack[] = [
-  {
-    id: "starter",
-    name: "5 генераций",
-    tokens: 25,
-    generations: 5,
-    discountPercent: 0,
-  },
-  {
-    id: "basic",
-    name: "10 генераций",
-    tokens: 50,
-    generations: 10,
-    discountPercent: 0,
-  },
-  {
-    id: "pro",
-    name: "20 генераций",
-    tokens: 100,
-    generations: 20,
-    discountPercent: 10,
-    highlight: true,
-  },
-  {
-    id: "max",
-    name: "50 генераций",
-    tokens: 250,
-    generations: 50,
-    discountPercent: 15,
-  },
-];
+import { apiGetTokenPacks, TokenPack } from "@/api/modules/pricing";
 
 export default function PricingPage() {
+  const [packs, setPacks] = useState<TokenPack[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const data = await apiGetTokenPacks();
+        if (!cancelled) {
+          setPacks(data);
+          setError(null);
+        }
+      } catch (e) {
+        console.error(e);
+        if (!cancelled) {
+          setError("Не удалось загрузить тарифы. Попробуйте позже.");
+        }
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <div className="mx-auto w-full max-w-3xl">
       <GlassCard>
@@ -74,95 +64,110 @@ export default function PricingPage() {
 
         {/* Линейка тарифов */}
         <section className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            {PACKS.map((pack) => {
-              const { tokens, discountPercent, generations } = pack;
-
-              // Цена пакета с учётом скидки
-              const price = Math.ceil(tokens * (1 - discountPercent / 100));
-
-              return (
-                <div
-                  key={pack.id}
-                  className={[
-                    "flex flex-col rounded-2xl border border-base-300/70 bg-base-100/60 p-4 sm:p-5",
-                    pack.highlight
-                      ? "ring-2 ring-primary/40 shadow-lg/40"
-                      : "shadow-sm",
-                  ].join(" ")}
-                >
-                  <div className="mb-3 flex items-center justify-between gap-2">
-                    <h2 className="text-base sm:text-lg font-semibold">
-                      {pack.name}
-                    </h2>
-
-                    {discountPercent > 0 && (
-                      <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                        −{discountPercent}%&nbsp;от стоимости
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="mb-3 space-y-1 text-sm sm:text-base">
-                    <p>
-                      <span className="font-medium">{tokens}&nbsp;токенов</span>{" "}
-                      — {generations}&nbsp;
-                      {generations === 1
-                        ? "генерация изображения"
-                        : "генераций изображения"}
-                    </p>
-
-                    <p className="text-xs sm:text-sm text-base-content/80">
-                      Цена пакета:&nbsp;
-                      <span className="font-medium">{price}&nbsp;₽</span>
-                    </p>
-
-                    {discountPercent > 0 && (
-                      <p className="text-[11px] sm:text-xs text-base-content/60">
-                        Без скидки было бы {tokens}&nbsp;₽
-                      </p>
-                    )}
-
-                    <p className="text-xs sm:text-sm text-base-content/70">
-                      Списывается 5&nbsp;токенов за&nbsp;одну генерацию.
-                    </p>
-                  </div>
-
-                  <div className="mt-auto pt-2 text-xs sm:text-sm text-base-content/60">
-                    <p>
-                      Токены можно использовать в&nbsp;любое время, пока баланс
-                      не&nbsp;закончится.
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="space-y-1 text-xs sm:text-sm text-base-content/60">
-            <p>
-              Точные цены пакетов указываются при оплате. В&nbsp;дальнейшем
-              тарифы могут корректироваться по&nbsp;мере развития платформы.
+          {/* состояние загрузки / ошибки */}
+          {isLoading && (
+            <p className="text-sm text-base-content/70">
+              Загружаем тарифы&hellip;
             </p>
-            <p>
-              Оплачивая пакет токенов, вы подтверждаете, что ознакомились
-              и&nbsp;согласны с&nbsp;условиями{" "}
-              <Link
-                to="/legal/offer"
-                className="underline decoration-dotted underline-offset-2"
-              >
-                Пользовательского соглашения
-              </Link>{" "}
-              и{" "}
-              <Link
-                to="/legal/privacy"
-                className="underline decoration-dotted underline-offset-2"
-              >
-                Политики конфиденциальности
-              </Link>
-              .
-            </p>
-          </div>
+          )}
+
+          {error && !isLoading && <p className="text-sm text-error">{error}</p>}
+
+          {!isLoading && !error && packs && (
+            <>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {packs.map((pack) => {
+                  const { tokens, discountPercent, generations } = pack;
+
+                  // Цена пакета с учётом скидки
+                  const price = Math.ceil(tokens * (1 - discountPercent / 100));
+
+                  return (
+                    <div
+                      key={pack.id}
+                      className={[
+                        "flex flex-col rounded-2xl border border-base-300/70 bg-base-100/60 p-4 sm:p-5",
+                        pack.highlight
+                          ? "ring-2 ring-primary/40 shadow-lg/40"
+                          : "shadow-sm",
+                      ].join(" ")}
+                    >
+                      <div className="mb-3 flex items-center justify-between gap-2">
+                        <h2 className="text-base sm:text-lg font-semibold">
+                          {pack.name}
+                        </h2>
+
+                        {discountPercent > 0 && (
+                          <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                            −{discountPercent}%&nbsp;от стоимости
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="mb-3 space-y-1 text-sm sm:text-base">
+                        <p>
+                          <span className="font-medium">
+                            {tokens}&nbsp;токенов
+                          </span>{" "}
+                          — {generations}&nbsp;
+                          {generations === 1
+                            ? "генерация изображения"
+                            : "генераций изображения"}
+                        </p>
+
+                        <p className="text-xs sm:text-sm text-base-content/80">
+                          Цена пакета:&nbsp;
+                          <span className="font-medium">{price}&nbsp;₽</span>
+                        </p>
+
+                        {discountPercent > 0 && (
+                          <p className="text-[11px] sm:text-xs text-base-content/60">
+                            Без скидки было бы {tokens}&nbsp;₽
+                          </p>
+                        )}
+
+                        <p className="text-xs sm:text-sm text-base-content/70">
+                          Списывается 5&nbsp;токенов за&nbsp;одну генерацию.
+                        </p>
+                      </div>
+
+                      <div className="mt-auto pt-2 text-xs sm:text-sm text-base-content/60">
+                        <p>
+                          Токены можно использовать в&nbsp;любое время, пока
+                          баланс не&nbsp;закончится.
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="space-y-1 text-xs sm:text-sm text-base-content/60">
+                <p>
+                  Точные цены пакетов указываются при оплате. В&nbsp;дальнейшем
+                  тарифы могут корректироваться по&nbsp;мере развития платформы.
+                </p>
+                <p>
+                  Оплачивая пакет токенов, вы подтверждаете, что ознакомились
+                  и&nbsp;согласны с&nbsp;условиями{" "}
+                  <Link
+                    to="/legal/offer"
+                    className="underline decoration-dotted underline-offset-2"
+                  >
+                    Пользовательского соглашения
+                  </Link>{" "}
+                  и{" "}
+                  <Link
+                    to="/legal/privacy"
+                    className="underline decoration-dotted underline-offset-2"
+                  >
+                    Политики конфиденциальности
+                  </Link>
+                  .
+                </p>
+              </div>
+            </>
+          )}
         </section>
       </GlassCard>
     </div>

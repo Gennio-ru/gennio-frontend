@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Input from "@/shared/ui/Input";
 import Button from "@/shared/ui/Button";
 import { EyeIcon, EyeClosedIcon } from "lucide-react";
-import { apiRegister } from "@/api/auth";
+import { apiRegister } from "@/api/modules/auth";
 
 // Требования к паролю: мин. 12 символов, латиница (верх/низ), цифра, спецсимвол, без пробелов.
 const passwordSchema = z

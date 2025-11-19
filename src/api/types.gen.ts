@@ -421,6 +421,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/pricing/token-packs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Получить список доступных пакетов токенов
+         * @description Возвращает набор пакетов токенов, которые отображаются пользователю на фронте.
+         */
+        get: operations["PricingController_getTokenPacks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/categories": {
         parameters: {
             query?: never;
@@ -458,6 +478,111 @@ export interface paths {
         patch: operations["CategoriesController_update"];
         trace?: never;
     };
+    "/api/payments/tokens": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Создать платёж за пакет токенов */
+        post: operations["PaymentsController_createTokensPayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Список платежей текущего пользователя */
+        get: operations["PaymentsController_listMyPayments"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить информацию о платеже */
+        get: operations["PaymentsController_getPayment"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Отменить платеж */
+        post: operations["PaymentsController_cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/yookassa/webhook": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Вебхук от YooKassa
+         * @description Обрабатывает события YooKassa (payment.succeeded, payment.canceled и т.д.). Вызывается YooKassa, а не фронтом.
+         */
+        post: operations["PaymentsController_yookassaWebhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{id}/refund": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Запросить возврат платежа */
+        post: operations["PaymentsController_refundPayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -482,7 +607,7 @@ export interface components {
              * @description Баланс кредитов
              * @example 100
              */
-            credits: number;
+            tokens: number;
             /**
              * @description Активен ли пользователь
              * @example true
@@ -771,7 +896,7 @@ export interface components {
              * @description Сколько кредитов списано за эту задачу
              * @example 8
              */
-            creditsCharged: number;
+            tokensCharged: number;
             /** @example {
              *       "width": 400,
              *       "height": 300
@@ -841,7 +966,7 @@ export interface components {
              * @description Сколько кредитов списано за эту задачу
              * @example 8
              */
-            creditsCharged: number;
+            tokensCharged: number;
             /** @example {
              *       "width": 400,
              *       "height": 300
@@ -861,7 +986,7 @@ export interface components {
             updatedAt: string;
         };
         /** @enum {string} */
-        ErrorCode: "CREDITS_NOT_ENOUGH" | "MODEJ_JOB_TYPE_NOT_FOUND" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "MODERATION_BLOCKED" | "UNAUTHORIZED" | "EMAIL_NOT_CONFIRMED" | "FORBIDDEN" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
+        ErrorCode: "TOKENS_NOT_ENOUGH" | "MODEJ_JOB_TYPE_NOT_FOUND" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "MODERATION_BLOCKED" | "UNAUTHORIZED" | "EMAIL_NOT_CONFIRMED" | "FORBIDDEN" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
         ErrorInfoDto: {
             code: components["schemas"]["ErrorCode"];
             /**
@@ -900,6 +1025,50 @@ export interface components {
              */
             text: string;
         };
+        /**
+         * @description Уникальный идентификатор пакета
+         * @enum {string}
+         */
+        TokensPackId: "STARTER" | "BASIC" | "PRO" | "MAX";
+        TokenPackDto: {
+            /** @example STARTER */
+            id: components["schemas"]["TokensPackId"];
+            /**
+             * @description Название пакета, отображаемое пользователю
+             * @example 5 генераций
+             */
+            name: string;
+            /**
+             * @description Количество токенов в пакете
+             * @example 25
+             */
+            tokens: number;
+            /**
+             * @description Ориентировочное количество генераций, которое покрывает пакет
+             * @example 5
+             */
+            generations: number;
+            /**
+             * @description Скидка в процентах относительно базовой цены
+             * @example 10
+             */
+            discountPercent: number;
+            /**
+             * @description Количество токенов в пакете
+             * @example 35
+             */
+            pri: number;
+            /**
+             * @description Стоимость в рублях
+             * @example 35
+             */
+            priceRub: number;
+            /**
+             * @description Пометить пакет как рекомендованный / выделенный
+             * @example true
+             */
+            highlight?: boolean;
+        };
         CreateCategoryDto: {
             /** @example Мультипликация */
             name: string;
@@ -909,6 +1078,121 @@ export interface components {
             /** @example Мультипликация */
             name?: string;
             description?: string;
+        };
+        CreateTokensPaymentDto: {
+            /**
+             * @description ID пакета токенов, выбранный пользователем
+             * @example pro
+             */
+            packId: string;
+            /**
+             * @description Путь на фронте, куда вернуть пользователя после оплаты. Если не указан — используем /payment/return.
+             * @example /pricing
+             */
+            returnPath?: string;
+        };
+        /**
+         * @description Текущий статус платежа
+         * @enum {string}
+         */
+        PaymentStatus: "PENDING" | "WAITING_FOR_CAPTURE" | "SUCCEEDED" | "CANCELED" | "REFUNDED" | "ERROR";
+        PaymentShortDto: {
+            /**
+             * @description ID платежа в системе Gennio
+             * @example c6a6a9ff-5d9c-4a0f-9c35-6f6d1d9f7a23
+             */
+            id: string;
+            /** @example PENDING */
+            status: components["schemas"]["PaymentStatus"];
+            /**
+             * @description URL для перехода в YooKassa
+             * @example https://yookassa.ru/checkout/...
+             */
+            confirmationUrl: string | null;
+        };
+        PaymentDto: {
+            /**
+             * Format: uuid
+             * @description ID пользователя, который оплатил (или null)
+             */
+            userId: string | null;
+            /**
+             * @description Сумма платежа (numeric хранится как строка)
+             * @example 199.00
+             */
+            amount: string;
+            /**
+             * @description Валюта платежа
+             * @example RUB
+             */
+            currency: string;
+            /**
+             * @description Платёжный провайдер
+             * @example yookassa
+             */
+            provider: string;
+            /**
+             * @description ID платежа в YooKassa
+             * @example 2fbb9a6b-000f-5000-8000-1e4b4c4d01e2
+             */
+            providerPaymentId: string | null;
+            status: components["schemas"]["PaymentStatus"];
+            /**
+             * @description Ссылка на страницу оплаты в YooKassa
+             * @example https://yookassa.ru/checkout/...
+             */
+            confirmationUrl: string | null;
+            /**
+             * @description Описание платежа
+             * @example Пакет 20 генераций
+             */
+            description: string | null;
+            /** @description Сырой объект платежа от YooKassa */
+            providerPayload: Record<string, never> | null;
+            /** @description Наши внутренние данные (пакет токенов и др.) */
+            meta: Record<string, never> | null;
+            /**
+             * Format: date-time
+             * @description Когда платеж был захвачен (capture)
+             */
+            capturedAt: string | null;
+            /** Format: date-time */
+            canceledAt: string | null;
+            /** Format: date-time */
+            refundedAt: string | null;
+            /**
+             * @description Сумма возврата
+             * @example 199.00
+             */
+            refundedAmount: string | null;
+            /**
+             * @description Код ошибки от YooKassa
+             * @example canceled_by_user
+             */
+            errorCode: string | null;
+            /**
+             * @description Текст ошибки
+             * @example Отменено пользователем
+             */
+            errorMessage: string | null;
+            /**
+             * Format: date-time
+             * @description Когда бизнес-логика была успешно выполнена
+             */
+            processedAt: string | null;
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        YookassaWebhookResponseDto: {
+            /**
+             * @description Webhook успешно принят
+             * @example true
+             */
+            accepted: boolean;
         };
     };
     responses: never;
@@ -1626,6 +1910,26 @@ export interface operations {
             };
         };
     };
+    PricingController_getTokenPacks: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Массив доступных пакетов токенов */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenPackDto"][];
+                };
+            };
+        };
+    };
     CategoriesController_findMany: {
         parameters: {
             query?: never;
@@ -1751,6 +2055,140 @@ export interface operations {
             };
             /** @description Категория не найдена */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PaymentsController_createTokensPayment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateTokensPaymentDto"];
+            };
+        };
+        responses: {
+            /** @description Краткая информация о платеже, включая ссылку на оплату в YooKassa. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentShortDto"];
+                };
+            };
+            /** @description Ошибка валидации или бизнес-ошибка */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    PaymentsController_listMyPayments: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"][];
+                };
+            };
+        };
+    };
+    PaymentsController_getPayment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID платежа в системе Gennio */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"];
+                };
+            };
+        };
+    };
+    PaymentsController_cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID платежа в системе Gennio */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"];
+                };
+            };
+        };
+    };
+    PaymentsController_yookassaWebhook: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["YookassaWebhookResponseDto"];
+                };
+            };
+        };
+    };
+    PaymentsController_refundPayment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };

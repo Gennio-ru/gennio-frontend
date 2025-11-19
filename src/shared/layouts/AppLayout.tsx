@@ -11,6 +11,8 @@ import { selectAppTheme } from "@/features/app/appSlice";
 import { cn } from "@/lib/utils";
 import AuthModal from "../ui/AuthModal";
 import PasswordResetModal from "../ui/PasswordResetModal";
+import PaymentModal from "../ui/PaymentModal";
+import PaymentResultModal from "../ui/PaymentResultModal";
 
 type Props = { children: ReactNode };
 
@@ -50,6 +52,8 @@ export default function AppLayout({ children }: Props) {
 
       <AuthModal />
       <PasswordResetModal />
+      <PaymentModal />
+      <PaymentResultModal />
     </div>
   );
 }

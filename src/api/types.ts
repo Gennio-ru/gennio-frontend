@@ -8,3 +8,4 @@ export interface PaginationResult<T> {
 }
 
 export type ErrorResponseDto = components["schemas"]["ErrorResponseDto"];
+export type ErrorCode = components["schemas"]["ErrorCode"];

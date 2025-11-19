@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Button from "@/shared/ui/Button";
-import { resendConfirmLink } from "@/api/auth";
+import { resendConfirmLink } from "@/api/modules/auth";
 
 type Props = {
   email: string;

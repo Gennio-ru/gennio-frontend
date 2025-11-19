@@ -14,6 +14,9 @@ import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
 import { customToast } from "@/lib/customToast";
+import { checkApiResponseErrorCode } from "@/lib/helpers";
+import { setPaymentModalOpen } from "@/features/app/appSlice";
+import { useDispatch } from "react-redux";
 
 registerPlugin(
   FilePondPluginImageExifOrientation,
@@ -43,6 +46,7 @@ export default function ImageUploader<T extends FieldValues>({
   disabled,
   className,
 }: ImageUploaderProps<T>) {
+  const dispatch = useDispatch();
   const [lastImageUrl, setLastImageUrl] = useState<string | null>(currentUrl);
   const [showUploader, setShowUploader] = useState(true);
   const [imageUploaded, setImageUploaded] = useState(false);
@@ -147,6 +151,11 @@ export default function ImageUploader<T extends FieldValues>({
                       setImageUploaded(true);
                       load(id); // сообщаем FilePond об успешной загрузке
                     } catch (e) {
+                      if (checkApiResponseErrorCode(e, "TOKENS_NOT_ENOUGH")) {
+                        dispatch(setPaymentModalOpen(true));
+                        return;
+                      }
+
                       customToast.error(e);
                       if (aborted) return; // если отменили — не показываем ошибку
                       console.error("Upload failed", e);

@@ -1,4 +1,5 @@
-import { ErrorResponseDto } from "./types";
+import axios from "axios";
+import { ErrorCode, ErrorResponseDto } from "@/api/types";
 
 export function isErrorResponseDto(value: unknown): value is ErrorResponseDto {
   if (!value || typeof value !== "object") return false;
@@ -26,3 +27,18 @@ export function isErrorResponseDto(value: unknown): value is ErrorResponseDto {
 
   return typeof err.code === "string";
 }
+
+export const checkApiResponseErrorCode = (
+  error: unknown,
+  errorCode: ErrorCode
+): boolean => {
+  if (!axios.isAxiosError(error)) return false;
+
+  const data = error.response?.data;
+
+  if (isErrorResponseDto(data) && data.error?.code === errorCode) {
+    return true;
+  }
+
+  return false;
+};

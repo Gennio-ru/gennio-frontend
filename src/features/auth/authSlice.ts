@@ -1,11 +1,16 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { apiLogin, apiMe, apiLogout, LoginByEmailPayload } from "@/api/auth";
+import {
+  apiLogin,
+  apiMe,
+  apiLogout,
+  LoginByEmailPayload,
+} from "@/api/modules/auth";
 import type { components } from "@/api/types.gen";
 import type { RootState } from "@/app/store";
 import { AuthResponseDto } from "@/api/client";
 import { ErrorResponseDto } from "@/api/types";
 import axios from "axios";
-import { isErrorResponseDto } from "@/api/isErrorResponse";
+import { isErrorResponseDto } from "@/lib/helpers";
 
 type User = components["schemas"]["UserDto"] | null;
 

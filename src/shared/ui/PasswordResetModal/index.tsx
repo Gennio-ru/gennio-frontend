@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 import Input from "../Input";
 import Button from "../Button";
 import { useLocation, useNavigate } from "react-router-dom";
-import { apiConfirmPasswordReset } from "@/api/auth";
+import { apiConfirmPasswordReset } from "@/api/modules/auth";
 
 const passwordSchema = z
   .string()

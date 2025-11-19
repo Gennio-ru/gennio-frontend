@@ -1,5 +1,5 @@
-import api from "./client";
-import type { operations } from "./types.gen";
+import api from "../client";
+import type { operations } from "../types.gen";
 
 export type UploadFileResponse =
   operations["FilesController_upload"]["responses"][201]["content"]["application/json"];

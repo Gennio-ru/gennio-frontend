@@ -1,6 +1,8 @@
-import { apiStartImageGenerateByPromptText } from "@/api/model-job";
+import { apiStartImageGenerateByPromptText } from "@/api/modules/model-job";
+import { setPaymentModalOpen } from "@/features/app/appSlice";
 import { setUser } from "@/features/auth/authSlice";
 import { customToast } from "@/lib/customToast";
+import { checkApiResponseErrorCode } from "@/lib/helpers";
 import Button from "@/shared/ui/Button";
 import GlassCard from "@/shared/ui/GlassCard";
 import Textarea from "@/shared/ui/Textarea";
@@ -44,7 +46,11 @@ export default function GenerateImagePage() {
       dispatch(setUser(res.user));
       navigate(`/model-job/${res.id}`);
     } catch (e) {
-      console.log(e);
+      if (checkApiResponseErrorCode(e, "TOKENS_NOT_ENOUGH")) {
+        dispatch(setPaymentModalOpen(true));
+        return;
+      }
+
       customToast.error(e);
     } finally {
       setIsFetching(false);
