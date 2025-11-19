@@ -1,5 +1,5 @@
-import api from "./client";
-import type { components, operations } from "./types.gen";
+import api from "../client";
+import type { components, operations } from "../types.gen";
 
 //
 // ==== Entity Types ====

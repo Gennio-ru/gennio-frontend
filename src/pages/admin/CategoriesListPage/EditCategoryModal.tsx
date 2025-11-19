@@ -21,7 +21,7 @@ import {
   apiCreateCategory,
   apiUpdateCategory,
   type Category,
-} from "@/api/categories";
+} from "@/api/modules/categories";
 
 const schema = z.object({
   name: z.string().min(1, "Укажите название категории"),

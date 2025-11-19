@@ -1,4 +1,4 @@
-import { apiGetCategories, Category } from "@/api/categories";
+import { apiGetCategories, Category } from "@/api/modules/categories";
 import { useEffect, useMemo, useState } from "react";
 import { GennioSelect } from "./GennioSelect";
 

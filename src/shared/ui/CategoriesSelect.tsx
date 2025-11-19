@@ -1,6 +1,6 @@
-import { apiGetCategories, Category } from "@/api/categories";
 import { useEffect, useMemo, useState } from "react";
 import CustomSelect from "@/shared/ui/CustomSelect";
+import { apiGetCategories, Category } from "@/api/modules/categories";
 
 interface Props {
   value: string | null;

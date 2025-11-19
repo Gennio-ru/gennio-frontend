@@ -5,7 +5,7 @@ import {
   apiGetCategories,
   apiDeleteCategory,
   type Category,
-} from "@/api/categories";
+} from "@/api/modules/categories";
 import EditCategoryModal from "./EditCategoryModal";
 import { Edit as EditIcon, Trash2 as TrashIcon } from "lucide-react";
 import { toast } from "react-hot-toast";
