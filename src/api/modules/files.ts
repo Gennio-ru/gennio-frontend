@@ -1,5 +1,7 @@
 import api from "../client";
-import type { operations } from "../types.gen";
+import type { components, operations } from "../types.gen";
+
+export type FileDto = components["schemas"]["FileDto"];
 
 export type UploadFileResponse =
   operations["FilesController_upload"]["responses"][201]["content"]["application/json"];

@@ -67,6 +67,8 @@ export default function GenerateImagePage() {
       >
         {/* Промпт */}
         <div className="relative mb-6">
+          <div className="mb-3 text-base">Введите текст промпта</div>
+
           <Controller
             name="text"
             control={control}
@@ -74,7 +76,7 @@ export default function GenerateImagePage() {
               <Textarea
                 {...field}
                 rows={4}
-                placeholder="Введите промпт для генерации"
+                placeholder="Например: “рыжий котик на подоконнике, мягкий свет, реалистичный стиль"
                 className="w-full rounded-field"
                 onChange={(e) => {
                   field.onChange(e);
@@ -90,7 +92,11 @@ export default function GenerateImagePage() {
         {/* Кнопка */}
         <div className="pt-4 flex justify-center">
           <Button type="submit" disabled={isBusy} className="px-6 w-[200px]">
-            {isSubmitting ? "Обработка…" : isFetching ? "Загрузка…" : "Начать"}
+            {isSubmitting
+              ? "Загрузка…"
+              : isFetching
+              ? "Загрузка…"
+              : "Сгенерировать"}
           </Button>
         </div>
       </form>

@@ -825,22 +825,22 @@ export interface components {
             /** @example https://cdn.example.com/uploads/2025/09/04/file.png */
             url: string;
             /** @example image/png */
-            contentType: Record<string, never> | null;
+            contentType: string | null;
             /**
              * @description Размер файла в байтах
              * @example 204800
              */
-            size: Record<string, never>;
+            size: number;
             /**
              * @description Ширина файла в пикселях
              * @example 1024
              */
-            widthPx?: Record<string, never> | null;
+            widthPx?: number | null;
             /**
              * @description Высота файла в пикселях
              * @example 768
              */
-            heightPx?: Record<string, never> | null;
+            heightPx?: number | null;
             /** Format: date-time */
             createdAt: string;
         };

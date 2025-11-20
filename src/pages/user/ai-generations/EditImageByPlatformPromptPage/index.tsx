@@ -1,4 +1,4 @@
-import { apiUploadFile } from "@/api/modules/files";
+import { apiUploadFile, UploadFileResponse } from "@/api/modules/files";
 import { apiStartImageEditByPromptId } from "@/api/modules/model-job";
 import { apiGetPrompt, type Prompt } from "@/api/modules/prompts";
 import { setPaymentModalOpen } from "@/features/app/appSlice";
@@ -6,8 +6,8 @@ import { setUser } from "@/features/auth/authSlice";
 import { customToast } from "@/lib/customToast";
 import { checkApiResponseErrorCode } from "@/lib/helpers";
 import Button from "@/shared/ui/Button";
-import ImageUploader from "@/shared/ui/FilePondUploader";
 import GlassCard from "@/shared/ui/GlassCard";
+import { ImageUploadWithCrop } from "@/shared/ui/ImageUploadWithCrop";
 import Loader from "@/shared/ui/Loader";
 import Textarea from "@/shared/ui/Textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,7 +23,6 @@ const modelJobSchema = z.object({
 });
 
 type ModelJobFormValues = z.infer<typeof modelJobSchema>;
-type UploadResponse = { id?: string; key?: string };
 
 export default function EditImageByPlatformPromptPage() {
   const dispatch = useDispatch();
@@ -56,10 +55,21 @@ export default function EditImageByPlatformPromptPage() {
       .finally(() => setIsLoading(false));
   }, [promptId]);
 
-  const upload = async (file: File) => {
-    const res = (await apiUploadFile(file)) as UploadResponse;
-    if (!res.id) throw new Error("Сервер не вернул id файла");
-    return res.id;
+  const upload = async (file: File | null): Promise<UploadFileResponse> => {
+    clearErrors("inputFileId");
+
+    if (!file) {
+      throw new Error("Файл не передан");
+    }
+
+    // делаем реальный запрос
+    const res = await apiUploadFile(file);
+
+    if (!res || !res.id || !res.url) {
+      throw new Error("Не удалось загрузить файл");
+    }
+
+    return res;
   };
 
   const onSubmit = async (data: ModelJobFormValues) => {
@@ -101,17 +111,7 @@ export default function EditImageByPlatformPromptPage() {
 
         {/* Референс */}
         <div className="relative mb-8">
-          <ImageUploader
-            control={control}
-            name="inputFileId"
-            onUpload={async (file) => {
-              const id = await upload(file);
-              clearErrors("inputFileId");
-              return id;
-            }}
-            disabled={isBusy}
-            className="w-full"
-          />
+          <ImageUploadWithCrop onUpload={upload} />
 
           {errors.inputFileId && (
             <p className="absolute top-full mt-1 text-xs text-error">
@@ -122,14 +122,16 @@ export default function EditImageByPlatformPromptPage() {
 
         {/* Промпт */}
         <div className="relative mb-8">
+          <div className="mb-3 text-base">Введите детали (если необходимо)</div>
+
           <Controller
             name="text"
             control={control}
             render={({ field }) => (
               <Textarea
                 {...field}
-                rows={4}
-                placeholder="Введите уточняющий промпт, если необходимо"
+                rows={1}
+                placeholder="Например: Добавь красный колпак на голову"
                 className="w-full rounded-field"
                 onChange={(e) => {
                   field.onChange(e);
@@ -137,6 +139,7 @@ export default function EditImageByPlatformPromptPage() {
                 }}
                 errored={!!errors.text}
                 errorMessage={errors.text?.message}
+                maxLength={200}
               />
             )}
           />
@@ -145,7 +148,11 @@ export default function EditImageByPlatformPromptPage() {
         {/* Кнопка */}
         <div className="pt-4 flex justify-center">
           <Button type="submit" disabled={isBusy} className="px-6 w-[200px]">
-            {isSubmitting ? "Обработка…" : isFetching ? "Загрузка…" : "Начать"}
+            {isSubmitting
+              ? "Загрузка…"
+              : isFetching
+              ? "Загрузка…"
+              : "Сгенерировать"}
           </Button>
         </div>
       </form>

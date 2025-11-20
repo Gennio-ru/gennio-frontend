@@ -4,12 +4,14 @@ import { cn } from "@/lib/utils"; // если используешь clsx/tailwi
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: "sm" | "md";
   color?: "primary" | "secondary" | "ghost";
+  bordered?: boolean;
 };
 
 export default function Button({
   className,
   size = "md",
   color = "primary",
+  bordered = false,
   ...rest
 }: ButtonProps) {
   const sizeClasses =
@@ -30,8 +32,10 @@ export default function Button({
       {...rest}
       className={cn(
         "rounded-field font-medium disabled:opacity-70 cursor-pointer focus:outline-none focus:ring-0",
+        "transition-colors duration-200 ease-in-out",
         sizeClasses,
         colorClasses,
+        bordered && "border border-base-content/60",
         className
       )}
     />

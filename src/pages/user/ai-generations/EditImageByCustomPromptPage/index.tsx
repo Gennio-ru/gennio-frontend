@@ -1,12 +1,12 @@
-import { apiUploadFile } from "@/api/modules/files";
+import { apiUploadFile, UploadFileResponse } from "@/api/modules/files";
 import { apiStartImageEditByPromptText } from "@/api/modules/model-job";
 import { setPaymentModalOpen } from "@/features/app/appSlice";
 import { setUser } from "@/features/auth/authSlice";
 import { customToast } from "@/lib/customToast";
 import { checkApiResponseErrorCode } from "@/lib/helpers";
 import Button from "@/shared/ui/Button";
-import ImageUploader from "@/shared/ui/FilePondUploader";
 import GlassCard from "@/shared/ui/GlassCard";
+import { ImageUploadWithCrop } from "@/shared/ui/ImageUploadWithCrop";
 import Textarea from "@/shared/ui/Textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -21,7 +21,6 @@ const modelJobSchema = z.object({
 });
 
 type ModelJobFormValues = z.infer<typeof modelJobSchema>;
-type UploadResponse = { id?: string; key?: string };
 
 export default function EditImageByCustomPromptPage() {
   const dispatch = useDispatch();
@@ -40,17 +39,21 @@ export default function EditImageByCustomPromptPage() {
     reValidateMode: "onSubmit",
   });
 
-  const upload = async (file: File | null) => {
+  const upload = async (file: File | null): Promise<UploadFileResponse> => {
     clearErrors("inputFileId");
-    if (!file) return "";
 
-    const res = (await apiUploadFile(file)) as UploadResponse;
-
-    if (!res.id) {
-      return null;
+    if (!file) {
+      throw new Error("Файл не передан");
     }
 
-    return res.id;
+    // делаем реальный запрос
+    const res = await apiUploadFile(file);
+
+    if (!res || !res.id || !res.url) {
+      throw new Error("Не удалось загрузить файл");
+    }
+
+    return res;
   };
 
   const onSubmit = async (data: ModelJobFormValues) => {
@@ -80,17 +83,12 @@ export default function EditImageByCustomPromptPage() {
     <GlassCard className="mx-auto w-full max-w-xl mt-5">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="space-y-6 text-base-content"
+        className="space-y-7 text-base-content"
       >
+        <h2 className="text-xl font-bold">Загрузка фото</h2>
         {/* Референс */}
-        <div className="relative mb-8">
-          <ImageUploader
-            control={control}
-            name="inputFileId"
-            onUpload={upload}
-            disabled={isBusy}
-            className="w-full"
-          />
+        <div className="relative mb-12">
+          <ImageUploadWithCrop onUpload={upload} />
 
           {errors.inputFileId && (
             <p className="absolute top-full mt-1 text-xs text-error">
@@ -101,14 +99,16 @@ export default function EditImageByCustomPromptPage() {
 
         {/* Промпт */}
         <div className="relative mb-8">
+          <div className="mb-3 text-base">Введите текст промпта</div>
+
           <Controller
             name="text"
             control={control}
             render={({ field }) => (
               <Textarea
                 {...field}
-                rows={4}
-                placeholder="Введите текст промпта"
+                rows={1}
+                placeholder="Например: “сделай в стиле акварели, но сохрани композицию”"
                 className="w-full rounded-field"
                 onChange={(e) => {
                   field.onChange(e);
@@ -116,6 +116,7 @@ export default function EditImageByCustomPromptPage() {
                 }}
                 errored={!!errors.text}
                 errorMessage={errors.text?.message}
+                maxLength={200}
               />
             )}
           />
@@ -124,7 +125,7 @@ export default function EditImageByCustomPromptPage() {
         {/* Кнопка */}
         <div className="pt-4 flex justify-center">
           <Button type="submit" disabled={isBusy} className="px-6 w-[200px]">
-            {isSubmitting ? "Обработка…" : "Обработать"}
+            {isSubmitting ? "Загрузка..." : "Сгенерировать"}
           </Button>
         </div>
       </form>
