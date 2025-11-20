@@ -15,21 +15,15 @@ import {
 } from "@/features/app/appSlice";
 
 import { useEffect, useState } from "react";
-import { apiCreateTokensPayment, Payment } from "@/api/modules/payments";
 import Button from "@/shared/ui/Button";
 import {
   apiGetTokenPacks,
   TokenPack,
   TokenPackId,
 } from "@/api/modules/pricing";
-import { useLocation, useNavigate } from "react-router-dom";
-import { socket } from "@/api/socket/socket";
-import { PAYMENT_EVENTS } from "@/api/socket/payment-events";
-import { meThunk } from "@/features/auth/authSlice";
+import { useStartPayment } from "@/features/payments/useStartPayment";
 
 export default function PaymentModal() {
-  const navigate = useNavigate();
-  const location = useLocation();
   const theme = useAppSelector(selectAppTheme);
   const dispatch = useAppDispatch();
   const open = useAppSelector(selectPaymentModalOpen);
@@ -38,11 +32,10 @@ export default function PaymentModal() {
   const [loadingPacks, setLoadingPacks] = useState(false);
   const [creatingPayment, setCreatingPayment] = useState<string | null>(null);
 
+  const { startPayment } = useStartPayment();
+
   const closeModal = () => dispatch(setPaymentModalOpen(false));
 
-  //
-  // Загрузка пакетов
-  //
   useEffect(() => {
     if (!open) return;
 
@@ -52,63 +45,10 @@ export default function PaymentModal() {
       .finally(() => setLoadingPacks(false));
   }, [open]);
 
-  //
-  // Старт оплаты
-  //
   const handleBuy = async (packId: TokenPackId) => {
-    const returnPath = location.pathname + location.search;
-
-    try {
+    startPayment(packId, () => {
       setCreatingPayment(packId);
-
-      const res = await apiCreateTokensPayment({ packId, returnPath });
-
-      socket.emit(PAYMENT_EVENTS.SUBSCRIBE, res.id);
-
-      const handleUpdate = async (payment: Payment) => {
-        if (payment.id !== res.id) return;
-
-        const final =
-          payment.status === "SUCCEEDED" ||
-          payment.status === "CANCELED" ||
-          payment.status === "ERROR" ||
-          payment.status === "REFUNDED";
-
-        if (!final) return;
-
-        // Если оплата прошла успешно — обновляем баланс токенов
-        if (payment.status === "SUCCEEDED") {
-          await dispatch(meThunk()).unwrap();
-        }
-
-        // Открываем модалку результата через URL
-        const params = new URLSearchParams(location.search);
-        params.set("paymentId", payment.id);
-
-        navigate(`${location.pathname}?${params.toString()}`, {
-          replace: true,
-        });
-
-        socket.emit(PAYMENT_EVENTS.UNSUBSCRIBE, res.id);
-        socket.off(PAYMENT_EVENTS.UPDATE, handleUpdate);
-      };
-
-      socket.on(PAYMENT_EVENTS.UPDATE, handleUpdate);
-
-      if (res.confirmationUrl) {
-        // Обычно токен хранить тоже нужно:
-        sessionStorage.setItem("lastPaymentId", res.id);
-
-        window.open(res.confirmationUrl, "_blank");
-      }
-
-      closeModal();
-    } catch (e) {
-      console.error("Ошибка создания платежа", e);
-      alert("Ошибка создания платежа");
-    } finally {
-      setCreatingPayment(null);
-    }
+    }).finally(() => setCreatingPayment(null));
   };
 
   return (

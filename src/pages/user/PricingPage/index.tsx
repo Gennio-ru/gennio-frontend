@@ -1,12 +1,21 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import GlassCard from "@/shared/ui/GlassCard";
-import { apiGetTokenPacks, TokenPack } from "@/api/modules/pricing";
+import {
+  apiGetTokenPacks,
+  TokenPack,
+  TokenPackId,
+} from "@/api/modules/pricing";
+import Button from "@/shared/ui/Button";
+import { useStartPayment } from "@/features/payments/useStartPayment";
 
 export default function PricingPage() {
   const [packs, setPacks] = useState<TokenPack[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [creatingPayment, setCreatingPayment] = useState<string | null>(null);
+
+  const { startPayment } = useStartPayment();
 
   useEffect(() => {
     let cancelled = false;
@@ -32,6 +41,12 @@ export default function PricingPage() {
       cancelled = true;
     };
   }, []);
+
+  const handleBuy = async (packId: TokenPackId) => {
+    startPayment(packId, () => {
+      setCreatingPayment(packId);
+    }).finally(() => setCreatingPayment(null));
+  };
 
   return (
     <div className="mx-auto w-full max-w-3xl">
@@ -77,10 +92,9 @@ export default function PricingPage() {
             <>
               <div className="grid gap-4 sm:grid-cols-2">
                 {packs.map((pack) => {
-                  const { tokens, discountPercent, generations } = pack;
-
-                  // Цена пакета с учётом скидки
-                  const price = Math.ceil(tokens * (1 - discountPercent / 100));
+                  const { tokens, discountPercent, generations, priceRub } =
+                    pack;
+                  const disabled = creatingPayment === pack.id;
 
                   return (
                     <div
@@ -93,9 +107,22 @@ export default function PricingPage() {
                       ].join(" ")}
                     >
                       <div className="mb-3 flex items-center justify-between gap-2">
-                        <h2 className="text-base sm:text-lg font-semibold">
-                          {pack.name}
-                        </h2>
+                        <div className="flex w-full justify-between items-center gap-2">
+                          <h2 className="text-base sm:text-lg font-semibold">
+                            {pack.name}
+                          </h2>
+
+                          <Button
+                            onClick={() => handleBuy(pack.id)}
+                            disabled={disabled}
+                            size="sm"
+                            className="text-nowrap"
+                          >
+                            {disabled
+                              ? "Создание платежа…"
+                              : `Купить за ${pack.priceRub} ₽`}
+                          </Button>
+                        </div>
 
                         {discountPercent > 0 && (
                           <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
@@ -117,7 +144,7 @@ export default function PricingPage() {
 
                         <p className="text-xs sm:text-sm text-base-content/80">
                           Цена пакета:&nbsp;
-                          <span className="font-medium">{price}&nbsp;₽</span>
+                          <span className="font-medium">{priceRub}&nbsp;₽</span>
                         </p>
 
                         {discountPercent > 0 && (
