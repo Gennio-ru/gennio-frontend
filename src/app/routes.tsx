@@ -26,14 +26,13 @@ const ModelJobResultPage = lazy(
 );
 
 // админские
-const PromptsAdminList = lazy(
-  () => import("@/pages/admin/PromptsListPage/PromptsList")
-);
+const PromptsAdminPage = lazy(() => import("@/pages/admin/PromptsListPage"));
 const PromptAdminEdit = lazy(
   () => import("@/pages/admin/PromptEditPage/PromptEditForm")
 );
-const CategoriesAdminList = lazy(
-  () => import("@/pages/admin/CategoriesListPage/CategoriesList")
+const PaymentsAdminPage = lazy(() => import("@/pages/admin/PaymentsListPage"));
+const CategoriesAdminPage = lazy(
+  () => import("@/pages/admin/CategoriesListPage")
 );
 
 export function AppRoutes() {
@@ -128,7 +127,7 @@ export function AppRoutes() {
           path="prompts"
           element={
             <Suspense fallback={<Loader />}>
-              <PromptsAdminList />
+              <PromptsAdminPage />
             </Suspense>
           }
         />
@@ -152,7 +151,15 @@ export function AppRoutes() {
           path="categories"
           element={
             <Suspense fallback={<Loader />}>
-              <CategoriesAdminList />
+              <CategoriesAdminPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="payments/*"
+          element={
+            <Suspense fallback={<Loader />}>
+              <PaymentsAdminPage />
             </Suspense>
           }
         />

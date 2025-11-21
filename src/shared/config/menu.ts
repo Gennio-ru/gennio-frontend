@@ -9,6 +9,7 @@ export const primaryHeaderMenu: NavItem[] = [
 export const adminHeaderMenu: NavItem[] = [
   { label: "Промпты", href: "/admin/prompts" },
   { label: "Категории", href: "/admin/categories" },
+  { label: "Платежи", href: "/admin/payments" },
 ];
 
 export const aiGenerationsMenu: NavItem[] = [

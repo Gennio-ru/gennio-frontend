@@ -10,37 +10,37 @@ import { X as ClearIcon } from "lucide-react";
 import { useAppSelector } from "@/app/hooks";
 import { selectAppTheme } from "@/features/app/appSlice";
 
-interface Item {
-  value: string;
+interface Item<T extends string> {
+  value: T;
   label: string;
 }
 
-interface Props {
-  value: string;
-  onChange: (value: string) => void;
+interface Props<T extends string> {
+  value: T;
+  onChange: (value: T) => void;
   onReset?: () => void;
-  items: Item[];
+  items: Item<T>[];
   placeholder?: string;
   className?: string;
 }
 
-export default function CustomSelect({
+export default function CustomSelect<T extends string>({
   value,
   onChange,
   onReset,
   items,
   placeholder,
   className,
-}: Props) {
+}: Props<T>) {
   const theme = useAppSelector(selectAppTheme);
   const showResetButton = onReset && value;
 
   return (
-    <div className="relative flex items-center w-auto min-w-36">
+    <div className="relative flex items-center w-auto">
       <Select value={value || ""} onValueChange={onChange}>
         <SelectTrigger
           className={cn(
-            "flex-1 bg-base-200 text-base-content",
+            "flex-1 bg-base-100 text-base-content",
             showResetButton && "gap-8",
             className
           )}

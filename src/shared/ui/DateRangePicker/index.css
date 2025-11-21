@@ -1,0 +1,160 @@
+/* Общий контейнер календаря */
+.rdrCalendarWrapper {
+  background-color: transparent !important; /* убрать белый фон */
+  font-size: 0.875rem; /* 14px — увеличь как надо */
+  color: var(--color-base-content); /* text-slate-200, можно свой цвет */
+}
+
+.rdrMonthAndYearWrapper {
+  padding-top: 0;
+  height: 54px;
+}
+
+.rdrMonth {
+  padding: 0 0.6em 0.6em 0.6em;
+  width: 340px;
+}
+
+/* Месяц и сетка дней тоже без своего фона */
+.rdrMonths,
+.rdrMonth {
+  background-color: transparent !important;
+}
+
+.rdrMonthName {
+  display: none;
+}
+
+/* Названия дней недели */
+.rdrWeekDay {
+  color: var(--color-base-content);
+  font-size: var(--text-base);
+}
+
+/* Цифры дней */
+.rdrDayNumber span {
+  color: var(--color-base-content); /* основной цвет текста */
+  font-size: 0.875rem; /* увеличенный шрифт */
+}
+
+/* Пассивные дни (серые, вне диапазона месяца) */
+.rdrDayPassive .rdrDayNumber span {
+  color: var(--color-base-content); /* серый */
+  opacity: 0.4;
+}
+
+.rdrInRange {
+  background: oklch(0.5871 0.2017 5.53 / 50%);
+}
+
+/* Выбранный диапазон */
+.rdrDaySelected,
+.rdrDayInRange,
+.rdrDayStartPreview,
+.rdrDayEndPreview {
+  background-color: oklch(
+    0.5871 0.2017 5.53 / 50%
+  ) !important; /* розовый бэк */
+}
+
+.rdrDaySelected .rdrDayNumber span,
+.rdrDayInRange .rdrDayNumber span {
+  color: var(--color-base-content) !important;
+}
+
+.rdrNextPrevButton {
+  width: 32px;
+  height: 32px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: transparent !important;
+  cursor: pointer;
+}
+
+.rdrNextPrevButton i {
+  display: none;
+}
+
+.rdrPprevButton::before {
+  content: "";
+  width: 32px;
+  height: 32px;
+  mask-size: contain;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  background-color: var(--color-base-content);
+  mask-image: url("data:image/svg+xml,%3Csvg fill='none' stroke='%23fff' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15 18l-6-6 6-6'/%3E%3C/svg%3E");
+}
+
+.rdrNextButton::before {
+  content: "";
+  width: 32px;
+  height: 32px;
+  mask-size: contain;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  background-color: var(--color-base-content);
+  mask-image: url("data:image/svg+xml,%3Csvg fill='none' stroke='%23fff' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M9 6l6 6-6 6'/%3E%3C/svg%3E");
+}
+
+.rdrYearPicker select {
+  color: var(--color-base-content);
+  font-size: var(--text-base);
+}
+
+.rdrMonthPicker select {
+  color: var(--color-base-content);
+  font-size: var(--text-base);
+}
+
+.rdrYearPicker select,
+.rdrMonthPicker select {
+  /* убираем нативный дропдаун */
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+
+  /* убираем фон и возможные background-стрелки */
+  background-image: none !important;
+  background-color: transparent !important;
+  background-repeat: no-repeat !important;
+
+  /* чтобы родная стрелка не торчала справа */
+  padding-right: 28px !important;
+
+  /* на всякий случай, бывают странные темы */
+  border-radius: 0.375rem; /* как у остального UI */
+}
+
+/* IE/старый Edge (если вдруг) */
+.rdrYearPicker select::-ms-expand,
+.rdrMonthPicker select::-ms-expand {
+  display: none !important;
+}
+
+.rdrYearPicker,
+.rdrMonthPicker {
+  position: relative;
+}
+
+.rdrYearPicker::after,
+.rdrMonthPicker::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 20px;
+  height: 20px;
+
+  /* SVG стрелка вниз через mask */
+  mask-image: url("data:image/svg+xml,%3Csvg fill='none' stroke='%23fff' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+
+  background-color: var(--color-base-content);
+}

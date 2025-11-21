@@ -502,8 +502,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Список платежей текущего пользователя */
-        get: operations["PaymentsController_listMyPayments"];
+        /** Получить список платежей с фильтрами и пагинацией */
+        get: operations["PaymentsController_findMany"];
         put?: never;
         post?: never;
         delete?: never;
@@ -521,6 +521,23 @@ export interface paths {
         };
         /** Получить информацию о платеже */
         get: operations["PaymentsController_getPayment"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/full/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить полную информацию о платеже */
+        get: operations["PaymentsController_getFullPayment"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1109,6 +1126,84 @@ export interface components {
              * @example https://yookassa.ru/checkout/...
              */
             confirmationUrl: string | null;
+        };
+        PaymentFullDto: {
+            /**
+             * Format: uuid
+             * @description ID пользователя, который оплатил (или null)
+             */
+            userId: string | null;
+            /**
+             * @description Сумма платежа (numeric хранится как строка)
+             * @example 199.00
+             */
+            amount: string;
+            /**
+             * @description Валюта платежа
+             * @example RUB
+             */
+            currency: string;
+            /**
+             * @description Платёжный провайдер
+             * @example yookassa
+             */
+            provider: string;
+            /**
+             * @description ID платежа в YooKassa
+             * @example 2fbb9a6b-000f-5000-8000-1e4b4c4d01e2
+             */
+            providerPaymentId: string | null;
+            status: components["schemas"]["PaymentStatus"];
+            /**
+             * @description Ссылка на страницу оплаты в YooKassa
+             * @example https://yookassa.ru/checkout/...
+             */
+            confirmationUrl: string | null;
+            /**
+             * @description Описание платежа
+             * @example Пакет 20 генераций
+             */
+            description: string | null;
+            /** @description Сырой объект платежа от YooKassa */
+            providerPayload: Record<string, never> | null;
+            /** @description Наши внутренние данные (пакет токенов и др.) */
+            meta: Record<string, never> | null;
+            /**
+             * Format: date-time
+             * @description Когда платеж был захвачен (capture)
+             */
+            capturedAt: string | null;
+            /** Format: date-time */
+            canceledAt: string | null;
+            /** Format: date-time */
+            refundedAt: string | null;
+            /**
+             * @description Сумма возврата
+             * @example 199.00
+             */
+            refundedAmount: string | null;
+            /**
+             * @description Код ошибки от YooKassa
+             * @example canceled_by_user
+             */
+            errorCode: string | null;
+            /**
+             * @description Текст ошибки
+             * @example Отменено пользователем
+             */
+            errorMessage: string | null;
+            /**
+             * Format: date-time
+             * @description Когда бизнес-логика была успешно выполнена
+             */
+            processedAt: string | null;
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            user: components["schemas"]["UserDto"];
         };
         PaymentDto: {
             /**
@@ -2095,9 +2190,20 @@ export interface operations {
             };
         };
     };
-    PaymentsController_listMyPayments: {
+    PaymentsController_findMany: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Поиск по userId, email, providerPaymentId, description */
+                search?: string;
+                /** @description Фильтр по статусу платежа */
+                status?: "PENDING" | "WAITING_FOR_CAPTURE" | "SUCCEEDED" | "CANCELED" | "REFUNDED" | "ERROR";
+                /** @description Дата создания — от */
+                createdFrom?: string;
+                /** @description Дата создания — до */
+                createdTo?: string;
+                limit?: number;
+                page?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -2109,7 +2215,10 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PaymentDto"][];
+                    "application/json": {
+                        items: components["schemas"]["PaymentFullDto"][];
+                        meta: components["schemas"]["PaginationMetaDto"];
+                    };
                 };
             };
         };
@@ -2132,6 +2241,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaymentDto"];
+                };
+            };
+        };
+    };
+    PaymentsController_getFullPayment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID платежа в системе Gennio */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentFullDto"];
                 };
             };
         };
