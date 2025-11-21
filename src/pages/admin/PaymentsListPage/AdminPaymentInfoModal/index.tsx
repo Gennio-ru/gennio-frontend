@@ -73,7 +73,7 @@ export default function AdminPaymentInfoModal() {
     >
       <DialogContent
         className={cn(
-          "sm:max-w-lg max-h-[80vh] flex flex-col", // 👈 скроллим содержимое
+          "sm:max-w-lg max-h-[80vh] flex flex-col max-h-[94%] overflow-y-auto",
           theme === "dark" && "bg-base-100/70 backdrop-blur-md"
         )}
         showCloseButton={false}
@@ -115,11 +115,9 @@ export default function AdminPaymentInfoModal() {
           </div>
         )}
 
-        {/* Основное содержимое */}
         {!loading && !loadError && payment && (
           <>
-            {/* Скроллируемая область */}
-            <div className="mt-2 flex-1 overflow-y-auto pr-1 space-y-6">
+            <div className="mt-2 flex-1 pr-1 space-y-6">
               <AdminPaymentHeader payment={payment} />
 
               <AdminPaymentDetailsCard payment={payment} />
