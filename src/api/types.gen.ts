@@ -583,6 +583,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/payments/{id}/refund-tokens/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Предпросмотр: сколько токенов и денег можно вернуть по платежу */
+        get: operations["PaymentsController_getRefundTokensPreview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{id}/refund-tokens": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Сделать частичный рефанд по токенам */
+        post: operations["PaymentsController_refundTokens"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/payments/{id}/refund": {
         parameters: {
             query?: never;
@@ -592,7 +626,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Запросить возврат платежа */
+        /** Запросить возврат платежа полностью/частично */
         post: operations["PaymentsController_refundPayment"];
         delete?: never;
         options?: never;
@@ -1168,6 +1202,10 @@ export interface components {
             providerPayload: Record<string, never> | null;
             /** @description Наши внутренние данные (пакет токенов и др.) */
             meta: Record<string, never> | null;
+            /** @description Сколько токенов было начислено за этот платеж */
+            tokensPurchased: number | null;
+            /** @description Сколько токенов уже было отозвано рефандами */
+            tokensRefunded: number | null;
             /**
              * Format: date-time
              * @description Когда платеж был захвачен (capture)
@@ -1246,6 +1284,10 @@ export interface components {
             providerPayload: Record<string, never> | null;
             /** @description Наши внутренние данные (пакет токенов и др.) */
             meta: Record<string, never> | null;
+            /** @description Сколько токенов было начислено за этот платеж */
+            tokensPurchased: number | null;
+            /** @description Сколько токенов уже было отозвано рефандами */
+            tokensRefunded: number | null;
             /**
              * Format: date-time
              * @description Когда платеж был захвачен (capture)
@@ -1288,6 +1330,37 @@ export interface components {
              * @example true
              */
             accepted: boolean;
+        };
+        RefundTokensPreviewDto: {
+            paymentId: string;
+            userId: string;
+            /** @description Всего токенов куплено этим платежом */
+            tokensPurchased: number;
+            /** @description Уже возвращено токенов по этому платежу */
+            tokensRefunded: number;
+            /** @description Осталось токенов, подвязанных к этому платежу */
+            remainingByPayment: number;
+            /** @description Текущий баланс токенов пользователя */
+            userBalance: number;
+            /** @description Максимум токенов, который можно вернуть сейчас */
+            maxTokensToRefund: number;
+            /** @description Цена одного токена по этому платежу (RUB) */
+            pricePerToken: number;
+            /** @description Максимальная сумма к возврату (RUB) */
+            maxAmountRub: number;
+            currency: string;
+        };
+        RefundTokensDto: {
+            /**
+             * @description Сколько токенов вернуть пользователю
+             * @example 100
+             */
+            tokens: number;
+            /**
+             * @description Комментарий к рефанду (уходит в YooKassa)
+             * @example Частичный возврат по просьбе пользователя
+             */
+            description?: string;
         };
     };
     responses: never;
@@ -2308,7 +2381,7 @@ export interface operations {
             };
         };
     };
-    PaymentsController_refundPayment: {
+    PaymentsController_getRefundTokensPreview: {
         parameters: {
             query?: never;
             header?: never;
@@ -2319,11 +2392,71 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["RefundTokensPreviewDto"];
+                };
+            };
+        };
+    };
+    PaymentsController_refundTokens: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RefundTokensDto"];
+            };
+        };
+        responses: {
+            /** @description Обновлённый платёж после запроса частичного рефанда */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentFullDto"];
+                };
+            };
+        };
+    };
+    PaymentsController_refundPayment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * @description Сумма возврата в рублях. Если не передана — вернуть максимально возможную сумму.
+                     * @example 1000
+                     */
+                    amount?: number | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Обновлённый платёж после запроса рефанда */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentFullDto"];
+                };
             };
         };
     };

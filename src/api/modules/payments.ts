@@ -20,11 +20,17 @@ export type PaymentsListResponse =
 export type PaymentsListParams =
   operations["PaymentsController_findMany"]["parameters"]["query"];
 
+export type AdminRefundTokensPreview =
+  operations["PaymentsController_getRefundTokensPreview"]["responses"]["200"]["content"]["application/json"];
+
 // Пейлоады
 
 // Платёж за пакет токенов (POST /payments/tokens)
 export type CreateTokensPaymentPayload =
   operations["PaymentsController_createTokensPayment"]["requestBody"]["content"]["application/json"];
+
+export type RefundByTokensPayload =
+  operations["PaymentsController_refundTokens"]["requestBody"]["content"]["application/json"];
 
 // Ответ от createTokensPayment
 export type CreateTokensPaymentResponse =
@@ -54,6 +60,16 @@ export async function apiGetFullPayment(id: string): Promise<PaymentFull> {
   return data;
 }
 
+// Получаем количество токенов которые доступны к возврату с этого платежа
+export async function apiGetRefundTokensPreview(
+  paymentId: string
+): Promise<AdminRefundTokensPreview> {
+  const { data } = await api.get<AdminRefundTokensPreview>(
+    `/payments/${paymentId}/refund-tokens/preview`
+  );
+  return data;
+}
+
 // Создать платёж за пакет токенов
 export async function apiCreateTokensPayment(
   payload: CreateTokensPaymentPayload
@@ -68,5 +84,17 @@ export async function apiCreateTokensPayment(
 // Отмена платежа
 export async function apiCancelPayment(id: string): Promise<Payment> {
   const { data } = await api.post<Payment>(`/payments/${id}/cancel`);
+  return data;
+}
+
+// Частичная отмена платежа
+export async function apiRefundPaymentByTokens(
+  id: string,
+  payload: RefundByTokensPayload
+): Promise<PaymentFull> {
+  const { data } = await api.post<PaymentFull>(
+    `/payments/${id}/refund-tokens`,
+    payload
+  );
   return data;
 }
