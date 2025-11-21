@@ -1,4 +1,4 @@
-import { apiUploadFile, UploadFileResponse } from "@/api/modules/files";
+import { apiAIUploadFile } from "@/api/modules/files";
 import { apiStartImageEditByPromptId } from "@/api/modules/model-job";
 import { apiGetPrompt, type Prompt } from "@/api/modules/prompts";
 import { setPaymentModalOpen } from "@/features/app/appSlice";
@@ -55,23 +55,6 @@ export default function EditImageByPlatformPromptPage() {
       .finally(() => setIsLoading(false));
   }, [promptId]);
 
-  const upload = async (file: File | null): Promise<UploadFileResponse> => {
-    clearErrors("inputFileId");
-
-    if (!file) {
-      throw new Error("Файл не передан");
-    }
-
-    // делаем реальный запрос
-    const res = await apiUploadFile(file);
-
-    if (!res || !res.id || !res.url) {
-      throw new Error("Не удалось загрузить файл");
-    }
-
-    return res;
-  };
-
   const onSubmit = async (data: ModelJobFormValues) => {
     try {
       setIsFetching(true);
@@ -111,7 +94,30 @@ export default function EditImageByPlatformPromptPage() {
 
         {/* Референс */}
         <div className="relative mb-8">
-          <ImageUploadWithCrop onUpload={upload} />
+          <Controller
+            name="inputFileId"
+            control={control}
+            render={({ field }) => (
+              <ImageUploadWithCrop
+                onUpload={async (file) => {
+                  clearErrors("inputFileId");
+
+                  if (!file) {
+                    throw new Error("Файл не передан");
+                  }
+
+                  const res = await apiAIUploadFile(file);
+
+                  if (!res || !res.id || !res.url) {
+                    throw new Error("Не удалось загрузить файл");
+                  }
+
+                  field.onChange(res.id);
+                  return res;
+                }}
+              />
+            )}
+          />
 
           {errors.inputFileId && (
             <p className="absolute top-full mt-1 text-xs text-error">

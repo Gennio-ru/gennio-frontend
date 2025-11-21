@@ -1,5 +1,5 @@
 import { UploadFileResponse } from "@/api/modules/files";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Cropper, { Area } from "react-easy-crop";
 import IconButton from "./IconButton";
 import { CloudUpload, XIcon } from "lucide-react";
@@ -12,6 +12,10 @@ import { CustomRange } from "./CustomRange";
 import Loader from "./Loader";
 
 type ImageUploadWithCropProps = {
+  /** Уже загруженная картинка (например, из бэка) */
+  value?: UploadFileResponse | null;
+  /** Сообщаем наружу, что превью поменялось (или null, если удалили) */
+  onChange?: (file: UploadFileResponse | null) => void;
   /** Колбек, который получит уже обрезанный файл и вернёт данные сохранённого изображения */
   onUpload: (file: File) => Promise<UploadFileResponse> | UploadFileResponse;
   /** Разрешённые mime-типы, по умолчанию только картинки */
@@ -45,6 +49,8 @@ const ASPECT_PRESETS = [
 ];
 
 export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
+  value,
+  onChange,
   onUpload,
   accept = "image/*",
   maxFileSizeMb = 10,
@@ -75,6 +81,10 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
   );
 
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setPreviewImage(value ?? null);
+  }, [value]);
 
   const currentAspect =
     ASPECT_PRESETS.find((p) => p.id === aspectPresetId)?.value ?? 1;
@@ -163,6 +173,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 
       // локально убираем превью и возвращаем аплоадер
       setPreviewImage(null);
+      onChange?.(null);
       setError(null);
     } catch (e) {
       console.error(e);
@@ -194,6 +205,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 
       // сохраняем данные загруженной картинки для превью
       setPreviewImage(uploaded);
+      onChange?.(uploaded);
 
       // сбрасываем кроппер и возвращаемся к idle
       setStep("idle");

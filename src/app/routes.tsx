@@ -27,9 +27,6 @@ const ModelJobResultPage = lazy(
 
 // админские
 const PromptsAdminPage = lazy(() => import("@/pages/admin/PromptsListPage"));
-const PromptAdminEdit = lazy(
-  () => import("@/pages/admin/PromptEditPage/PromptEditForm")
-);
 const PaymentsAdminPage = lazy(() => import("@/pages/admin/PaymentsListPage"));
 const CategoriesAdminPage = lazy(
   () => import("@/pages/admin/CategoriesListPage")
@@ -124,26 +121,10 @@ export function AppRoutes() {
       {/* админка */}
       <Route path="/admin" element={<AdminRoute />}>
         <Route
-          path="prompts"
+          path="prompts/*"
           element={
             <Suspense fallback={<Loader />}>
               <PromptsAdminPage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="prompts/:id"
-          element={
-            <Suspense fallback={<Loader />}>
-              <PromptAdminEdit />
-            </Suspense>
-          }
-        />
-        <Route
-          path="prompts/new"
-          element={
-            <Suspense fallback={<Loader />}>
-              <PromptAdminEdit />
             </Suspense>
           }
         />

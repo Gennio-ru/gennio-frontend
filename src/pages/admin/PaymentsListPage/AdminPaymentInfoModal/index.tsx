@@ -14,7 +14,7 @@ import { XCircle, XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { apiGetFullPayment, PaymentFull } from "@/api/modules/payments";
-import Button from "../Button";
+import Button from "@/shared/ui/Button";
 
 import { AdminPaymentHeader } from "./AdminPaymentHeader";
 import { AdminPaymentDetailsCard } from "./AdminPaymentDetailsCard";

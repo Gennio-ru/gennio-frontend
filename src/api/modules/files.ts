@@ -29,6 +29,21 @@ export async function apiUploadFile(file: File): Promise<UploadFileResponse> {
   return data;
 }
 
+export async function apiAIUploadFile(file: File): Promise<UploadFileResponse> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const { data } = await api.post<UploadFileResponse>(
+    "/files/ai-upload",
+    formData,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    }
+  );
+
+  return data;
+}
+
 export async function apiGetFile(id: string): Promise<GetFileResponse> {
   const { data } = await api.get<GetFileResponse>(`/files/${id}`);
 

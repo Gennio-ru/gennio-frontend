@@ -15,6 +15,7 @@ import { EditIcon, TrashIcon } from "lucide-react";
 import { apiDeletePrompt } from "@/api/modules/prompts";
 import toast from "react-hot-toast";
 import Loader from "@/shared/ui/Loader";
+import AdminPromptEditModal from "./AdminPromptEditModal";
 
 export default function PromptsAdminList() {
   const dispatch = useAppDispatch();
@@ -111,82 +112,86 @@ export default function PromptsAdminList() {
   );
 
   return (
-    <div className="py-6">
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end">
-        <div className="flex-1">
-          <Input
-            value={searchLocal}
-            onChange={(e) => setSearchLocal(e.target.value)}
-            placeholder="Search by title or description"
-            className="bg-base-100!"
+    <>
+      <div className="py-6">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end">
+          <div className="flex-1">
+            <Input
+              value={searchLocal}
+              onChange={(e) => setSearchLocal(e.target.value)}
+              placeholder="Search by title or description"
+              className="bg-base-100!"
+            />
+          </div>
+
+          <CategoriesSelect
+            value={categoryId || null}
+            onChange={changeCategory}
+            onReset={clearCategory}
+            className="bg-base-100"
           />
+
+          <Button
+            className="sm:w-auto"
+            onClick={() => navigate("/admin/prompts/new")}
+          >
+            + New prompt
+          </Button>
         </div>
 
-        <CategoriesSelect
-          value={categoryId || null}
-          onChange={changeCategory}
-          onReset={clearCategory}
-          className="bg-base-100"
-        />
+        {status === "failed" && (
+          <div className="mb-3 text-error">Failed to load</div>
+        )}
 
-        <Button
-          className="sm:w-auto"
-          onClick={() => navigate("/admin/prompts/new")}
-        >
-          + New prompt
-        </Button>
-      </div>
-
-      {status === "failed" && (
-        <div className="mb-3 text-error">Failed to load</div>
-      )}
-
-      <div className="overflow-hidden rounded-box bg-base-100">
-        <table className="w-full text-sm">
-          <thead className="bg-base-100 text-base-content/70 border-b border-base-300">
-            <tr>
-              <th className="p-3 text-left">Title</th>
-              <th className="p-3 text-left hidden sm:table-cell">Type</th>
-              <th className="p-3 text-left hidden md:table-cell">Category</th>
-              <th className="p-3 text-left hidden lg:table-cell">Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows}
-
-            {items.length === 0 && status !== "loading" && (
+        <div className="overflow-hidden rounded-box bg-base-100">
+          <table className="w-full text-sm">
+            <thead className="bg-base-100 text-base-content/70 border-b border-base-300">
               <tr>
-                <td className="p-4 text-base-content/50" colSpan={4}>
-                  Не найдено
-                </td>
+                <th className="p-3 text-left">Title</th>
+                <th className="p-3 text-left hidden sm:table-cell">Type</th>
+                <th className="p-3 text-left hidden md:table-cell">Category</th>
+                <th className="p-3 text-left hidden lg:table-cell">Created</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {rows}
+
+              {items.length === 0 && status !== "loading" && (
+                <tr>
+                  <td className="p-4 text-base-content/50" colSpan={4}>
+                    Не найдено
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {isLoading && <Loader />}
+
+        <div className="mt-4 flex items-center justify-between text-sm text-base-content/70">
+          <div>
+            Page {page} of {totalPages}
+          </div>
+          <div className="flex gap-2">
+            <Button
+              disabled={!canPrev || isLoading}
+              onClick={() => dispatch(setPage(Math.max(1, page - 1)))}
+            >
+              Prev
+            </Button>
+            <Button
+              disabled={!canNext || isLoading}
+              onClick={() => dispatch(setPage(page + 1))}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
       </div>
 
-      {isLoading && <Loader />}
-
-      <div className="mt-4 flex items-center justify-between text-sm text-base-content/70">
-        <div>
-          Page {page} of {totalPages}
-        </div>
-        <div className="flex gap-2">
-          <Button
-            disabled={!canPrev || isLoading}
-            onClick={() => dispatch(setPage(Math.max(1, page - 1)))}
-          >
-            Prev
-          </Button>
-          <Button
-            disabled={!canNext || isLoading}
-            onClick={() => dispatch(setPage(page + 1))}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
-    </div>
+      <AdminPromptEditModal />
+    </>
   );
 }
 

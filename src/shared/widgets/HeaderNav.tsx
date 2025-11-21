@@ -72,7 +72,7 @@ export default function HeaderNav() {
 
       {/* 🔹 Правая часть (UserMenu / Войти) — 6 колонок на мобилках, 2 на md+ */}
       <div className="col-span-6 md:col-span-4 flex justify-end items-center gap-4 text-sm text-base-content/80">
-        {isAuth && (
+        {!showAdminMenu && isAuth && (
           <span className="text-nowrap text-base">Токены: {user.tokens}</span>
         )}
 

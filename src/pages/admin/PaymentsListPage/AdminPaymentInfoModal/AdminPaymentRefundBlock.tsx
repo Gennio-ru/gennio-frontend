@@ -7,8 +7,8 @@ import {
   apiRefundPaymentByTokens,
 } from "@/api/modules/payments";
 
-import Button from "../Button";
-import Input from "../Input";
+import Button from "@/shared/ui/Button";
+import Input from "@/shared/ui/Input";
 
 type Props = {
   payment: PaymentFull;

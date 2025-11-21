@@ -306,6 +306,22 @@ export interface paths {
         patch: operations["PromptsController_update"];
         trace?: never;
     };
+    "/api/files/ai-upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["FilesController_aiUpload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/files/upload": {
         parameters: {
             query?: never;
@@ -846,6 +862,8 @@ export interface components {
             /** @example Мягкое освещение, крупный план */
             description: string;
             /** @example f47ac10b-58cc-4372-a567-0e02b2c3d479 */
+            beforeImageId: string;
+            /** @example f47ac10b-58cc-4372-a567-0e02b2c3d479 */
             afterImageId: string;
             /** @description Промпт шаблона */
             text: string;
@@ -857,6 +875,8 @@ export interface components {
             title?: string;
             /** @example Мягкое освещение, крупный план */
             description?: string;
+            /** @example f47ac10b-58cc-4372-a567-0e02b2c3d479 */
+            beforeImageId?: string;
             /** @example f47ac10b-58cc-4372-a567-0e02b2c3d479 */
             afterImageId?: string;
             /** @description Промпт шаблона */
@@ -1843,6 +1863,33 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    FilesController_aiUpload: {
+        parameters: {
+            query: {
+                folder: string;
+                public: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UploadDto"];
+            };
+        };
+        responses: {
+            /** @description Файл успешно загружен */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadFileResponseDto"];
+                };
             };
         };
     };

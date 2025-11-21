@@ -18,7 +18,7 @@ import { Edit } from "lucide-react";
 import { DateRangePicker } from "@/shared/ui/DateRangePicker";
 import CustomSelect from "@/shared/ui/CustomSelect";
 import { PaymentStatus } from "@/api/modules/payments";
-import AdminPaymentInfoModal from "@/shared/ui/AdminPaymentInfoModal";
+import AdminPaymentInfoModal from "./AdminPaymentInfoModal";
 
 type PaymentStatusSelectItem = {
   value: PaymentStatus;
@@ -84,20 +84,15 @@ export default function PaymentsAdminList() {
         const hasError = Boolean(payment.errorCode || payment.errorMessage);
 
         let statusClass =
-          "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-base-200 text-base-content/80";
+          "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-base-200 text-base-content/80 ";
 
         if (payment.status === "SUCCEEDED")
-          statusClass =
-            "inline-flex px-2 py-0.5 text-xs font-medium bg-success/10 text-success";
+          statusClass += "bg-success/20 text-success";
         else if (payment.status === "CANCELED")
-          statusClass =
-            "inline-flex px-2 py-0.5 text-xs font-medium bg-error/10 text-error";
+          statusClass += "bg-error/20 text-error";
         else if (payment.status === "REFUNDED")
-          statusClass =
-            "inline-flex px-2 py-0.5 text-xs font-medium bg-warning/10 text-warning";
-        else if (hasError)
-          statusClass =
-            "inline-flex px-2 py-0.5 text-xs font-medium bg-error/10 text-error";
+          statusClass += "bg-warning/20 text-warning";
+        else if (hasError) statusClass += "bg-error/20 text-error";
 
         return (
           <tr key={payment.id}>
