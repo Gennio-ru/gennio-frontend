@@ -14,7 +14,6 @@ export type PaymentStatus = components["schemas"]["PaymentStatus"];
 export type PaymentShort = components["schemas"]["PaymentShortDto"];
 
 // Платёж, который возвращается в списке
-// (для простоты считаем, что это Payment[])
 export type PaymentsListResponse =
   operations["PaymentsController_findMany"]["responses"]["200"]["content"]["application/json"];
 export type PaymentsListParams =

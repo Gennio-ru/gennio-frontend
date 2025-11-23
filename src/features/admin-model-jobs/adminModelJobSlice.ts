@@ -1,16 +1,18 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import {
-  apiGetPayments,
-  PaymentFull,
-  PaymentsListParams,
-  PaymentStatus,
-} from "@/api/modules/payments";
 import type { PaginationResult } from "@/api/types";
 import type { RootState } from "@/app/store";
+import {
+  apiGetModelJobsList,
+  ModelJob,
+  ModelJobsListParams,
+  ModelJobStatus,
+  ModelJobType,
+} from "@/api/modules/model-job";
 
 type Filters = {
   search: string | null;
-  status: PaymentStatus | null;
+  status: ModelJobStatus | null;
+  type: ModelJobType | null;
   createdFrom?: string | null;
   createdTo?: string | null;
 };
@@ -21,7 +23,7 @@ type DateRange = {
 };
 
 type State = {
-  items: PaymentFull[];
+  items: ModelJob[];
   page: number;
   totalPages: number;
   totalItems: number;
@@ -38,31 +40,36 @@ const initialState: State = {
   filters: {
     search: null,
     status: null,
+    type: null,
     createdFrom: null,
     createdTo: null,
   },
   status: "idle",
 };
 
-export const fetchAdminPayments = createAsyncThunk<
-  PaginationResult<PaymentFull>,
-  PaymentsListParams,
+export const fetchAdminModelJobsList = createAsyncThunk<
+  PaginationResult<ModelJob>,
+  ModelJobsListParams,
   { state: RootState }
->("adminPayments/fetchPage", async ({ page = 1, limit = 50 }, { getState }) => {
-  const { filters } = getState().adminPayments;
+>(
+  "adminModelJobs/fetchPage",
+  async ({ page = 1, limit = 50 }, { getState }) => {
+    const { filters } = getState().adminModelJobs;
 
-  return apiGetPayments({
-    page,
-    limit,
-    search: filters.search ?? undefined,
-    status: filters.status ?? undefined,
-    createdFrom: filters.createdFrom ?? undefined,
-    createdTo: filters.createdTo ?? undefined,
-  });
-});
+    return apiGetModelJobsList({
+      page,
+      limit,
+      search: filters.search ?? undefined,
+      status: filters.status ?? undefined,
+      type: filters.type ?? undefined,
+      createdFrom: filters.createdFrom ?? undefined,
+      createdTo: filters.createdTo ?? undefined,
+    });
+  }
+);
 
-const adminPaymentsSlice = createSlice({
-  name: "adminPayments",
+const adminModelJobsSlice = createSlice({
+  name: "adminModelJobs",
   initialState,
   reducers: {
     resetState: () => initialState,
@@ -77,8 +84,12 @@ const adminPaymentsSlice = createSlice({
       state.filters.search = action.payload;
       state.page = 1;
     },
-    setStatus(state, action: PayloadAction<PaymentStatus | null>) {
+    setStatus(state, action: PayloadAction<ModelJobStatus | null>) {
       state.filters.status = action.payload;
+      state.page = 1;
+    },
+    setType(state, action: PayloadAction<ModelJobType | null>) {
+      state.filters.type = action.payload;
       state.page = 1;
     },
     setDateRange(state, action: PayloadAction<DateRange>) {
@@ -89,11 +100,11 @@ const adminPaymentsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchAdminPayments.pending, (state) => {
+      .addCase(fetchAdminModelJobsList.pending, (state) => {
         state.status = "loading";
         state.error = undefined;
       })
-      .addCase(fetchAdminPayments.fulfilled, (state, action) => {
+      .addCase(fetchAdminModelJobsList.fulfilled, (state, action) => {
         const { items, meta } = action.payload;
         state.items = items;
         state.page = meta.currentPage;
@@ -101,7 +112,7 @@ const adminPaymentsSlice = createSlice({
         state.totalItems = meta.totalItems ?? state.totalItems;
         state.status = "idle";
       })
-      .addCase(fetchAdminPayments.rejected, (state, action) => {
+      .addCase(fetchAdminModelJobsList.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message || "Failed to load";
       });
@@ -114,7 +125,8 @@ export const {
   setPage,
   setSearch,
   setStatus,
+  setType,
   setDateRange,
-} = adminPaymentsSlice.actions;
+} = adminModelJobsSlice.actions;
 
-export default adminPaymentsSlice.reducer;
+export default adminModelJobsSlice.reducer;

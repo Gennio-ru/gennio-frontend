@@ -31,7 +31,12 @@ export default function HeaderNav() {
   return (
     <div className="grid grid-cols-12 gap-4 items-center py-2 w-full">
       {/* 🔹 Левая часть (бургер + логотип) — 2 колонки на md+, 6 на мобилках */}
-      <div className="col-span-6 md:col-span-2 flex items-center gap-4">
+      <div
+        className={cn(
+          "col-span-6 flex items-center gap-4",
+          showAdminMenu ? "lg:col-span-2" : "md:col-span-2"
+        )}
+      >
         <SidebarToggleButton />
 
         <Link to="/prompts" className="text-xl font-bold text-base-content">
@@ -44,7 +49,12 @@ export default function HeaderNav() {
       </div>
 
       {/* 🔹 Центральная часть (меню) — 8 колонок, скрыто до md */}
-      <nav className="hidden md:flex md:col-span-6 items-center justify-start gap-8 text-sm">
+      <nav
+        className={cn(
+          "hidden items-center justify-start gap-8 text-sm",
+          showAdminMenu ? "lg:flex lg:col-span-6" : "md:flex md:col-span-6"
+        )}
+      >
         {menuItems.map((item) => (
           <NavLink
             key={item.label}
@@ -71,7 +81,12 @@ export default function HeaderNav() {
       </nav>
 
       {/* 🔹 Правая часть (UserMenu / Войти) — 6 колонок на мобилках, 2 на md+ */}
-      <div className="col-span-6 md:col-span-4 flex justify-end items-center gap-4 text-sm text-base-content/80">
+      <div
+        className={cn(
+          "col-span-6 flex justify-end items-center gap-4 text-sm text-base-content/80",
+          showAdminMenu ? "lg:col-span-4" : "md:col-span-4"
+        )}
+      >
         {!showAdminMenu && isAuth && (
           <span className="text-nowrap text-base">Токены: {user.tokens}</span>
         )}

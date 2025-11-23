@@ -11,11 +11,11 @@ export const adminHeaderMenu: NavItem[] = [
   { label: "Категории", href: "/admin/categories" },
   { label: "Платежи", href: "/admin/payments" },
   { label: "Пользователи", href: "/admin/users" },
+  { label: "Генерации", href: "/admin/model-jobs" },
 ];
 
 export const aiGenerationsMenu: NavItem[] = [
   { label: "Готовые шаблоны", href: "/prompts" },
   { label: "Генерация картинок", href: "/generate-image" },
   { label: "Обработка фото", href: "/edit-image" },
-  // { label: "Генерация текста", href: "/generate-text" },
 ];

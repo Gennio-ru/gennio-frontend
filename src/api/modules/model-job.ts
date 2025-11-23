@@ -1,14 +1,20 @@
 import api from "../client";
-import type { operations } from "../types.gen";
+import type { components, operations } from "../types.gen";
 
 //
 // ==== Entity Types ====
 //
 
-export type ModelJob =
-  operations["ModelJobController_startImageEditByPromptId"]["responses"]["201"]["content"]["application/json"];
-export type ModelJobFull =
-  operations["ModelJobController_findOne"]["responses"]["200"]["content"]["application/json"];
+export type ModelJob = components["schemas"]["ModelJobDto"];
+export type ModelJobFull = components["schemas"]["ModelJobFullDto"];
+export type ModelJobStatus = components["schemas"]["ModelJobStatusType"];
+export type ModelJobType = components["schemas"]["ModelJobType"];
+
+// Генерация, который возвращается в списке
+export type ModelJobsListResponse =
+  operations["ModelJobController_findMany"]["responses"]["200"]["content"]["application/json"];
+export type ModelJobsListParams =
+  operations["ModelJobController_findMany"]["parameters"]["query"];
 
 // Пейлоады
 export type StartImageEditByPromptIdPayload =
@@ -22,9 +28,19 @@ export type StartImageGenerateByPromptTextPayload =
 // ==== API ====
 //
 
+// Список генераций с пагинацией
+export async function apiGetModelJobsList(
+  params?: ModelJobsListParams
+): Promise<ModelJobsListResponse> {
+  const { data } = await api.get<ModelJobsListResponse>("/model-job", {
+    params,
+  });
+  return data;
+}
+
 // Получить данные об обработке
-export async function apiGetModelJob(id: string): Promise<ModelJob> {
-  const { data } = await api.get<ModelJob>(`/model-job/${id}`);
+export async function apiGetModelJob(id: string): Promise<ModelJobFull> {
+  const { data } = await api.get<ModelJobFull>(`/model-job/${id}`);
   return data;
 }
 

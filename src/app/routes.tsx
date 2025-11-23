@@ -29,6 +29,9 @@ const ModelJobResultPage = lazy(
 const PromptsAdminPage = lazy(() => import("@/pages/admin/PromptsListPage"));
 const PaymentsAdminPage = lazy(() => import("@/pages/admin/PaymentsListPage"));
 const UsersAdminPage = lazy(() => import("@/pages/admin/UsersListPage"));
+const ModelJobsAdminPage = lazy(
+  () => import("@/pages/admin/ModelJobsListPage")
+);
 const CategoriesAdminPage = lazy(
   () => import("@/pages/admin/CategoriesListPage")
 );
@@ -150,6 +153,14 @@ export function AppRoutes() {
           element={
             <Suspense fallback={<Loader />}>
               <UsersAdminPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="model-jobs/*"
+          element={
+            <Suspense fallback={<Loader />}>
+              <ModelJobsAdminPage />
             </Suspense>
           }
         />

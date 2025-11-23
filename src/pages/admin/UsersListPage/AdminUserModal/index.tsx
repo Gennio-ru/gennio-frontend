@@ -25,6 +25,10 @@ import {
 } from "@/api/modules/users";
 import { fetchAdminUsersList } from "@/features/admin-users/adminUserSlice";
 import { customToast } from "@/lib/customToast";
+import {
+  resetFilters,
+  setSearch,
+} from "@/features/admin-payments/adminPaymentSlice";
 
 export default function AdminUserInfoModal() {
   const { userId } = useParams<{ userId: string }>();
@@ -242,6 +246,18 @@ export default function AdminUserInfoModal() {
                   </div>
                 </div>
               </section>
+
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => {
+                    dispatch(resetFilters());
+                    dispatch(setSearch(user.email));
+                    navigate("/admin/payments");
+                  }}
+                >
+                  Платежи
+                </Button>
+              </div>
 
               {/* Блокировка / разблокировка */}
               <section className="space-y-2">

@@ -9,6 +9,7 @@ import {
   showMobileSidebar,
 } from "@/features/app/appSlice";
 import { Menu, XIcon } from "lucide-react";
+import { useAuth } from "@/features/auth/useAuth";
 
 type NavItem = { label: string; href: string; external?: boolean };
 
@@ -55,13 +56,21 @@ export function SidebarToggleButton({
   label?: string;
 }) {
   const dispatch = useAppDispatch();
+  const { user } = useAuth();
+
+  const isAdminPage =
+    user?.role === "admin" && location.pathname.startsWith("/admin");
 
   return (
     <button
       type="button"
       aria-label={label}
       onClick={() => dispatch(showMobileSidebar())}
-      className={cn("md:hidden cursor-pointer", className)}
+      className={cn(
+        "cursor-pointer",
+        isAdminPage ? "lg:hidden" : "md:hidden",
+        className
+      )}
     >
       <Menu size={28} />
     </button>

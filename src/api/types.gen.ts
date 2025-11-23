@@ -423,6 +423,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/model-job": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить список генераций с фильтрами и пагинацией */
+        get: operations["ModelJobController_findMany"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/model-job/{id}": {
         parameters: {
             query?: never;
@@ -984,6 +1001,57 @@ export interface components {
          * @enum {string}
          */
         ModelTariffCode: "TEXT_BASIC" | "TEXT_PRO" | "IMAGE_BASIC_GENERATE" | "IMAGE_BASIC_EDIT" | "IMAGE_PRO_GENERATE" | "IMAGE_PRO_EDIT";
+        ModelJobDto: {
+            model: components["schemas"]["ModelType"];
+            type: components["schemas"]["ModelJobType"];
+            status: components["schemas"]["ModelJobStatusType"];
+            /** @example Мягкое освещение, крупный план */
+            text: string | null;
+            /** @example Мягкое освещение, крупный план */
+            promptId: string | null;
+            /** @example user-123 */
+            userId: string;
+            user: components["schemas"]["UserDto"] | null;
+            /**
+             * Format: uuid
+             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
+             */
+            inputFileId: string | null;
+            /**
+             * Format: uuid
+             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
+             */
+            outputFileId: string | null;
+            /**
+             * Format: uuid
+             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
+             */
+            outputPreviewFileId: string | null;
+            outputText: string | null;
+            tariffCode: components["schemas"]["ModelTariffCode"];
+            /**
+             * @description Сколько кредитов списано за эту задачу
+             * @example 8
+             */
+            tokensCharged: number;
+            /** @example {
+             *       "width": 400,
+             *       "height": 300
+             *     } */
+            usedTokens: Record<string, never> | null;
+            /** @example OpenAI timeout error */
+            error: string | null;
+            /** Format: date-time */
+            startedAt: string | null;
+            /** Format: date-time */
+            finishedAt: string | null;
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
         ModelJobFullDto: {
             model: components["schemas"]["ModelType"];
             type: components["schemas"]["ModelJobType"];
@@ -1053,57 +1121,6 @@ export interface components {
              */
             text: string;
             inputFileId: string;
-        };
-        ModelJobDto: {
-            model: components["schemas"]["ModelType"];
-            type: components["schemas"]["ModelJobType"];
-            status: components["schemas"]["ModelJobStatusType"];
-            /** @example Мягкое освещение, крупный план */
-            text: string | null;
-            /** @example Мягкое освещение, крупный план */
-            promptId: string | null;
-            /** @example user-123 */
-            userId: string;
-            user: components["schemas"]["UserDto"] | null;
-            /**
-             * Format: uuid
-             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
-             */
-            inputFileId: string | null;
-            /**
-             * Format: uuid
-             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
-             */
-            outputFileId: string | null;
-            /**
-             * Format: uuid
-             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
-             */
-            outputPreviewFileId: string | null;
-            outputText: string | null;
-            tariffCode: components["schemas"]["ModelTariffCode"];
-            /**
-             * @description Сколько кредитов списано за эту задачу
-             * @example 8
-             */
-            tokensCharged: number;
-            /** @example {
-             *       "width": 400,
-             *       "height": 300
-             *     } */
-            usedTokens: Record<string, never> | null;
-            /** @example OpenAI timeout error */
-            error: string | null;
-            /** Format: date-time */
-            startedAt: string | null;
-            /** Format: date-time */
-            finishedAt: string | null;
-            /** Format: uuid */
-            id: string;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
         };
         /** @enum {string} */
         ErrorCode: "TOKENS_NOT_ENOUGH" | "MODEJ_JOB_TYPE_NOT_FOUND" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "MODERATION_BLOCKED" | "UNAUTHORIZED" | "EMAIL_NOT_CONFIRMED" | "ACCOUNT_IS_BLOCKED" | "FORBIDDEN" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
@@ -2145,6 +2162,41 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    ModelJobController_findMany: {
+        parameters: {
+            query?: {
+                /** @description Общий поиск */
+                search?: string;
+                /** @description Фильтр по типу генерации */
+                type?: "image-edit-by-prompt-id" | "image-edit-by-prompt-text" | "image-generate-by-prompt-text" | "text-generate";
+                /** @description Фильтр по статусу генерации */
+                status?: "queued" | "processing" | "succeeded" | "failed";
+                /** @description Дата создания — от */
+                createdFrom?: string;
+                /** @description Дата создания — до */
+                createdTo?: string;
+                limit?: number;
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: components["schemas"]["ModelJobDto"][];
+                        meta: components["schemas"]["PaginationMetaDto"];
+                    };
+                };
             };
         };
     };
