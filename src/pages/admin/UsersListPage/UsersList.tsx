@@ -111,9 +111,9 @@ export default function AdminUsersList() {
               )}
             </td>
 
-            {/* Кредиты */}
+            {/* Токены */}
             <td className="p-3 align-top">
-              <div className="text-sm font-medium">{user.tokens} кредитов</div>
+              <div className="text-sm font-medium">{user.tokens} токенов</div>
             </td>
 
             {/* Даты */}
@@ -218,7 +218,7 @@ export default function AdminUsersList() {
               <tr>
                 <th className="p-3 text-left">Пользователь</th>
                 <th className="p-3 text-left">Статус</th>
-                <th className="p-3 text-left">Кредиты</th>
+                <th className="p-3 text-left">Токены</th>
                 <th className="p-3 text-left hidden lg:table-cell">Даты</th>
                 <th className="p-3 text-right">Действия</th>
               </tr>

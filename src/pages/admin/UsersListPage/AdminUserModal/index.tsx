@@ -195,7 +195,7 @@ export default function AdminUserInfoModal() {
                 )}
               </section>
 
-              {/* Роль и кредиты */}
+              {/* Роль и токены */}
               <section className="rounded-box bg-base-200/40 p-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                 <div>
                   <div className="text-xs text-base-content/60 mb-0.5">
@@ -205,7 +205,7 @@ export default function AdminUserInfoModal() {
                 </div>
                 <div>
                   <div className="text-xs text-base-content/60 mb-0.5">
-                    Баланс кредитов
+                    Баланс токенов
                   </div>
                   <div className="font-medium">{user.tokens}</div>
                 </div>

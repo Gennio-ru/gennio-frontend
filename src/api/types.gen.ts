@@ -746,7 +746,7 @@ export interface components {
             /** @example user */
             role: components["schemas"]["UserRole"];
             /**
-             * @description Баланс кредитов
+             * @description Баланс токенов
              * @example 100
              */
             tokens: number;
@@ -1030,7 +1030,7 @@ export interface components {
             outputText: string | null;
             tariffCode: components["schemas"]["ModelTariffCode"];
             /**
-             * @description Сколько кредитов списано за эту задачу
+             * @description Сколько токенов списано за эту задачу
              * @example 8
              */
             tokensCharged: number;
@@ -1081,7 +1081,7 @@ export interface components {
             outputText: string | null;
             tariffCode: components["schemas"]["ModelTariffCode"];
             /**
-             * @description Сколько кредитов списано за эту задачу
+             * @description Сколько токенов списано за эту задачу
              * @example 8
              */
             tokensCharged: number;
@@ -2251,7 +2251,7 @@ export interface operations {
                     "application/json": components["schemas"]["ModelJobDto"];
                 };
             };
-            /** @description Бизнес-ошибка (например, не хватает кредитов) */
+            /** @description Бизнес-ошибка (например, не хватает токенов) */
             400: {
                 headers: {
                     [name: string]: unknown;
@@ -2284,7 +2284,7 @@ export interface operations {
                     "application/json": components["schemas"]["ModelJobDto"];
                 };
             };
-            /** @description Бизнес-ошибка (например, не хватает кредитов) */
+            /** @description Бизнес-ошибка (например, не хватает токенов) */
             400: {
                 headers: {
                     [name: string]: unknown;
@@ -2317,7 +2317,7 @@ export interface operations {
                     "application/json": components["schemas"]["ModelJobDto"];
                 };
             };
-            /** @description Бизнес-ошибка (например, не хватает кредитов) */
+            /** @description Бизнес-ошибка (например, не хватает токенов) */
             400: {
                 headers: {
                     [name: string]: unknown;
