@@ -1,4 +1,3 @@
-import { UploadFileResponse } from "@/api/modules/files";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Cropper, { Area } from "react-easy-crop";
 import IconButton from "./IconButton";
@@ -10,14 +9,15 @@ import { SegmentedControl } from "./SegmentedControl";
 import Button from "./Button";
 import { CustomRange } from "./CustomRange";
 import Loader from "./Loader";
+import { FileDto } from "@/api/modules/files";
 
 type ImageUploadWithCropProps = {
   /** Уже загруженная картинка (например, из бэка) */
-  value?: UploadFileResponse | null;
+  value?: FileDto | null;
   /** Сообщаем наружу, что превью поменялось (или null, если удалили) */
-  onChange?: (file: UploadFileResponse | null) => void;
+  onChange?: (file: FileDto | null) => void;
   /** Колбек, который получит уже обрезанный файл и вернёт данные сохранённого изображения */
-  onUpload: (file: File) => Promise<UploadFileResponse> | UploadFileResponse;
+  onUpload: (file: File) => Promise<FileDto> | FileDto;
   /** Разрешённые mime-типы, по умолчанию только картинки */
   accept?: string;
   /** Макс. размер файла (МБ) */
@@ -27,7 +27,7 @@ type ImageUploadWithCropProps = {
   /** Название файла по умолчанию при сохранении */
   outputFileName?: string;
   /** Опционально: колбек для удаления файла на бэке (DB/S3) */
-  onRemove?: (file: UploadFileResponse) => Promise<void> | void;
+  onRemove?: (file: FileDto) => Promise<void> | void;
 };
 
 const ASPECT_PRESETS = [
@@ -52,7 +52,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
   value,
   onChange,
   onUpload,
-  accept = "image/*",
+  accept = "image/png,image/jpg,image/jpeg,image/webp",
   maxFileSizeMb = 10,
   initialAspectPreset = "square",
   outputFileName = "cropped-image.jpg",
@@ -76,9 +76,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     "portrait" | "square" | "landscape"
   >(initialAspectPreset);
 
-  const [previewImage, setPreviewImage] = useState<UploadFileResponse | null>(
-    null
-  );
+  const [previewImage, setPreviewImage] = useState<FileDto | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -300,7 +298,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
               </div>
 
               <div className="mt-4 text-sm text-base-content/60">
-                Форматы JPEG, PNG, WEBP не более 5MB
+                Форматы JPEG, PNG, WEBP не более 10MB
               </div>
             </div>
           </div>

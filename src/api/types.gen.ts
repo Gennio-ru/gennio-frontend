@@ -4,6 +4,23 @@
  */
 
 export interface paths {
+    "/api/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить список промптов с фильтрами и пагинацией */
+        get: operations["UsersController_findMany"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/users/{id}": {
         parameters: {
             query?: never;
@@ -12,13 +29,47 @@ export interface paths {
             cookie?: never;
         };
         /** Получить пользователя по id */
-        get: operations["UsersController_getOne"];
+        get: operations["UsersController_findOne"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/users/{id}/block": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Заблокировать пользователя */
+        patch: operations["UsersController_blockUser"];
+        trace?: never;
+    };
+    "/api/users/{id}/unblock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Разблокировать пользователя */
+        patch: operations["UsersController_unblockUser"];
         trace?: never;
     };
     "/api/auth/register/email": {
@@ -654,6 +705,13 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        PaginationMetaDto: {
+            totalItems: number;
+            itemCount: number;
+            itemsPerPage: number;
+            totalPages: number;
+            currentPage: number;
+        };
         /** @enum {string} */
         UserRole: "user" | "admin";
         UserDto: {
@@ -680,12 +738,37 @@ export interface components {
              * @example true
              */
             isActive: boolean;
-            /** @example false */
+            /**
+             * @description Подтверждён ли email
+             * @example false
+             */
             isEmailVerified: boolean;
-            /** @example true */
+            /**
+             * @description Подтверждён ли телефон
+             * @example true
+             */
             isPhoneVerified: boolean;
+            /**
+             * @description Заблокирован ли пользователь
+             * @example false
+             */
+            isBlocked: boolean;
+            /**
+             * Format: date-time
+             * @description Дата блокировки пользователя
+             */
+            blockedAt?: string | null;
+            /** @description Причина блокировки (видна только администраторам) */
+            blockedReason?: string | null;
             /** Format: date-time */
             lastLoginAt?: string | null;
+        };
+        BlockUserDto: {
+            /**
+             * @description Причина блокировки (опционально)
+             * @example Спам / злоупотребление сервисом
+             */
+            reason?: string | null;
         };
         RegisterByEmailDto: {
             /** @example user@example.com */
@@ -747,13 +830,6 @@ export interface components {
              * @example NewStrongPassword123!
              */
             password: string;
-        };
-        PaginationMetaDto: {
-            totalItems: number;
-            itemCount: number;
-            itemsPerPage: number;
-            totalPages: number;
-            currentPage: number;
         };
         FileDto: {
             /** @example uploads/2025/09/04/photo.png */
@@ -887,33 +963,6 @@ export interface components {
         UploadDto: {
             /** Format: binary */
             file: string;
-        };
-        UploadFileResponseDto: {
-            /** @example f47ac10b-58cc-4372-a567-0e02b2c3d479 */
-            id: string;
-            /** @example uploads/2025/09/04/file.png */
-            key: string;
-            /** @example https://cdn.example.com/uploads/2025/09/04/file.png */
-            url: string;
-            /** @example image/png */
-            contentType: string | null;
-            /**
-             * @description Размер файла в байтах
-             * @example 204800
-             */
-            size: number;
-            /**
-             * @description Ширина файла в пикселях
-             * @example 1024
-             */
-            widthPx?: number | null;
-            /**
-             * @description Высота файла в пикселях
-             * @example 768
-             */
-            heightPx?: number | null;
-            /** Format: date-time */
-            createdAt: string;
         };
         DeleteFileResponseDto: {
             /** @example true */
@@ -1057,7 +1106,7 @@ export interface components {
             updatedAt: string;
         };
         /** @enum {string} */
-        ErrorCode: "TOKENS_NOT_ENOUGH" | "MODEJ_JOB_TYPE_NOT_FOUND" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "MODERATION_BLOCKED" | "UNAUTHORIZED" | "EMAIL_NOT_CONFIRMED" | "FORBIDDEN" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
+        ErrorCode: "TOKENS_NOT_ENOUGH" | "MODEJ_JOB_TYPE_NOT_FOUND" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "MODERATION_BLOCKED" | "UNAUTHORIZED" | "EMAIL_NOT_CONFIRMED" | "ACCOUNT_IS_BLOCKED" | "FORBIDDEN" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
         ErrorInfoDto: {
             code: components["schemas"]["ErrorCode"];
             /**
@@ -1391,7 +1440,39 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    UsersController_getOne: {
+    UsersController_findMany: {
+        parameters: {
+            query?: {
+                search?: string;
+                /** @description Фильтр по роли пользователя */
+                role?: components["schemas"]["UserRole"];
+                /** @description Минимальное количество токенов */
+                tokensMin?: number;
+                /** @description Максимальное количество токенов */
+                tokensMax?: number;
+                limit?: number;
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: components["schemas"]["UserDto"][];
+                        meta: components["schemas"]["PaginationMetaDto"];
+                    };
+                };
+            };
+        };
+    };
+    UsersController_findOne: {
         parameters: {
             query?: never;
             header?: never;
@@ -1402,6 +1483,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Найденный пользователь */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -1409,6 +1491,75 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["UserDto"];
                 };
+            };
+            /** @description Пользователь не найден */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UsersController_blockUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BlockUserDto"];
+            };
+        };
+        responses: {
+            /** @description Пользователь заблокирован */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserDto"];
+                };
+            };
+            /** @description Пользователь не найден */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UsersController_unblockUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Пользователь разблокирован */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserDto"];
+                };
+            };
+            /** @description Пользователь не найден */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -1888,7 +2039,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UploadFileResponseDto"];
+                    "application/json": components["schemas"]["FileDto"];
                 };
             };
         };
@@ -1915,7 +2066,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UploadFileResponseDto"];
+                    "application/json": components["schemas"]["FileDto"];
                 };
             };
         };

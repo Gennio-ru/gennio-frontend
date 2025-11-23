@@ -10,7 +10,7 @@ import { ImageUploadWithCrop } from "@/shared/ui/ImageUploadWithCrop";
 import Textarea from "@/shared/ui/Textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import z from "zod";
@@ -38,6 +38,8 @@ export default function EditImageByCustomPromptPage() {
     mode: "onSubmit",
     reValidateMode: "onSubmit",
   });
+
+  const inputFileId = useWatch({ control, name: "inputFileId" });
 
   const onSubmit = async (data: ModelJobFormValues) => {
     try {
@@ -104,29 +106,31 @@ export default function EditImageByCustomPromptPage() {
         </div>
 
         {/* Промпт */}
-        <div className="relative mb-8">
-          <div className="mb-3 text-base">Введите текст промпта</div>
+        {inputFileId && (
+          <div className="relative mb-8">
+            <div className="mb-3 text-base">Введите текст промпта</div>
 
-          <Controller
-            name="text"
-            control={control}
-            render={({ field }) => (
-              <Textarea
-                {...field}
-                rows={1}
-                placeholder="Например: “сделай в стиле акварели, но сохрани композицию”"
-                className="w-full rounded-field"
-                onChange={(e) => {
-                  field.onChange(e);
-                  clearErrors("text");
-                }}
-                errored={!!errors.text}
-                errorMessage={errors.text?.message}
-                maxLength={200}
-              />
-            )}
-          />
-        </div>
+            <Controller
+              name="text"
+              control={control}
+              render={({ field }) => (
+                <Textarea
+                  {...field}
+                  rows={1}
+                  placeholder="Например: “сделай в стиле акварели, но сохрани композицию”"
+                  className="w-full rounded-field"
+                  onChange={(e) => {
+                    field.onChange(e);
+                    clearErrors("text");
+                  }}
+                  errored={!!errors.text}
+                  errorMessage={errors.text?.message}
+                  maxLength={200}
+                />
+              )}
+            />
+          </div>
+        )}
 
         {/* Кнопка */}
         <div className="pt-4 flex justify-center">

@@ -12,7 +12,7 @@ import Loader from "@/shared/ui/Loader";
 import Textarea from "@/shared/ui/Textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import z from "zod";
@@ -44,6 +44,8 @@ export default function EditImageByPlatformPromptPage() {
     mode: "onSubmit",
     reValidateMode: "onSubmit",
   });
+
+  const inputFileId = useWatch({ control, name: "inputFileId" });
 
   useEffect(() => {
     if (!promptId) return;
@@ -127,29 +129,33 @@ export default function EditImageByPlatformPromptPage() {
         </div>
 
         {/* Промпт */}
-        <div className="relative mb-8">
-          <div className="mb-3 text-base">Введите детали (если необходимо)</div>
+        {inputFileId && (
+          <div className="relative mb-8">
+            <div className="mb-3 text-base">
+              Введите детали (если необходимо)
+            </div>
 
-          <Controller
-            name="text"
-            control={control}
-            render={({ field }) => (
-              <Textarea
-                {...field}
-                rows={1}
-                placeholder="Например: Добавь красный колпак на голову"
-                className="w-full rounded-field"
-                onChange={(e) => {
-                  field.onChange(e);
-                  clearErrors("text");
-                }}
-                errored={!!errors.text}
-                errorMessage={errors.text?.message}
-                maxLength={200}
-              />
-            )}
-          />
-        </div>
+            <Controller
+              name="text"
+              control={control}
+              render={({ field }) => (
+                <Textarea
+                  {...field}
+                  rows={1}
+                  placeholder="Например: Добавь красный колпак на голову"
+                  className="w-full rounded-field"
+                  onChange={(e) => {
+                    field.onChange(e);
+                    clearErrors("text");
+                  }}
+                  errored={!!errors.text}
+                  errorMessage={errors.text?.message}
+                  maxLength={200}
+                />
+              )}
+            />
+          </div>
+        )}
 
         {/* Кнопка */}
         <div className="pt-4 flex justify-center">

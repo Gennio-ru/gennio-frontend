@@ -4,6 +4,7 @@ import authReducer from "@/features/auth/authSlice";
 import promptsReducer from "@/features/prompts/promptSlice";
 import adminPromptsReducer from "@/features/admin-prompts/adminPromptSlice";
 import adminPaymentsReducer from "@/features/admin-payments/adminPaymentSlice";
+import adminUsersReducer from "@/features/admin-users/adminUserSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     prompts: promptsReducer,
     adminPrompts: adminPromptsReducer,
     adminPayments: adminPaymentsReducer,
+    adminUsers: adminUsersReducer,
   },
 });
 

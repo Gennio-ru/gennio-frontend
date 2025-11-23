@@ -10,6 +10,7 @@ export const adminHeaderMenu: NavItem[] = [
   { label: "Промпты", href: "/admin/prompts" },
   { label: "Категории", href: "/admin/categories" },
   { label: "Платежи", href: "/admin/payments" },
+  { label: "Пользователи", href: "/admin/users" },
 ];
 
 export const aiGenerationsMenu: NavItem[] = [

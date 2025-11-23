@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { selectAppTheme } from "@/features/app/appSlice";
@@ -26,7 +26,7 @@ import toast from "react-hot-toast";
 import Textarea from "@/shared/ui/Textarea";
 import Input from "@/shared/ui/Input";
 import CategoriesSelect from "@/shared/ui/CategoriesSelect";
-import { apiAIUploadFile, UploadFileResponse } from "@/api/modules/files";
+import { apiUploadFile, FileDto } from "@/api/modules/files";
 import { customToast } from "@/lib/customToast";
 import { ImageUploadWithCrop } from "@/shared/ui/ImageUploadWithCrop";
 import { fetchAdminPrompts } from "@/features/admin-prompts/adminPromptSlice";
@@ -75,9 +75,8 @@ export default function AdminPromptEditModal() {
     reValidateMode: "onSubmit",
   });
 
-  useEffect(() => {
-    if (!promptId) {
-      setPrompt(null);
+  const clearForm = useCallback(
+    () =>
       reset({
         title: "",
         description: "",
@@ -85,7 +84,14 @@ export default function AdminPromptEditModal() {
         text: "",
         beforeImageId: "",
         afterImageId: "",
-      });
+      }),
+    [reset]
+  );
+
+  useEffect(() => {
+    if (!promptId) {
+      setPrompt(null);
+      clearForm();
       return;
     }
 
@@ -107,10 +113,11 @@ export default function AdminPromptEditModal() {
         customToast.error(e);
       })
       .finally(() => setLoading(false));
-  }, [promptId, reset]);
+  }, [promptId, reset, clearForm]);
 
   const closeModal = () => {
     navigate("/admin/prompts", { replace: true });
+    clearForm();
   };
 
   const onSubmit = async (data: FormValues) => {
@@ -287,7 +294,7 @@ export default function AdminPromptEditModal() {
                       ? ({
                           id: field.value,
                           url: prompt.beforeImageUrl,
-                        } as UploadFileResponse)
+                        } as FileDto)
                       : null
                   }
                   onChange={(file) => {
@@ -302,13 +309,14 @@ export default function AdminPromptEditModal() {
                       throw new Error("Файл не передан");
                     }
 
-                    const res = await apiAIUploadFile(file);
+                    const res = await apiUploadFile(file);
 
                     if (!res || !res.id || !res.url) {
                       throw new Error("Не удалось загрузить файл");
                     }
 
                     field.onChange(res.id);
+                    setPrompt({ ...prompt, beforeImageUrl: res.url });
                     return res;
                   }}
                 />
@@ -337,7 +345,7 @@ export default function AdminPromptEditModal() {
                       ? ({
                           id: field.value,
                           url: prompt.afterImageUrl,
-                        } as UploadFileResponse)
+                        } as FileDto)
                       : null
                   }
                   onChange={(file) => {
@@ -352,13 +360,14 @@ export default function AdminPromptEditModal() {
                       throw new Error("Файл не передан");
                     }
 
-                    const res = await apiAIUploadFile(file);
+                    const res = await apiUploadFile(file);
 
                     if (!res || !res.id || !res.url) {
                       throw new Error("Не удалось загрузить файл");
                     }
 
                     field.onChange(res.id);
+                    setPrompt({ ...prompt, afterImageUrl: res.url });
                     return res;
                   }}
                 />

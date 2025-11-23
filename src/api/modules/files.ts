@@ -3,8 +3,6 @@ import type { components, operations } from "../types.gen";
 
 export type FileDto = components["schemas"]["FileDto"];
 
-export type UploadFileResponse =
-  operations["FilesController_upload"]["responses"][201]["content"]["application/json"];
 export type UploadFilePayload =
   operations["FilesController_upload"]["requestBody"]["content"]["application/json"];
 
@@ -14,32 +12,24 @@ export type GetFileResponse =
 export type DeleteFileResponse =
   operations["FilesController_remove"]["responses"][200]["content"]["application/json"];
 
-export async function apiUploadFile(file: File): Promise<UploadFileResponse> {
+export async function apiUploadFile(file: File): Promise<FileDto> {
   const formData = new FormData();
   formData.append("file", file);
 
-  const { data } = await api.post<UploadFileResponse>(
-    "/files/upload",
-    formData,
-    {
-      headers: { "Content-Type": "multipart/form-data" },
-    }
-  );
+  const { data } = await api.post<FileDto>("/files/upload", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 
   return data;
 }
 
-export async function apiAIUploadFile(file: File): Promise<UploadFileResponse> {
+export async function apiAIUploadFile(file: File): Promise<FileDto> {
   const formData = new FormData();
   formData.append("file", file);
 
-  const { data } = await api.post<UploadFileResponse>(
-    "/files/ai-upload",
-    formData,
-    {
-      headers: { "Content-Type": "multipart/form-data" },
-    }
-  );
+  const { data } = await api.post<FileDto>("/files/ai-upload", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 
   return data;
 }
