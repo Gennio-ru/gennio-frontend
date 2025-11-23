@@ -6,6 +6,7 @@ import adminPromptsReducer from "@/features/admin-prompts/adminPromptSlice";
 import adminPaymentsReducer from "@/features/admin-payments/adminPaymentSlice";
 import adminUsersReducer from "@/features/admin-users/adminUserSlice";
 import adminModelJobsReducer from "@/features/admin-model-jobs/adminModelJobSlice";
+import adminTransactionsReducer from "@/features/admin-transactions/adminTransactionSlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     adminPayments: adminPaymentsReducer,
     adminUsers: adminUsersReducer,
     adminModelJobs: adminModelJobsReducer,
+    adminTransactions: adminTransactionsReducer,
   },
 });
 

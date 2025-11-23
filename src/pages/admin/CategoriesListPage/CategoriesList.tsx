@@ -9,6 +9,7 @@ import {
 import EditCategoryModal from "./EditCategoryModal";
 import { Edit as EditIcon, Trash2 as TrashIcon } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { cn } from "@/lib/utils";
 
 export default function CategoriesAdminList() {
   const [editOpen, setEditOpen] = useState(false);
@@ -36,7 +37,6 @@ export default function CategoriesAdminList() {
     fetchCategories();
   }, [fetchCategories]);
 
-  // 🕓 debounce — применяем введённый текст только спустя 300 мс после остановки ввода
   useEffect(() => {
     const timer = setTimeout(() => {
       setSearchValue(searchLocal);
@@ -109,8 +109,11 @@ export default function CategoriesAdminList() {
 
           <tbody>
             {!isLoading &&
-              filtered.map((category) => (
-                <tr key={category.id}>
+              filtered.map((category, index) => (
+                <tr
+                  key={category.id}
+                  className={cn(index % 2 === 0 && "bg-base-200/40")}
+                >
                   <td className="p-3">{category.name}</td>
                   <td className="p-3 hidden sm:table-cell">
                     {category.description || "-"}

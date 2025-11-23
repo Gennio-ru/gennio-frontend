@@ -26,6 +26,8 @@ import {
   ModelJob,
 } from "@/api/modules/model-job";
 import AdminModelJobModal from "./AdminModelJobModal";
+import { Tooltip } from "@/shared/ui/Tooltip";
+import { cn } from "@/lib/utils";
 
 type ModelJobStatusSelectItem = {
   value: ModelJobStatus;
@@ -98,7 +100,7 @@ export default function AdminModelJobsList() {
 
   const rows = useMemo(
     () =>
-      items.map((job: ModelJob) => {
+      items.map((job: ModelJob, index) => {
         const created =
           job.createdAt && new Date(job.createdAt).toLocaleString();
 
@@ -117,12 +119,14 @@ export default function AdminModelJobsList() {
           job.user?.email || job.user?.phone || job.userId || "—";
 
         return (
-          <tr key={job.id}>
+          <tr key={job.id} className={cn(index % 2 === 0 && "bg-base-200/40")}>
             {/* Запрос / текст */}
             <td className="p-3 align-top max-w-[260px]">
-              <div className="mt-1 text-xs text-base-content/60">
-                ID: {job.id.slice(0, 8)}…
-              </div>
+              <Tooltip content={job.id}>
+                <div className="mt-1 text-xs text-base-content/60">
+                  ID: {job.id.slice(0, 8)}…
+                </div>
+              </Tooltip>
             </td>
 
             {/* Пользователь */}
@@ -160,7 +164,7 @@ export default function AdminModelJobsList() {
             </td>
 
             {/* Действия */}
-            <td className="p-3 align-top">
+            <td className="p-3 align-top flex justify-center">
               <IconButton
                 onClick={() => navigate(`/admin/model-jobs/${job.id}`)}
                 icon={<Edit size={18} />}

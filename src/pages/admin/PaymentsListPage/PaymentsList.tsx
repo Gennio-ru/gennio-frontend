@@ -19,6 +19,7 @@ import { DateRangePicker } from "@/shared/ui/DateRangePicker";
 import CustomSelect from "@/shared/ui/CustomSelect";
 import { PaymentStatus } from "@/api/modules/payments";
 import AdminPaymentInfoModal from "./AdminPaymentInfoModal";
+import { cn } from "@/lib/utils";
 
 type PaymentStatusSelectItem = {
   value: PaymentStatus;
@@ -75,7 +76,7 @@ export default function PaymentsAdminList() {
 
   const rows = useMemo(
     () =>
-      items.map((payment) => {
+      items.map((payment, index) => {
         const amount = `${payment.amount} ${payment.currency}`;
         const created = new Date(payment.createdAt).toLocaleString();
         const updated = new Date(payment.updatedAt).toLocaleString();
@@ -95,7 +96,10 @@ export default function PaymentsAdminList() {
         else if (hasError) statusClass += "bg-error/20 text-error";
 
         return (
-          <tr key={payment.id}>
+          <tr
+            key={payment.id}
+            className={cn(index % 2 === 0 && "bg-base-200/40")}
+          >
             <td className="p-3">
               <div className="font-medium">{amount}</div>
               <div className="text-xs text-base-content/60">

@@ -21,6 +21,8 @@ import { Edit } from "lucide-react";
 
 import { UserRole } from "@/api/modules/users";
 import AdminUserInfoModal from "./AdminUserModal";
+import { Tooltip } from "@/shared/ui/Tooltip";
+import { cn } from "@/lib/utils";
 
 type RoleSelectItem = {
   value: UserRole;
@@ -75,7 +77,7 @@ export default function AdminUsersList() {
 
   const rows = useMemo(
     () =>
-      items.map((user) => {
+      items.map((user, index) => {
         const created =
           user.createdAt && new Date(user.createdAt).toLocaleString();
         const lastLogin =
@@ -90,19 +92,22 @@ export default function AdminUsersList() {
         else statusClass += "bg-success/20 text-success";
 
         return (
-          <tr key={user.id}>
+          <tr key={user.id} className={cn(index % 2 === 0 && "bg-base-200/40")}>
             {/* Пользователь */}
-            <td className="p-3 align-top">
+            <td className="p-3 align-middle">
               <div className="font-medium">
                 {user.email || user.phone || user.id}
               </div>
-              <div className="text-xs text-base-content/60">
-                ID: {user.id.slice(0, 8)}… • Роль: {user.role}
-              </div>
+
+              <Tooltip content={user.id}>
+                <div className="text-xs text-base-content/60">
+                  ID: {user.id.slice(0, 8)}… • Роль: {user.role}
+                </div>
+              </Tooltip>
             </td>
 
             {/* Статус */}
-            <td className="p-3 align-top">
+            <td className="p-3 align-middle">
               <div className={statusClass}>{statusLabel}</div>
               {user.blockedReason && (
                 <div className="mt-1 text-xs text-error/90">
@@ -112,12 +117,12 @@ export default function AdminUsersList() {
             </td>
 
             {/* Токены */}
-            <td className="p-3 align-top">
+            <td className="p-3 align-middle">
               <div className="text-sm font-medium">{user.tokens} токенов</div>
             </td>
 
             {/* Даты */}
-            <td className="p-3 text-xs hidden lg:table-cell align-top">
+            <td className="p-3 text-xs hidden lg:table-cell align-middle">
               {created && (
                 <div className="text-base-content/80">Создан: {created}</div>
               )}

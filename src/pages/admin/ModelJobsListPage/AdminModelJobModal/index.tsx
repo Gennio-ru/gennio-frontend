@@ -15,6 +15,7 @@ import { XCircle, XIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { apiGetModelJob, ModelJobFull } from "@/api/modules/model-job";
 import Button from "@/shared/ui/Button";
+import ImageThumb from "@/shared/ui/ImageThumb";
 
 export default function AdminModelJobModal() {
   const { modelJobId } = useParams<{ modelJobId: string }>();
@@ -272,36 +273,5 @@ export default function AdminModelJobModal() {
         )}
       </DialogContent>
     </Dialog>
-  );
-}
-
-type ImageThumbProps = {
-  label: string;
-  url: string | null;
-};
-
-function ImageThumb({ label, url }: ImageThumbProps) {
-  if (!url) {
-    return (
-      <div className="flex flex-col items-center gap-1 text-xs text-base-content/60 w-[96px]">
-        <span>{label}</span>
-        <div className="w-20 h-20 rounded-box border border-dashed border-base-300 flex items-center justify-center text-[10px] text-base-content/40">
-          нет
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col items-center gap-1 text-xs text-base-content/70 w-[96px]">
-      <span>{label}</span>
-      <a href={url} target="_blank" rel="noreferrer">
-        <img
-          src={url}
-          alt={label}
-          className="w-20 h-20 rounded-box border border-base-300 object-cover"
-        />
-      </a>
-    </div>
   );
 }

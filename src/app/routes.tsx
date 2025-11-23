@@ -35,6 +35,9 @@ const ModelJobsAdminPage = lazy(
 const CategoriesAdminPage = lazy(
   () => import("@/pages/admin/CategoriesListPage")
 );
+const TransactionsAdminPage = lazy(
+  () => import("@/pages/admin/TransactionsListPage")
+);
 
 export function AppRoutes() {
   return (
@@ -161,6 +164,15 @@ export function AppRoutes() {
           element={
             <Suspense fallback={<Loader />}>
               <ModelJobsAdminPage />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path="transactions"
+          element={
+            <Suspense fallback={<Loader />}>
+              <TransactionsAdminPage />
             </Suspense>
           }
         />

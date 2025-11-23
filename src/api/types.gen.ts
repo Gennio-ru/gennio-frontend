@@ -505,6 +505,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/transactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить список платежей с фильтрами и пагинацией */
+        get: operations["UserTokenTransactionsController_findMany"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/pricing/token-packs": {
         parameters: {
             query?: never;
@@ -1161,6 +1178,39 @@ export interface components {
              * @example Мягкое освещение, крупный план
              */
             text: string;
+        };
+        /**
+         * @description Причина изменения токенов
+         * @enum {string}
+         */
+        TokenTransactionReason: "JOB_CHARGE" | "JOB_REFUND" | "MANUAL_ADD" | "MANUAL_SUBTRACT" | "PAYMENT_PURCHASE" | "PAYMENT_REFUND" | "PROMO";
+        UserTokenTransactionDto: {
+            /**
+             * Format: uuid
+             * @description ID пользователя
+             */
+            userId: string;
+            /** @description Пользователь (если подгружен) */
+            user: components["schemas"]["UserDto"] | null;
+            /**
+             * @description Изменение баланса: +100 начисление, -20 списание
+             * @example 50
+             */
+            delta: number;
+            reason: components["schemas"]["TokenTransactionReason"];
+            /**
+             * Format: uuid
+             * @description ID задачи модели, если транзакция связана с выполнением задания
+             */
+            modelJobId?: string | null;
+            /** @description Доп. данные — тариф, промокод, пакет токенов и т.п. */
+            meta?: Record<string, never> | null;
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
         };
         /**
          * @description Уникальный идентификатор пакета
@@ -2324,6 +2374,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    UserTokenTransactionsController_findMany: {
+        parameters: {
+            query?: {
+                /** @description Поиск по userId, email, providerPaymentId, description */
+                search?: string;
+                /** @description Фильтр по направлению платежа */
+                delta?: number;
+                /** @description Фильтр по причине платежа */
+                reason?: "JOB_CHARGE" | "JOB_REFUND" | "MANUAL_ADD" | "MANUAL_SUBTRACT" | "PAYMENT_PURCHASE" | "PAYMENT_REFUND" | "PROMO";
+                /** @description Дата создания — от */
+                createdFrom?: string;
+                /** @description Дата создания — до */
+                createdTo?: string;
+                limit?: number;
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: components["schemas"]["UserTokenTransactionDto"][];
+                        meta: components["schemas"]["PaginationMetaDto"];
+                    };
                 };
             };
         };

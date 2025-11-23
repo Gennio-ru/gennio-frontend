@@ -12,6 +12,7 @@ export const adminHeaderMenu: NavItem[] = [
   { label: "Платежи", href: "/admin/payments" },
   { label: "Пользователи", href: "/admin/users" },
   { label: "Генерации", href: "/admin/model-jobs" },
+  { label: "Транзакции", href: "/admin/transactions" },
 ];
 
 export const aiGenerationsMenu: NavItem[] = [

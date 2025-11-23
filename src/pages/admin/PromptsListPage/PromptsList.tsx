@@ -16,6 +16,8 @@ import { apiDeletePrompt } from "@/api/modules/prompts";
 import toast from "react-hot-toast";
 import Loader from "@/shared/ui/Loader";
 import AdminPromptEditModal from "./AdminPromptEditModal";
+import ImageThumb from "@/shared/ui/ImageThumb";
+import { cn } from "@/lib/utils";
 
 export default function PromptsAdminList() {
   const dispatch = useAppDispatch();
@@ -77,16 +79,13 @@ export default function PromptsAdminList() {
 
   const rows = useMemo(
     () =>
-      items.map((prompt) => (
-        <tr key={prompt.id}>
+      items.map((prompt, index) => (
+        <tr key={prompt.id} className={cn(index % 2 === 0 && "bg-base-200/40")}>
+          <td className="p-3">
+            <ImageThumb url={prompt.afterImageUrl} />
+          </td>
           <td className="p-3">{prompt.title}</td>
-          <td className="p-3 hidden sm:table-cell">{prompt.type}</td>
-          <td className="p-3 hidden md:table-cell">
-            {prompt.category?.name || "-"}
-          </td>
-          <td className="p-3 hidden lg:table-cell">
-            {new Date(prompt.createdAt).toLocaleString()}
-          </td>
+          <td className="p-3 table-cell">{prompt.category?.name || "-"}</td>
           <td className="p-3">
             <div className="flex items-center gap-2">
               <Button
@@ -147,10 +146,10 @@ export default function PromptsAdminList() {
           <table className="w-full text-sm">
             <thead className="bg-base-100 text-base-content/70 border-b border-base-300">
               <tr>
+                <th />
                 <th className="p-3 text-left">Title</th>
-                <th className="p-3 text-left hidden sm:table-cell">Type</th>
-                <th className="p-3 text-left hidden md:table-cell">Category</th>
-                <th className="p-3 text-left hidden lg:table-cell">Created</th>
+                <th className="p-3 text-left table-cell">Category</th>
+                <th className="p-3 w-0 whitespace-nowrap text-center" />
               </tr>
             </thead>
             <tbody>
