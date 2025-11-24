@@ -824,7 +824,7 @@ export interface components {
         RegisterByEmailDto: {
             /** @example user@example.com */
             email: string;
-            /** @example StrongPass123! */
+            /** @example ПарольПароль123! */
             password: string;
         };
         RegisterByPhoneDto: {
