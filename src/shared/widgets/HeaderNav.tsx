@@ -91,7 +91,9 @@ export default function HeaderNav() {
           <span className="text-nowrap text-base">Токены: {user.tokens}</span>
         )}
 
-        <ThemeSwitch />
+        <div className={cn("hidden", showAdminMenu ? "lg:block" : "md:block")}>
+          <ThemeSwitch />
+        </div>
 
         {isAuth ? (
           <div className="flex items-center gap-3">

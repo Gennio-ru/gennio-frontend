@@ -46,7 +46,7 @@ export default function ThemeSwitch() {
           className={`
             w-5 h-5 rounded-full transform
             transition-transform duration-300 shrink-0
-            ${theme === "dark" ? "bg-stone-400" : "bg-neutral-400"}
+            ${theme === "dark" ? "bg-stone-400" : "bg-[#777]"}
           `}
         />
 
