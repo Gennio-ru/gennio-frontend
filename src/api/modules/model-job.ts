@@ -7,6 +7,8 @@ import type { components, operations } from "../types.gen";
 
 export type ModelJob = components["schemas"]["ModelJobDto"];
 export type ModelJobFull = components["schemas"]["ModelJobFullDto"];
+export type ModelJobWithPreviewFile =
+  components["schemas"]["ModelJobWithPreviewFileDto"];
 export type ModelJobStatus = components["schemas"]["ModelJobStatusType"];
 export type ModelJobType = components["schemas"]["ModelJobType"];
 
@@ -70,6 +72,16 @@ export async function apiStartImageGenerateByPromptText(
   const { data } = await api.post<ModelJob>(
     "/model-job/start-image-generate",
     payload
+  );
+  return data;
+}
+
+// Последние генерации пользователя
+export async function apiGetLastGenerations(): Promise<
+  ModelJobWithPreviewFile[]
+> {
+  const { data } = await api.get<ModelJobWithPreviewFile[]>(
+    "/model-job/last-generations"
   );
   return data;
 }

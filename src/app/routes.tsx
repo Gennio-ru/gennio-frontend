@@ -8,6 +8,7 @@ const AboutProjectPage = lazy(() => import("@/pages/user/AboutProjectPage"));
 const PricingPage = lazy(() => import("@/pages/user/PricingPage"));
 const LegalOfferPage = lazy(() => import("@/pages/user/LegalOfferPage"));
 const PrivacyPolicyPage = lazy(() => import("@/pages/user/PrivacyPolicyPage"));
+const MyGenerations = lazy(() => import("@/pages/user/MyGenerations"));
 const PromptsPage = lazy(
   () => import("@/pages/user/ai-generations/PromptsPage")
 );
@@ -55,6 +56,14 @@ export function AppRoutes() {
         element={
           <Suspense fallback={<Loader />}>
             <PricingPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/my-generations"
+        element={
+          <Suspense fallback={<Loader />}>
+            <MyGenerations />
           </Suspense>
         }
       />

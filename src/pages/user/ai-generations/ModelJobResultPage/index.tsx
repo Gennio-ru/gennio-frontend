@@ -11,30 +11,50 @@ import { ModelJobImageResult } from "./ModelJobImageResult";
 import ModerationBlockedNotice from "./ModerationBlockNotice";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/features/auth/authSlice";
+import { checkApiResponseErrorCode } from "@/lib/helpers";
 
 export default function ModelJobResultPage() {
-  const dispatch = useDispatch();
   const { modelJobId } = useParams<{ modelJobId: string }>();
+  const dispatch = useDispatch();
 
   const [job, setJob] = useState<ModelJobFull | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingOriginal, setIsLoadingOriginal] = useState(false);
+  const [loadingJob, setLoadingJob] = useState(true);
+  const [serverError, setServerError] = useState<string>();
+  const [downloadingOriginal, setDownloadingOriginal] = useState(false);
 
+  //
+  // === LOAD JOB ===
+  //
   useEffect(() => {
     if (!modelJobId) return;
 
+    setLoadingJob(true);
+
     apiGetModelJob(modelJobId)
-      .then((data) => setJob(data as ModelJobFull))
-      .finally(() => setIsLoading(false));
+      .then((data) => {
+        setJob(data as ModelJobFull);
+      })
+      .catch((e) => {
+        if (checkApiResponseErrorCode(e, "FORBIDDEN")) {
+          setServerError("У вас нет доступа к результату этой генерации");
+        } else {
+          setServerError("Не удалось загрузить результат");
+        }
+      })
+      .finally(() => setLoadingJob(false));
+  }, [modelJobId]);
+
+  //
+  // === SOCKET UPDATES ===
+  //
+  useEffect(() => {
+    if (!modelJobId) return;
 
     socket.emit(MODEL_JOB_EVENTS.SUBSCRIBE, modelJobId);
 
-    const onUpdate = (updatedJob: ModelJobFull) => {
-      setJob(updatedJob);
-
-      if (updatedJob.user) {
-        dispatch(setUser(updatedJob.user));
-      }
+    const onUpdate = (updated: ModelJobFull) => {
+      setJob(updated);
+      if (updated.user) dispatch(setUser(updated.user));
     };
 
     socket.on(MODEL_JOB_EVENTS.UPDATE, onUpdate);
@@ -45,30 +65,42 @@ export default function ModelJobResultPage() {
     };
   }, [modelJobId, dispatch]);
 
+  //
+  // === DOWNLOAD ORIGINAL FILE ===
+  //
   const handleDownloadOriginal = async () => {
     if (!job?.outputFileUrl) return;
-    setIsLoadingOriginal(true);
-    const res = await fetch(job.outputFileUrl).finally(() =>
-      setIsLoadingOriginal(false)
-    );
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "gennio_original.jpeg";
-    a.click();
-    URL.revokeObjectURL(url);
+
+    try {
+      setDownloadingOriginal(true);
+
+      const res = await fetch(job.outputFileUrl);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "gennio_original.jpeg";
+      a.click();
+
+      URL.revokeObjectURL(url);
+    } finally {
+      setDownloadingOriginal(false);
+    }
   };
 
+  //
+  // === ERROR CASES ===
+  //
   if (!modelJobId) {
-    return (
-      <div className="mx-auto w-full p-6 text-center rounded-lg bg-error/10 text-error">
-        Не передан идентификатор задачи
-      </div>
-    );
+    return <ErrorBlock>Не передан идентификатор задачи</ErrorBlock>;
   }
 
-  if (isLoading) {
+  if (serverError) {
+    return <ErrorBlock>{serverError}</ErrorBlock>;
+  }
+
+  if (loadingJob) {
     return (
       <div className="mx-auto w-full p-6 text-center">
         <GennioGenerationLoader />
@@ -77,13 +109,12 @@ export default function ModelJobResultPage() {
   }
 
   if (!job) {
-    return (
-      <div className="mx-auto w-full p-6 text-center rounded-lg bg-error/10 text-error">
-        Не удалось загрузить результат
-      </div>
-    );
+    return <ErrorBlock>Не удалось загрузить результат</ErrorBlock>;
   }
 
+  //
+  // === JOB TYPE LOGIC ===
+  //
   const isImageJob =
     job.type === "image-edit-by-prompt-id" ||
     job.type === "image-edit-by-prompt-text" ||
@@ -104,12 +135,15 @@ export default function ModelJobResultPage() {
   }
 
   const isModerationBlocked =
-    job?.error === "MODERATION_BLOCKED" || job?.error === "moderation_blocked";
+    job.error === "MODERATION_BLOCKED" || job.error === "moderation_blocked";
 
   if (isModerationBlocked) {
     return <ModerationBlockedNotice prompt={job.text ?? undefined} />;
   }
 
+  //
+  // === RESULT VIEW ===
+  //
   return (
     <div className="mx-auto max-w-2xl text-center">
       {job.error && (
@@ -121,15 +155,16 @@ export default function ModelJobResultPage() {
       {isImageJob && (
         <>
           <ModelJobImageResult job={job} />
+
           {job.outputFileUrl && (
             <Button
               onClick={handleDownloadOriginal}
               className="mt-4"
-              disabled={isLoadingOriginal}
+              disabled={downloadingOriginal}
             >
               <div className="flex gap-1 items-center justify-center">
                 Скачать оригинал
-                {isLoadingOriginal && (
+                {downloadingOriginal && (
                   <Lottie
                     animationData={spinnerAnimation}
                     loop
@@ -147,6 +182,17 @@ export default function ModelJobResultPage() {
           Тип задачи <code>{job.type}</code> пока не поддерживается в UI.
         </div>
       )}
+    </div>
+  );
+}
+
+//
+// === SMALL REUSABLE ERROR BLOCK ===
+//
+function ErrorBlock({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mx-auto w-full p-6 text-center rounded-lg bg-error/10 text-error">
+      {children}
     </div>
   );
 }

@@ -11,12 +11,14 @@ import Button from "./Button";
 import { useAuth } from "@/features/auth/useAuth";
 import { cn } from "@/lib/utils";
 import { selectAppTheme } from "@/features/app/appSlice";
+import { useNavigate } from "react-router-dom";
 
 export function UserMenu() {
   const { user } = useAuth();
   const theme = useAppSelector(selectAppTheme);
   const [open, setOpen] = React.useState(false);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const onLogout = async () => {
     try {
@@ -59,6 +61,15 @@ export function UserMenu() {
             <div>
               <span>{user.email}</span>
             </div>
+
+            <Button
+              className="p-0 text-left text-base"
+              size="sm"
+              color="ghost"
+              onClick={() => navigate("/my-generations")}
+            >
+              Мои генерации
+            </Button>
 
             <div className="divider my-0.5" />
           </>

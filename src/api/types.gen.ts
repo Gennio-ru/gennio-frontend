@@ -440,6 +440,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/model-job/last-generations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить последние несколько генераций запросившего пользователя */
+        get: operations["ModelJobController_lastGenerations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/model-job/{id}": {
         parameters: {
             query?: never;
@@ -1062,12 +1079,74 @@ export interface components {
             startedAt: string | null;
             /** Format: date-time */
             finishedAt: string | null;
+            /** Format: date-time */
+            resultsExpireAt: string | null;
+            /** Format: date-time */
+            resultsDeletedAt: string | null;
             /** Format: uuid */
             id: string;
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
+        };
+        ModelJobWithPreviewFileDto: {
+            model: components["schemas"]["ModelType"];
+            type: components["schemas"]["ModelJobType"];
+            status: components["schemas"]["ModelJobStatusType"];
+            /** @example Мягкое освещение, крупный план */
+            text: string | null;
+            /** @example Мягкое освещение, крупный план */
+            promptId: string | null;
+            /** @example user-123 */
+            userId: string;
+            user: components["schemas"]["UserDto"] | null;
+            /**
+             * Format: uuid
+             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
+             */
+            inputFileId: string | null;
+            /**
+             * Format: uuid
+             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
+             */
+            outputFileId: string | null;
+            /**
+             * Format: uuid
+             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
+             */
+            outputPreviewFileId: string | null;
+            outputText: string | null;
+            tariffCode: components["schemas"]["ModelTariffCode"];
+            /**
+             * @description Сколько токенов списано за эту задачу
+             * @example 8
+             */
+            tokensCharged: number;
+            /** @example {
+             *       "width": 400,
+             *       "height": 300
+             *     } */
+            usedTokens: Record<string, never> | null;
+            /** @example OpenAI timeout error */
+            error: string | null;
+            /** Format: date-time */
+            startedAt: string | null;
+            /** Format: date-time */
+            finishedAt: string | null;
+            /** Format: date-time */
+            resultsExpireAt: string | null;
+            /** Format: date-time */
+            resultsDeletedAt: string | null;
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            outputPreviewFile: components["schemas"]["FileDto"] | null;
+            /** Format: uri */
+            outputPreviewFileUrl: string | null;
         };
         ModelJobFullDto: {
             model: components["schemas"]["ModelType"];
@@ -1113,6 +1192,10 @@ export interface components {
             startedAt: string | null;
             /** Format: date-time */
             finishedAt: string | null;
+            /** Format: date-time */
+            resultsExpireAt: string | null;
+            /** Format: date-time */
+            resultsDeletedAt: string | null;
             /** Format: uuid */
             id: string;
             /** Format: date-time */
@@ -2241,6 +2324,25 @@ export interface operations {
                         items: components["schemas"]["ModelJobDto"][];
                         meta: components["schemas"]["PaginationMetaDto"];
                     };
+                };
+            };
+        };
+    };
+    ModelJobController_lastGenerations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelJobWithPreviewFileDto"][];
                 };
             };
         };

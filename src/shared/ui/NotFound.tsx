@@ -3,7 +3,11 @@ import searchEmpty from "@/assets/search-empty.svg";
 import { selectAppTheme } from "@/features/app/appSlice";
 import { cn } from "@/lib/utils";
 
-export function NotFound() {
+interface Props {
+  enableDescription?: boolean;
+}
+
+export function NotFound({ enableDescription = true }: Props) {
   const theme = useAppSelector(selectAppTheme);
 
   return (
@@ -16,10 +20,14 @@ export function NotFound() {
           theme === "light" && "brightness-0"
         )}
       />
+
       <p className="text-2xl mb-3 text-base-content">Ничего не нашлось</p>
-      <p className="text-base max-w-sm">
-        Попробуйте изменить запрос, добавить деталей
-      </p>
+
+      {enableDescription && (
+        <p className="text-base max-w-sm">
+          Попробуйте изменить запрос, добавить деталей
+        </p>
+      )}
     </div>
   );
 }
