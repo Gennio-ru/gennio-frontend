@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import GlassCard from "@/shared/ui/GlassCard";
 import {
   apiGetTokenPacks,
   TokenPack,
@@ -8,6 +7,8 @@ import {
 } from "@/api/modules/pricing";
 import Button from "@/shared/ui/Button";
 import { useStartPayment } from "@/features/payments/useStartPayment";
+import GlassCard from "@/shared/ui/GlassCard";
+import { CircleCheck } from "lucide-react";
 
 export default function PricingPage() {
   const [packs, setPacks] = useState<TokenPack[] | null>(null);
@@ -49,154 +50,219 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-3xl">
-      <GlassCard>
-        {/* Заголовок */}
-        <header className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
-            Тарифы и&nbsp;токены Gennio
-          </h1>
-          <p className="mt-3 text-sm sm:text-base text-base-content/80">
-            В&nbsp;Gennio используется система токенов. Один токен равен одному
-            рублю, а&nbsp;одна генерация изображения стоит ровно 5&nbsp;токенов.
-            Вы&nbsp;пополняете баланс токенов, а&nbsp;платформа автоматически
-            списывает их при генерации.
+    <div className="w-full">
+      {/* Заголовок */}
+      <header className="mt-8 sm:mt-10 text-center">
+        <h1 className="text-4xl sm:text-[44px] font-bold">
+          Выберите пакет генераций
+        </h1>
+
+        <p className="mt-4 text-[18px]">
+          И начните создавать то, что давно хотелось
+        </p>
+      </header>
+
+      {/* Линейка тарифов */}
+      <section className="space-y-4">
+        {/* состояние загрузки / ошибки */}
+        {isLoading && (
+          <p className="text-sm text-base-content/70">
+            Загружаем тарифы&hellip;
           </p>
-        </header>
+        )}
 
-        {/* Общее объяснение */}
-        <section className="mb-6 sm:mb-8 space-y-3 text-sm sm:text-base">
-          <p>
-            Ниже&nbsp;— пакеты токенов для генерации изображений. Маленькие
-            пакеты подходят, чтобы просто попробовать сервис, а&nbsp;большие
-            дают небольшую скидку.
-          </p>
-          <p className="text-xs sm:text-sm text-base-content/70">
-            Все операции сейчас списывают фиксированные 5&nbsp;токенов
-            за&nbsp;одну успешную генерацию изображения.
-          </p>
-        </section>
+        {error && !isLoading && <p className="text-sm text-error">{error}</p>}
 
-        {/* Линейка тарифов */}
-        <section className="space-y-4">
-          {/* состояние загрузки / ошибки */}
-          {isLoading && (
-            <p className="text-sm text-base-content/70">
-              Загружаем тарифы&hellip;
-            </p>
-          )}
+        {!isLoading && !error && packs && (
+          <>
+            <div className="mt-10 grid gap-6 grid-cols-1 min-[860px]:grid-cols-3">
+              <GlassCard
+                className="px-8 pt-7 pb-8 min-[860px]:min-h-[380px] flex flex-col
+                justify-between gap-6 max-w-sm w-full mx-auto min-[860px]:max-w-auto"
+              >
+                <div>
+                  <p className="font-bold text-xl">Стартовый</p>
 
-          {error && !isLoading && <p className="text-sm text-error">{error}</p>}
+                  <p className="text-sm text-base-content/60">
+                    Для знакомства с сервисом
+                  </p>
 
-          {!isLoading && !error && packs && (
-            <>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {packs.map((pack) => {
-                  const { tokens, discountPercent, generations, priceRub } =
-                    pack;
-                  const disabled = creatingPayment === pack.id;
+                  <p className="mt-4 text-3xl font-bold text-nowrap">
+                    {packs[0].generations} генераций
+                  </p>
 
-                  return (
-                    <div
-                      key={pack.id}
-                      className={[
-                        "flex flex-col rounded-2xl border border-base-300/70 bg-base-100/60 p-4 sm:p-5",
-                        pack.highlight
-                          ? "ring-2 ring-primary/40 shadow-lg/40"
-                          : "shadow-sm",
-                      ].join(" ")}
-                    >
-                      <div className="mb-3 flex items-center justify-between gap-2">
-                        <div className="flex w-full justify-between items-center gap-2">
-                          <h2 className="text-base sm:text-lg font-semibold">
-                            {pack.name}
-                          </h2>
+                  <div className="mt-4 text-base flex gap-1.5 items-start">
+                    <CircleCheck
+                      size={18}
+                      className="min-w-[18px] relative top-[2px]"
+                    />
 
-                          <Button
-                            onClick={() => handleBuy(pack.id)}
-                            disabled={disabled}
-                            size="sm"
-                            className="text-nowrap"
-                          >
-                            {disabled
-                              ? "Создание платежа…"
-                              : `Купить за ${pack.priceRub} ₽`}
-                          </Button>
-                        </div>
+                    <p>Включено {packs[0].tokens}&nbsp;токенов</p>
+                  </div>
 
-                        {discountPercent > 0 && (
-                          <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                            −{discountPercent}%&nbsp;от стоимости
-                          </span>
-                        )}
-                      </div>
+                  <div className="mt-2.5 text-base flex gap-1.5 items-start">
+                    <CircleCheck
+                      size={18}
+                      className="min-w-[18px] relative top-[2px]"
+                    />{" "}
+                    <p>1&nbsp;генерация&nbsp;= 7&nbsp;токенов</p>
+                  </div>
+                </div>
 
-                      <div className="mb-3 space-y-1 text-sm sm:text-base">
-                        <p>
-                          <span className="font-medium">
-                            {tokens}&nbsp;токенов
-                          </span>{" "}
-                          — {generations}&nbsp;
-                          {generations === 1
-                            ? "генерация изображения"
-                            : "генераций изображения"}
-                        </p>
+                <Button
+                  onClick={() => handleBuy("STARTER")}
+                  disabled={!!creatingPayment}
+                  className="w-full text-nowrap self-end"
+                >
+                  Купить за {packs[0].priceRub} ₽
+                </Button>
+              </GlassCard>
 
-                        <p className="text-xs sm:text-sm text-base-content/80">
-                          Цена пакета:&nbsp;
-                          <span className="font-medium">{priceRub}&nbsp;₽</span>
-                        </p>
+              <GlassCard
+                className="px-8 pt-7 pb-8 min-[860px]:min-h-[380px] flex flex-col
+                justify-between gap-6 max-w-sm w-full mx-auto min-[860px]:max-w-auto"
+              >
+                <div>
+                  <p className="font-bold text-xl">Базовый</p>
 
-                        {discountPercent > 0 && (
-                          <p className="text-[11px] sm:text-xs text-base-content/60">
-                            Без скидки было бы {tokens}&nbsp;₽
-                          </p>
-                        )}
+                  <p className="text-sm text-base-content/60">
+                    С приятным бонусом
+                  </p>
 
-                        <p className="text-xs sm:text-sm text-base-content/70">
-                          Списывается 5&nbsp;токенов за&nbsp;одну генерацию.
-                        </p>
-                      </div>
+                  <p className="mt-4 text-3xl font-bold text-nowrap">
+                    {packs[1].generations} генераций
+                  </p>
 
-                      <div className="mt-auto pt-2 text-xs sm:text-sm text-base-content/60">
-                        <p>
-                          Токены можно использовать в&nbsp;любое время, пока
-                          баланс не&nbsp;закончится.
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+                  <div className="mt-4 text-base flex gap-1.5 items-start">
+                    <CircleCheck
+                      size={18}
+                      className="min-w-[18px] relative top-[2px]"
+                    />{" "}
+                    <p>+1 генерация в&nbsp;подарок</p>
+                  </div>
 
+                  <div className="mt-2.5 text-base flex gap-1.5 items-start">
+                    <CircleCheck
+                      size={18}
+                      className="min-w-[18px] relative top-[2px]"
+                    />{" "}
+                    <p>Включено {packs[1].tokens}&nbsp;токенов</p>
+                  </div>
+
+                  <div className="mt-2.5 text-base flex gap-1.5 items-start">
+                    <CircleCheck
+                      size={18}
+                      className="min-w-[18px] relative top-[2px]"
+                    />{" "}
+                    <p>1&nbsp;генерация&nbsp;= 7&nbsp;токенов</p>
+                  </div>
+                </div>
+
+                <Button
+                  onClick={() => handleBuy("BASIC")}
+                  disabled={!!creatingPayment}
+                  className="w-full text-nowrap self-end"
+                >
+                  Купить за{" "}
+                  <span className="line-through text-primary-content/70">
+                    {packs[1].tokens}
+                  </span>{" "}
+                  {packs[1].priceRub} ₽
+                </Button>
+              </GlassCard>
+
+              <GlassCard
+                className="px-8 pt-7 pb-8 min-[860px]:min-h-[380px] flex flex-col justify-between
+                gap-6 bg-base-100/70 max-w-sm w-full mx-auto min-[860px]:max-w-auto"
+              >
+                <div>
+                  <p className="font-bold text-xl">Расширенный</p>
+
+                  <p className="text-sm text-base-content/60">Самый выгодный</p>
+
+                  <p className="mt-4 text-3xl font-bold text-nowrap">
+                    {packs[2].generations} генераций
+                  </p>
+
+                  <div className="mt-4 text-base flex gap-1.5 items-start">
+                    <CircleCheck
+                      size={18}
+                      className="min-w-[18px] relative top-[2px]"
+                    />{" "}
+                    <p>+3 генерации в&nbsp;подарок&nbsp;🔥</p>
+                  </div>
+
+                  <div className="mt-2.5 text-base flex gap-1.5 items-start">
+                    <CircleCheck
+                      size={18}
+                      className="min-w-[18px] relative top-[2px]"
+                    />{" "}
+                    <p>Включено {packs[2].tokens}&nbsp;токенов</p>
+                  </div>
+
+                  <div className="mt-2.5 text-base flex gap-1.5 items-start">
+                    <CircleCheck
+                      size={18}
+                      className="min-w-[18px] relative top-[2px]"
+                    />{" "}
+                    <p>1&nbsp;генерация&nbsp;= 7&nbsp;токенов</p>
+                  </div>
+                </div>
+
+                <Button
+                  onClick={() => handleBuy("PRO")}
+                  disabled={!!creatingPayment}
+                  className="w-full text-nowrap self-end"
+                >
+                  Купить за{" "}
+                  <span className="line-through text-primary-content/70">
+                    {packs[2].tokens}
+                  </span>{" "}
+                  {packs[2].priceRub} ₽
+                </Button>
+              </GlassCard>
+            </div>
+
+            <div className="mt-10 font-light max-w-[800px] mb-[180px]">
+              <p>
+                Используйте Gennio для создания изображений в любых стилях,
+                обработки ваших фото, изменения деталей и генерации новых работ
+                по вашим или готовым промтам
+              </p>
+
+              <p className="mt-2">
+                В Gennio применяется система токенов. Один токен равен одному
+                рублю, а одна генерация изображения стоит ровно 7 токенов. Вы
+                пополняете баланс токенов, а платформа автоматически списывает
+                их при генерации
+              </p>
+            </div>
+
+            <footer className="pb-6 max-w-[800px]">
               <div className="space-y-1 text-xs sm:text-sm text-base-content/60">
-                <p>
-                  Точные цены пакетов указываются при оплате. В&nbsp;дальнейшем
-                  тарифы могут корректироваться по&nbsp;мере развития платформы.
-                </p>
                 <p>
                   Оплачивая пакет токенов, вы подтверждаете, что ознакомились
                   и&nbsp;согласны с&nbsp;условиями{" "}
                   <Link
                     to="/legal/offer"
-                    className="underline decoration-dotted underline-offset-2"
+                    className="underline decoration-dotted underline-offset-2 text-nowrap"
                   >
                     Пользовательского соглашения
                   </Link>{" "}
                   и{" "}
                   <Link
                     to="/legal/privacy"
-                    className="underline decoration-dotted underline-offset-2"
+                    className="underline decoration-dotted underline-offset-2 text-nowrap"
                   >
                     Политики конфиденциальности
                   </Link>
                   .
                 </p>
               </div>
-            </>
-          )}
-        </section>
-      </GlassCard>
+            </footer>
+          </>
+        )}
+      </section>
     </div>
   );
 }

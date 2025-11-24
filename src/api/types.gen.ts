@@ -1216,7 +1216,7 @@ export interface components {
          * @description Уникальный идентификатор пакета
          * @enum {string}
          */
-        TokensPackId: "STARTER" | "BASIC" | "PRO" | "MAX";
+        TokensPackId: "STARTER" | "BASIC" | "PRO";
         TokenPackDto: {
             /** @example STARTER */
             id: components["schemas"]["TokensPackId"];
@@ -1240,11 +1240,6 @@ export interface components {
              * @example 10
              */
             discountPercent: number;
-            /**
-             * @description Количество токенов в пакете
-             * @example 35
-             */
-            pri: number;
             /**
              * @description Стоимость в рублях
              * @example 35
