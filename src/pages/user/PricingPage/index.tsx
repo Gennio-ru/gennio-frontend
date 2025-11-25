@@ -88,7 +88,7 @@ export default function PricingPage() {
                   </p>
 
                   <p className="mt-4 text-3xl font-bold text-nowrap">
-                    {packs[0].generations} генераций
+                    {packs[1].generations} генераций
                   </p>
 
                   <div className="mt-4 text-base flex gap-1.5 items-start">
@@ -97,7 +97,7 @@ export default function PricingPage() {
                       className="min-w-[18px] relative top-[2px]"
                     />
 
-                    <p>Включено {packs[0].tokens}&nbsp;токенов</p>
+                    <p>Включено {packs[1].tokens}&nbsp;токенов</p>
                   </div>
 
                   <div className="mt-2.5 text-base flex gap-1.5 items-start">
@@ -114,7 +114,7 @@ export default function PricingPage() {
                   disabled={!!creatingPayment}
                   className="w-full text-nowrap self-end"
                 >
-                  Купить за {packs[0].priceRub} ₽
+                  Купить за {packs[1].priceRub} ₽
                 </Button>
               </GlassCard>
 
@@ -130,57 +130,6 @@ export default function PricingPage() {
                   </p>
 
                   <p className="mt-4 text-3xl font-bold text-nowrap">
-                    {packs[1].generations} генераций
-                  </p>
-
-                  <div className="mt-4 text-base flex gap-1.5 items-start">
-                    <CircleCheck
-                      size={18}
-                      className="min-w-[18px] relative top-[2px]"
-                    />{" "}
-                    <p>+1 генерация в&nbsp;подарок</p>
-                  </div>
-
-                  <div className="mt-2.5 text-base flex gap-1.5 items-start">
-                    <CircleCheck
-                      size={18}
-                      className="min-w-[18px] relative top-[2px]"
-                    />{" "}
-                    <p>Включено {packs[1].tokens}&nbsp;токенов</p>
-                  </div>
-
-                  <div className="mt-2.5 text-base flex gap-1.5 items-start">
-                    <CircleCheck
-                      size={18}
-                      className="min-w-[18px] relative top-[2px]"
-                    />{" "}
-                    <p>1&nbsp;генерация&nbsp;= 7&nbsp;токенов</p>
-                  </div>
-                </div>
-
-                <Button
-                  onClick={() => handleBuy("BASIC")}
-                  disabled={!!creatingPayment}
-                  className="w-full text-nowrap self-end"
-                >
-                  Купить за{" "}
-                  <span className="line-through text-primary-content/70">
-                    {packs[1].tokens}
-                  </span>{" "}
-                  {packs[1].priceRub} ₽
-                </Button>
-              </GlassCard>
-
-              <GlassCard
-                className="px-8 pt-7 pb-8 min-[860px]:min-h-[380px] flex flex-col justify-between
-                gap-6 bg-base-100/70 max-w-sm w-full mx-auto min-[860px]:max-w-auto"
-              >
-                <div>
-                  <p className="font-bold text-xl">Расширенный</p>
-
-                  <p className="text-sm text-base-content/60">Самый выгодный</p>
-
-                  <p className="mt-4 text-3xl font-bold text-nowrap">
                     {packs[2].generations} генераций
                   </p>
 
@@ -189,7 +138,7 @@ export default function PricingPage() {
                       size={18}
                       className="min-w-[18px] relative top-[2px]"
                     />{" "}
-                    <p>+3 генерации в&nbsp;подарок&nbsp;🔥</p>
+                    <p>+1 генерация в&nbsp;подарок</p>
                   </div>
 
                   <div className="mt-2.5 text-base flex gap-1.5 items-start">
@@ -210,6 +159,57 @@ export default function PricingPage() {
                 </div>
 
                 <Button
+                  onClick={() => handleBuy("BASIC")}
+                  disabled={!!creatingPayment}
+                  className="w-full text-nowrap self-end"
+                >
+                  Купить за{" "}
+                  <span className="line-through text-primary-content/70">
+                    {packs[2].tokens}
+                  </span>{" "}
+                  {packs[1].priceRub} ₽
+                </Button>
+              </GlassCard>
+
+              <GlassCard
+                className="px-8 pt-7 pb-8 min-[860px]:min-h-[380px] flex flex-col justify-between
+                gap-6 bg-base-100/70 max-w-sm w-full mx-auto min-[860px]:max-w-auto"
+              >
+                <div>
+                  <p className="font-bold text-xl">Расширенный</p>
+
+                  <p className="text-sm text-base-content/60">Самый выгодный</p>
+
+                  <p className="mt-4 text-3xl font-bold text-nowrap">
+                    {packs[3].generations} генераций
+                  </p>
+
+                  <div className="mt-4 text-base flex gap-1.5 items-start">
+                    <CircleCheck
+                      size={18}
+                      className="min-w-[18px] relative top-[2px]"
+                    />{" "}
+                    <p>+3 генерации в&nbsp;подарок&nbsp;🔥</p>
+                  </div>
+
+                  <div className="mt-2.5 text-base flex gap-1.5 items-start">
+                    <CircleCheck
+                      size={18}
+                      className="min-w-[18px] relative top-[2px]"
+                    />{" "}
+                    <p>Включено {packs[3].tokens}&nbsp;токенов</p>
+                  </div>
+
+                  <div className="mt-2.5 text-base flex gap-1.5 items-start">
+                    <CircleCheck
+                      size={18}
+                      className="min-w-[18px] relative top-[2px]"
+                    />{" "}
+                    <p>1&nbsp;генерация&nbsp;= 7&nbsp;токенов</p>
+                  </div>
+                </div>
+
+                <Button
                   onClick={() => handleBuy("PRO")}
                   disabled={!!creatingPayment}
                   className="w-full text-nowrap self-end"
@@ -218,7 +218,7 @@ export default function PricingPage() {
                   <span className="line-through text-primary-content/70">
                     {packs[2].tokens}
                   </span>{" "}
-                  {packs[2].priceRub} ₽
+                  {packs[3].priceRub} ₽
                 </Button>
               </GlassCard>
             </div>

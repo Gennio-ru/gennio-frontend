@@ -1299,7 +1299,7 @@ export interface components {
          * @description Уникальный идентификатор пакета
          * @enum {string}
          */
-        TokensPackId: "STARTER" | "BASIC" | "PRO";
+        TokensPackId: "ONCE" | "STARTER" | "BASIC" | "PRO";
         TokenPackDto: {
             /** @example STARTER */
             id: components["schemas"]["TokensPackId"];

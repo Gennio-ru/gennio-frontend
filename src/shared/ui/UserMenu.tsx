@@ -63,10 +63,13 @@ export function UserMenu() {
             </div>
 
             <Button
-              className="p-0 text-left text-base"
+              className="p-0 text-left text-base font-thin"
               size="sm"
               color="ghost"
-              onClick={() => navigate("/my-generations")}
+              onClick={() => {
+                navigate("/my-generations");
+                setOpen(false);
+              }}
             >
               Мои генерации
             </Button>

@@ -6,7 +6,7 @@ import {
 } from "@/shared/ui/shadcn/dialog";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { cn } from "@/lib/utils";
-import { XIcon } from "lucide-react";
+import { CircleAlert, XIcon } from "lucide-react";
 import { DialogClose } from "@radix-ui/react-dialog";
 import {
   selectAppTheme,
@@ -22,6 +22,9 @@ import {
   TokenPackId,
 } from "@/api/modules/pricing";
 import { useStartPayment } from "@/features/payments/useStartPayment";
+import Loader from "../Loader";
+import { RadioDot } from "../ RadioDot";
+import { declOfNum } from "@/lib/helpers";
 
 export default function PaymentModal() {
   const theme = useAppSelector(selectAppTheme);
@@ -29,8 +32,13 @@ export default function PaymentModal() {
   const open = useAppSelector(selectPaymentModalOpen);
 
   const [packs, setPacks] = useState<TokenPack[] | null>(null);
+  const [selectedPackId, setSelectedPackId] = useState<TokenPackId | null>(
+    null
+  );
   const [loadingPacks, setLoadingPacks] = useState(false);
   const [creatingPayment, setCreatingPayment] = useState<string | null>(null);
+
+  const selectedPack = packs?.find((item) => item.id === selectedPackId);
 
   const { startPayment } = useStartPayment();
 
@@ -41,13 +49,16 @@ export default function PaymentModal() {
 
     setLoadingPacks(true);
     apiGetTokenPacks()
-      .then((data) => setPacks(data))
+      .then((data) => {
+        setPacks(data);
+        setSelectedPackId(data[0].id);
+      })
       .finally(() => setLoadingPacks(false));
   }, [open]);
 
-  const handleBuy = async (packId: TokenPackId) => {
-    startPayment(packId, () => {
-      setCreatingPayment(packId);
+  const handleBuy = async () => {
+    startPayment(selectedPackId, () => {
+      setCreatingPayment(selectedPackId);
     }).finally(() => setCreatingPayment(null));
   };
 
@@ -59,15 +70,24 @@ export default function PaymentModal() {
         else dispatch(setPaymentModalOpen(true));
       }}
     >
-      <DialogContent
-        className={cn(
-          "sm:max-w-md",
-          theme === "dark" && "bg-base-100/70 backdrop-blur-md"
-        )}
-        showCloseButton={false}
-      >
+      <DialogContent className={cn("sm:w-[500px]")} showCloseButton={false}>
         <DialogHeader className="relative">
-          <DialogTitle className="mx-auto mb-5">Оплата</DialogTitle>
+          <DialogTitle
+            className={cn(
+              "mx-auto mb-5 text-base font-[300]",
+              "flex items-start justify-center gap-2 pr-6",
+              theme === "dark" ? "text-[#FA9313]" : "text-[#da7900]"
+            )}
+          >
+            <CircleAlert
+              size={18}
+              className="min-w-[18px] relative top-[3px]"
+            />
+
+            <p className="text-left">
+              У&nbsp;вас&nbsp;не&nbsp;хватает токенов&nbsp;для&nbsp;генерации
+            </p>
+          </DialogTitle>
 
           <DialogClose
             className="absolute cursor-pointer top-0 right-0 focus:outline-none focus:ring-0"
@@ -77,56 +97,66 @@ export default function PaymentModal() {
             <span className="sr-only">Закрыть</span>
           </DialogClose>
         </DialogHeader>
-
         {/* Loading */}
-        {loadingPacks && (
-          <div className="py-8 text-center text-base-content/70">
-            Загрузка пакетов…
-          </div>
-        )}
+        {loadingPacks && <Loader />}
+        <div>
+          <p className="text-xl font-bold">Выберите количество генераций</p>
 
+          <p>Одна генерация = 7 токенов</p>
+        </div>
         {/* PACKS */}
         {!loadingPacks && packs && (
-          <div className="grid gap-3">
+          <div className="grid gap-3 mt-2">
             {packs.map((pack) => {
-              const disabled = creatingPayment === pack.id;
+              const giftTokens = (pack.tokens - pack.priceRub) / 7;
 
               return (
                 <div
-                  key={pack.id}
                   className={cn(
-                    "rounded-xl border border-base-300/70 bg-base-100/60 p-4 flex flex-col",
-                    pack.highlight && "ring-2 ring-primary/60 shadow-lg"
+                    "rounded-box p-4 flex justify-between items-center cursor-pointer gap-4 transition-shadow duration-200",
+                    theme === "dark" ? "bg-white/15" : "bg-base-200",
+                    selectedPackId === pack.id
+                      ? "shadow-[0_0_0_2px_var(--color-primary)]"
+                      : "shadow-none"
                   )}
+                  onClick={() => setSelectedPackId(pack.id)}
                 >
-                  <div className="flex justify-between items-center mb-2">
-                    <div className="font-medium">{pack.name}</div>
+                  <div className="flex flex-col">
+                    <div className="font-bold">
+                      <span>{pack.name} </span>&nbsp;{" "}
+                      {giftTokens > 0 && (
+                        <span className="text-nowrap">
+                          + {giftTokens} в подарок
+                        </span>
+                      )}
+                    </div>
 
-                    {pack.discountPercent > 0 && (
-                      <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                        –{pack.discountPercent}%
-                      </span>
-                    )}
+                    <p className="text-sm mt-1">
+                      Входит {pack.tokens}{" "}
+                      {declOfNum(pack.tokens, ["токен", "токена", "токенов"])}
+                    </p>
                   </div>
 
-                  <div className="text-sm text-base-content/70 mb-3">
-                    {pack.tokens} токенов → {pack.generations} генераций
-                  </div>
+                  <div className="flex gap-6 items-center">
+                    <p className="font-medium text-xl text-nowrap">
+                      {pack.priceRub} ₽
+                    </p>
 
-                  <Button
-                    onClick={() => handleBuy(pack.id)}
-                    disabled={disabled}
-                    size="md"
-                  >
-                    {disabled
-                      ? "Создание платежа…"
-                      : `Купить за ${pack.priceRub} ₽`}
-                  </Button>
+                    <RadioDot active={selectedPackId === pack.id} />
+                  </div>
                 </div>
               );
             })}
           </div>
         )}
+        <Button
+          disabled={!selectedPackId || !!creatingPayment}
+          className="w-min mx-auto px-10 mt-2 text-nowrap"
+          onClick={handleBuy}
+        >
+          Оплатить
+          {selectedPack ? ` ${selectedPack.priceRub} ₽` : ""}
+        </Button>
       </DialogContent>
     </Dialog>
   );
