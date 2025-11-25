@@ -9,6 +9,7 @@ import Button from "@/shared/ui/Button";
 import { useStartPayment } from "@/features/payments/useStartPayment";
 import GlassCard from "@/shared/ui/GlassCard";
 import { CircleCheck } from "lucide-react";
+import { customToast } from "@/lib/customToast";
 
 export default function PricingPage() {
   const [packs, setPacks] = useState<TokenPack[] | null>(null);
@@ -46,7 +47,9 @@ export default function PricingPage() {
   const handleBuy = async (packId: TokenPackId) => {
     startPayment(packId, () => {
       setCreatingPayment(packId);
-    }).finally(() => setCreatingPayment(null));
+    })
+      .catch((e) => customToast.error(e))
+      .finally(() => setCreatingPayment(null));
   };
 
   return (
