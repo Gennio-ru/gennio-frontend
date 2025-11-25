@@ -74,7 +74,7 @@ export default function PaymentModal() {
         <DialogHeader className="relative">
           <DialogTitle
             className={cn(
-              "mx-auto mb-5 text-base font-[300]",
+              "mx-auto mb-5 text-base font-bold",
               "flex items-start justify-center gap-2 pr-6",
               theme === "dark" ? "text-[#FA9313]" : "text-[#da7900]"
             )}
@@ -116,7 +116,7 @@ export default function PaymentModal() {
                     "rounded-box p-4 flex justify-between items-center cursor-pointer gap-4 transition-shadow duration-200",
                     theme === "dark" ? "bg-white/15" : "bg-base-200",
                     selectedPackId === pack.id
-                      ? "shadow-[0_0_0_2px_var(--color-primary)]"
+                      ? "shadow-[0_0_0_1.5px_var(--color-primary)]"
                       : "shadow-none"
                   )}
                   onClick={() => setSelectedPackId(pack.id)}

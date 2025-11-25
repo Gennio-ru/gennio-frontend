@@ -65,7 +65,7 @@ export default function EditImageByCustomPromptPage() {
   const isBusy = isFetching || isSubmitting;
 
   return (
-    <GlassCard className="mx-auto w-full max-w-xl mt-5">
+    <GlassCard className="mx-auto w-full max-w-2xl mt-5">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="space-y-7 text-base-content"

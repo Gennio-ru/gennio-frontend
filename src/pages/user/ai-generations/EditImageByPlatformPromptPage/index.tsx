@@ -87,10 +87,10 @@ export default function EditImageByPlatformPromptPage() {
   }
 
   return (
-    <GlassCard className="mx-auto w-full max-w-xl mt-5">
+    <GlassCard className="mx-auto w-full max-w-2xl mt-5">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="mx-auto w-full max-w-xl space-y-6 text-base-content"
+        className="mx-auto w-full space-y-6 text-base-content"
       >
         <h1 className="text-lg font-semibold">{currentPrompt.title}</h1>
 
