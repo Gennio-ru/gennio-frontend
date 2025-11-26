@@ -21,7 +21,7 @@ export function AdminButton() {
       size="lg"
       onClick={goToAdmin}
       aria-label="Прокрутить наверх"
-      className="fixed bottom-5 sm:bottom-10 right-5 sm:right-10 z-50 hover:scale-105 active:scale-95"
+      className="fixed bottom-5 sm:bottom-10 left-5 sm:left-10 z-50 hover:scale-105 active:scale-95"
     />
   );
 }

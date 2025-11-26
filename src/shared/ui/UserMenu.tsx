@@ -52,7 +52,7 @@ export function UserMenu() {
         align="end"
         sideOffset={6}
         className={cn(
-          "flex flex-col mt-1 gap-2 p-4 min-w-[10rem]",
+          "flex flex-col mt-1.5 gap-2 p-4 min-w-[10rem] right-1",
           theme === "dark" ? "glass-panel-dark" : "glass-panel-light"
         )}
       >

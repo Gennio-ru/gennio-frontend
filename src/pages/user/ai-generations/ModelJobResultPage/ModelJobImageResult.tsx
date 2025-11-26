@@ -27,18 +27,13 @@ function getOrientation(meta?: ImageMeta | null): Orientation {
 export function ModelJobImageResult({ job }: Props) {
   const {
     text,
-    type,
     inputFileUrl,
     inputFile,
     outputPreviewFileUrl,
     outputPreviewFile,
   } = job;
 
-  const showPrompt =
-    !!text &&
-    (type === "image-edit-by-prompt-id" ||
-      type === "image-edit-by-prompt-text" ||
-      type === "image-generate-by-prompt-text");
+  const showPrompt = !!text;
 
   // Ориентация — по результату (preview), если есть, иначе по input
   const mainMeta: ImageMeta | undefined =

@@ -112,9 +112,9 @@ export function GennioSelect({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.15 }}
-            onMouseLeave={() => setHighlightedIndex(-1)} // 👈 вот это важно
+            onMouseLeave={() => setHighlightedIndex(-1)}
             className={cn(
-              "absolute left-0 mt-2 z-10 min-w-[300px] sm:min-w-[360px] w-full max-h-[290px] overflow-y-auto \
+              "absolute left-1 mt-2 z-10 min-w-[300px] sm:min-w-[360px] w-full max-h-[290px] overflow-y-auto \
               text-2xl rounded-field py-2",
               theme === "dark" ? "glass-panel-dark" : "glass-panel-light"
             )}

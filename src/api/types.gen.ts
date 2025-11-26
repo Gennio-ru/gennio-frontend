@@ -1027,7 +1027,7 @@ export interface components {
         /** @enum {string} */
         ModelType: "OPENAI";
         /** @enum {string} */
-        ModelJobType: "image-edit-by-prompt-id" | "image-edit-by-prompt-text" | "image-generate-by-prompt-text" | "text-generate";
+        ModelJobType: "image-edit-by-prompt-id" | "image-edit-by-prompt-text" | "image-generate-by-prompt-text";
         /** @enum {string} */
         ModelJobStatusType: "queued" | "processing" | "succeeded" | "failed";
         /**
@@ -2299,7 +2299,7 @@ export interface operations {
                 /** @description Общий поиск */
                 search?: string;
                 /** @description Фильтр по типу генерации */
-                type?: "image-edit-by-prompt-id" | "image-edit-by-prompt-text" | "image-generate-by-prompt-text" | "text-generate";
+                type?: "image-edit-by-prompt-id" | "image-edit-by-prompt-text" | "image-generate-by-prompt-text";
                 /** @description Фильтр по статусу генерации */
                 status?: "queued" | "processing" | "succeeded" | "failed";
                 /** @description Дата создания — от */
