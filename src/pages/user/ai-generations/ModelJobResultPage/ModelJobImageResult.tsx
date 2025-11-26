@@ -6,13 +6,31 @@ type Props = {
   job: ModelJobFull;
 };
 
+type Orientation = "horizontal" | "vertical" | "square";
+
+type ImageMeta = {
+  widthPx?: number | null;
+  heightPx?: number | null;
+};
+
+function getOrientation(meta?: ImageMeta | null): Orientation {
+  const w = meta?.widthPx ?? 0;
+  const h = meta?.heightPx ?? 0;
+
+  if (!w || !h) return "horizontal";
+
+  if (w === h) return "square";
+  if (w > h) return "horizontal";
+  return "vertical"; // 1 / 1.5
+}
+
 export function ModelJobImageResult({ job }: Props) {
   const {
-    inputFileUrl,
-    outputPreviewFileUrl,
     text,
     type,
+    inputFileUrl,
     inputFile,
+    outputPreviewFileUrl,
     outputPreviewFile,
   } = job;
 
@@ -21,6 +39,16 @@ export function ModelJobImageResult({ job }: Props) {
     (type === "image-edit-by-prompt-id" ||
       type === "image-edit-by-prompt-text" ||
       type === "image-generate-by-prompt-text");
+
+  // Ориентация — по результату (preview), если есть, иначе по input
+  const mainMeta: ImageMeta | undefined =
+    (outputPreviewFile as ImageMeta | undefined) ??
+    (inputFile as ImageMeta | undefined);
+
+  const orientation = getOrientation(mainMeta);
+
+  const hasInput = !!inputFileUrl;
+  const hasOutput = !!outputPreviewFileUrl;
 
   return (
     <>
@@ -35,54 +63,103 @@ export function ModelJobImageResult({ job }: Props) {
         </GlassCard>
       )}
 
-      {type === "image-edit-by-prompt-id" && (
-        <div className="flex flex-col md:flex-row items-start justify-center gap-4">
-          <ImageWithLoader
-            src={inputFileUrl ?? undefined}
-            alt="Оригинал"
-            size="xs"
-            widthPx={inputFile.widthPx ?? undefined}
-            heightPx={inputFile.heightPx ?? undefined}
-          />
+      {/* HORIZONTAL: 1.5 / 1 — две полосы одна под другой */}
+      {orientation === "horizontal" && hasOutput && (
+        <div className="flex flex-col gap-4 items-center">
+          {hasInput && (
+            <ImageWithLoader
+              src={inputFileUrl ?? undefined}
+              alt="Исходное изображение"
+              size="xs"
+              widthPx={inputFile?.widthPx ?? undefined}
+              heightPx={inputFile?.heightPx ?? undefined}
+              className="rounded-xl shadow-sm bg-base-200 max-w-3xl w-full"
+            />
+          )}
 
           <ImageWithLoader
             src={outputPreviewFileUrl ?? undefined}
             alt="Результат"
             size="xl"
-            widthPx={outputPreviewFile.widthPx ?? undefined}
-            heightPx={outputPreviewFile.heightPx ?? undefined}
+            widthPx={outputPreviewFile?.widthPx ?? undefined}
+            heightPx={outputPreviewFile?.heightPx ?? undefined}
+            className="rounded-xl shadow-sm bg-base-200 max-w-3xl w-full"
           />
         </div>
       )}
 
-      {type === "image-edit-by-prompt-text" && (
-        <div className="flex flex-col md:flex-row items-start justify-center gap-4">
-          <ImageWithLoader
-            src={inputFileUrl ?? undefined}
-            alt="Оригинал"
-            size="xs"
-            widthPx={inputFile.widthPx ?? undefined}
-            heightPx={inputFile.heightPx ?? undefined}
-          />
+      {/* VERTICAL: 1 / 1.5 — отдельный кейс */}
+      {orientation === "vertical" && hasOutput && (
+        <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-4">
+          {/* Превью (input) — поменьше, слева, если есть */}
+          {hasInput && (
+            <div className="inline-flex">
+              <ImageWithLoader
+                src={inputFileUrl ?? undefined}
+                alt="Исходное изображение"
+                size="xs"
+                widthPx={inputFile?.widthPx ?? undefined}
+                heightPx={inputFile?.heightPx ?? undefined}
+                className="rounded-xl shadow-sm bg-base-200"
+              />
+            </div>
+          )}
 
-          <ImageWithLoader
-            src={outputPreviewFileUrl ?? undefined}
-            alt="Результат"
-            size="xl"
-            widthPx={outputPreviewFile.widthPx ?? undefined}
-            heightPx={outputPreviewFile.heightPx ?? undefined}
-          />
+          {/* Результат — справа */}
+          <div className="inline-flex">
+            <ImageWithLoader
+              src={outputPreviewFileUrl ?? undefined}
+              alt="Результат"
+              size="xl"
+              widthPx={outputPreviewFile?.widthPx ?? undefined}
+              heightPx={outputPreviewFile?.heightPx ?? undefined}
+              className="rounded-xl shadow-sm bg-base-200"
+            />
+          </div>
         </div>
       )}
 
-      {type === "image-generate-by-prompt-text" && (
+      {/* SQUARE: 1 / 1 — свой кейс, более симметричный */}
+      {orientation === "square" && hasOutput && (
+        <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-3">
+          {/* Превью (input) — слева, если есть */}
+          {hasInput && (
+            <div className="inline-flex">
+              <ImageWithLoader
+                src={inputFileUrl ?? undefined}
+                alt="Исходное изображение"
+                size="xs"
+                widthPx={inputFile?.widthPx ?? undefined}
+                heightPx={inputFile?.heightPx ?? undefined}
+                className="rounded-xl shadow-sm bg-base-200"
+              />
+            </div>
+          )}
+
+          {/* Результат — справа */}
+          <div className="inline-flex">
+            <ImageWithLoader
+              src={outputPreviewFileUrl ?? undefined}
+              alt="Результат"
+              size="xl"
+              widthPx={outputPreviewFile?.widthPx ?? undefined}
+              heightPx={outputPreviewFile?.heightPx ?? undefined}
+              className="rounded-xl shadow-sm bg-base-200"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* На всякий случай: если вдруг нет output (неизвестный стейт) */}
+      {!hasOutput && hasInput && (
         <div className="flex items-center justify-center">
           <ImageWithLoader
-            src={outputPreviewFileUrl ?? undefined}
-            alt="Результат"
+            src={inputFileUrl ?? undefined}
+            alt="Изображение"
             size="xl"
-            widthPx={outputPreviewFile.widthPx ?? undefined}
-            heightPx={outputPreviewFile.heightPx ?? undefined}
+            widthPx={inputFile?.widthPx ?? undefined}
+            heightPx={inputFile?.heightPx ?? undefined}
+            className="rounded-xl shadow-sm bg-base-200 max-w-3xl w-full"
           />
         </div>
       )}
