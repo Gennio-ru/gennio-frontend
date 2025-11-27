@@ -16,8 +16,8 @@ interface Item<T extends string> {
 }
 
 interface Props<T extends string> {
-  value: T;
-  onChange: (value: T) => void;
+  value: T | "" | undefined;
+  onChange: (value: T | "") => void;
   onReset?: () => void;
   items: Item<T>[];
   placeholder?: string;
@@ -37,7 +37,10 @@ export default function CustomSelect<T extends string>({
 
   return (
     <div className="relative flex items-center w-auto">
-      <Select value={value || ""} onValueChange={onChange}>
+      <Select
+        value={value ?? undefined}
+        onValueChange={(v) => onChange(v as T)}
+      >
         <SelectTrigger
           className={cn(
             "flex-1 bg-base-100 text-base-content",

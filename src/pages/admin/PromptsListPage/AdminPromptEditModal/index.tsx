@@ -13,7 +13,7 @@ import { XIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Button from "@/shared/ui/Button";
 import z from "zod";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   apiCreatePrompt,
@@ -75,6 +75,8 @@ export default function AdminPromptEditModal() {
     mode: "onSubmit",
     reValidateMode: "onSubmit",
   });
+
+  useWatch({ control });
 
   const clearForm = useCallback(
     () =>
@@ -232,6 +234,7 @@ export default function AdminPromptEditModal() {
             </label>
 
             <Controller
+              key={promptId ?? "new"}
               name="categoryId"
               control={control}
               render={({ field }) => (
