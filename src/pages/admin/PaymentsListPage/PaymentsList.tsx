@@ -180,7 +180,7 @@ export default function PaymentsAdminList() {
             value={filters.status}
             items={paymentStatusesItems}
             placeholder="Статус"
-            onChange={(value) => dispatch(setStatus(value))}
+            onChange={(value) => dispatch(setStatus(value || null))}
             onReset={() => dispatch(setStatus(null))}
             className="min-w-[200px]"
           />
