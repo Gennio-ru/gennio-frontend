@@ -1,0 +1,56 @@
+.range-custom {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 9999px;
+  cursor: pointer;
+
+  background: linear-gradient(
+    to right,
+    var(--color-primary) 0,
+    var(--color-primary) var(--value),
+    var(--track-color) var(--value),
+    var(--track-color) 100%
+  );
+}
+
+/* LIGHT THEME */
+html[data-theme="light"] .range-custom {
+  --track-color: #fff;
+}
+
+/* DARK THEME */
+html[data-theme="dark"] .range-custom {
+  --track-color: #bbb;
+}
+
+/* ===== Chrome / Safari ===== */
+.range-custom::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--color-primary);
+  border-radius: 50%;
+}
+
+/* ===== Firefox ===== */
+.range-custom::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--color-primary);
+  border-radius: 50%;
+}
+
+.range-custom::-moz-range-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    var(--color-primary) 0,
+    var(--color-primary) var(--value),
+    var(--track-color) var(--value),
+    var(--track-color) 100%
+  );
+}

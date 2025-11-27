@@ -1,11 +1,14 @@
+import { Lock } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import IconButton from "./IconButton";
+import { AppRoute } from "../config/routes";
 
 export function AdminButton() {
   const navigate = useNavigate();
   const location = useLocation();
 
   const goToAdmin = () => {
-    navigate("/admin/prompts");
+    navigate(AppRoute.ADMIN_PROMPTS);
   };
 
   if (location.pathname.includes("/admin")) {
@@ -13,18 +16,13 @@ export function AdminButton() {
   }
 
   return (
-    <div
-      role="button"
-      tabIndex={0}
-      aria-label="Редактировать промпты"
-      title="Редактировать промпты"
-      className="fixed bottom-12 right-4 h-16 w-16 z-50 flex items-center justify-center rounded-full cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95"
+    <IconButton
+      icon={<Lock size={24} />}
+      color="glass"
+      size="lg"
       onClick={goToAdmin}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") goToAdmin();
-      }}
-    >
-      <img src="/settings.svg" alt="Редактировать" className="w-16 h-16" />
-    </div>
+      aria-label="Прокрутить наверх"
+      className="fixed bottom-5 sm:bottom-10 left-5 sm:left-10 z-50 hover:scale-105 active:scale-95"
+    />
   );
 }

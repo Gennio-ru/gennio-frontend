@@ -1,27 +1,56 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { apiLogin, apiMe, apiLogout } from "@/api/auth";
+import {
+  apiLogin,
+  apiMe,
+  apiLogout,
+  LoginByEmailPayload,
+} from "@/api/modules/auth";
 import type { components } from "@/api/types.gen";
 import type { RootState } from "@/app/store";
+import { AuthResponseDto } from "@/api/client";
+import { ErrorResponseDto } from "@/api/types";
+import axios from "axios";
+import { isErrorResponseDto } from "@/lib/helpers";
 
 type User = components["schemas"]["UserDto"] | null;
 
 type State = {
   user: User;
+  authModalOpen: boolean;
+  resetPasswordModalOpen: boolean;
   status: "idle" | "loading" | "failed";
   authReady: boolean; // <- признак, что проверка сессии завершена
 };
 
 const initialState: State = {
   user: null,
+  authModalOpen: false,
+  resetPasswordModalOpen: false,
   status: "idle",
   authReady: false,
 };
 
-export const loginThunk = createAsyncThunk(
-  "auth/login",
-  async ({ email, password }: { email: string; password: string }) =>
-    apiLogin({ email, password })
-);
+export const loginThunk = createAsyncThunk<
+  AuthResponseDto, // что возвращаем в случае успеха
+  LoginByEmailPayload, // аргумент
+  { rejectValue: ErrorResponseDto } // тип payload при ошибке
+>("auth/login", async (payload, { rejectWithValue }) => {
+  try {
+    const result = await apiLogin(payload);
+    return result;
+  } catch (e: unknown) {
+    // если это axios-ошибка и там есть наш dto — вернуть его как rejectValue
+    if (axios.isAxiosError(e)) {
+      const data = e.response?.data;
+      if (isErrorResponseDto(data)) {
+        return rejectWithValue(data);
+      }
+    }
+
+    // всё остальное — пробрасываем как есть (упадёт как обычный Error/SerializedError)
+    throw e;
+  }
+});
 
 // аккуратно вытаскиваем http-статус без any
 function getHttpStatus(e: unknown): number {
@@ -71,6 +100,12 @@ const slice = createSlice({
     },
     logout(state) {
       state.user = null;
+    },
+    setAuthModalOpen(state, action: PayloadAction<boolean>) {
+      state.authModalOpen = action.payload;
+    },
+    setResetPasswordModalOpen(state, action: PayloadAction<boolean>) {
+      state.resetPasswordModalOpen = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -129,11 +164,15 @@ const slice = createSlice({
   },
 });
 
-export const { setUser, logout } = slice.actions;
+export const { setUser, logout, setAuthModalOpen, setResetPasswordModalOpen } =
+  slice.actions;
 export default slice.reducer;
 
 // ----- Селекторы -----
 export const selectUser = (s: RootState) => s.auth.user;
+export const selectAuthModalOpen = (s: RootState) => s.auth.authModalOpen;
+export const selectResetPasswordModalOpen = (s: RootState) =>
+  s.auth.resetPasswordModalOpen;
 export const selectIsAuthenticated = (s: RootState) => Boolean(s.auth.user);
 export const selectAuthReady = (s: RootState) => s.auth.authReady;
 export const selectAuthStatus = (s: RootState) => s.auth.status;

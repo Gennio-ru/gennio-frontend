@@ -10,9 +10,7 @@ import type { components } from "./types.gen";
 export type AuthResponseDto = components["schemas"]["AuthResponseDto"];
 
 export const API_URL =
-  import.meta.env.VITE_API_URL ??
-  import.meta.env.VITE_API_BASE_URL ??
-  "http://localhost:3000/api";
+  import.meta.env.VITE_API_URL ?? import.meta.env.VITE_API_BASE_URL;
 
 // ==== access token in-memory ====
 let accessToken: string | null = null;

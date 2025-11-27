@@ -4,10 +4,13 @@ import { cn } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import {
   hideMobileSidebar,
+  selectAppTheme,
   selectShowMobileSidebar,
   showMobileSidebar,
 } from "@/features/app/appSlice";
 import { Menu, XIcon } from "lucide-react";
+import { useAuth } from "@/features/auth/useAuth";
+import ThemeSwitch from "../ui/ThemeSwitch";
 
 type NavItem = { label: string; href: string; external?: boolean };
 
@@ -16,26 +19,9 @@ type SidebarProps = {
   className?: string;
 };
 
-export function SidebarDesktop({ items, className }: SidebarProps) {
-  return (
-    <aside
-      className={cn(
-        "hidden [@media(min-width:1440px)]:flex sticky top-16 h-min w-52 shrink-0 flex-col overflow-auto",
-        "px-6",
-        className
-      )}
-      aria-label="Боковое меню"
-    >
-      <nav className="space-y-1">
-        {items.map((item) => (
-          <MenuItem key={item.label} item={item} />
-        ))}
-      </nav>
-    </aside>
-  );
-}
-
 export function MenuItem({ item }: { item: NavItem }) {
+  const dispatch = useAppDispatch();
+
   return item.external ? (
     <a
       key={item.label}
@@ -50,9 +36,10 @@ export function MenuItem({ item }: { item: NavItem }) {
     <NavLink
       key={item.label}
       to={item.href}
+      onClick={() => dispatch(hideMobileSidebar())}
       className={({ isActive }) =>
         cn(
-          "block transition-colors text-base py-1.5",
+          "block transition-colors text-lg py-2",
           isActive ? "text-primary" : "text-base-content hover:text-primary"
         )
       }
@@ -70,6 +57,10 @@ export function SidebarToggleButton({
   label?: string;
 }) {
   const dispatch = useAppDispatch();
+  const { user } = useAuth();
+
+  const isAdminPage =
+    user?.role === "admin" && location.pathname.startsWith("/admin");
 
   return (
     <button
@@ -77,16 +68,18 @@ export function SidebarToggleButton({
       aria-label={label}
       onClick={() => dispatch(showMobileSidebar())}
       className={cn(
-        "[@media(min-width:1440px)]:hidden cursor-pointer",
+        "cursor-pointer",
+        isAdminPage ? "lg:hidden" : "md:hidden",
         className
       )}
     >
-      <Menu size={24} />
+      <Menu size={28} />
     </button>
   );
 }
 
 export function SidebarMobile({ items }: SidebarProps) {
+  const theme = useAppSelector(selectAppTheme);
   const dispatch = useAppDispatch();
   const isShownMobileSidebar = useAppSelector(selectShowMobileSidebar);
 
@@ -120,29 +113,39 @@ export function SidebarMobile({ items }: SidebarProps) {
         )}
         onClick={() => dispatch(hideMobileSidebar())}
       />
-      {/* panel */}
+
+      {/* glass panel */}
       <aside
         className={cn(
-          "absolute left-0 top-0 h-full w-[82%] max-w-[240px]",
-          "bg-base-100 px-6 py-2",
-          "transition-transform duration-300 ease-in-out",
-          isShownMobileSidebar ? "translate-x-0" : "-translate-x-full"
+          "absolute left-2 top-2 h-[calc(100%-1rem)] w-[82%] max-w-[240px]",
+          "rounded-field",
+          "px-6 py-3 transition-transform duration-300 ease-in-out",
+          theme === "dark" ? "glass-panel-dark" : "glass-panel-light",
+          isShownMobileSidebar
+            ? "translate-x-0"
+            : "-translate-x-[calc(100%+1rem)]"
         )}
         role="dialog"
         aria-label="Мобильное меню"
       >
-        <div className="flex justify-end mb-2">
+        {/* header */}
+        <div className="flex justify-between">
+          <div className="relative top-1">
+            <ThemeSwitch />
+          </div>
+
           <button
             type="button"
             aria-label="Закрыть меню"
             onClick={() => dispatch(hideMobileSidebar())}
-            className="p-2 cursor-pointer"
+            className="p-2 cursor-pointer relative left-3"
           >
             <XIcon size={24} />
           </button>
         </div>
 
-        <nav className="space-y-1">
+        {/* nav */}
+        <nav className="space-y-1 mt-2">
           {items.map((item) => (
             <MenuItem key={item.label} item={item} />
           ))}

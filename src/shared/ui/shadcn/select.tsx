@@ -33,13 +33,13 @@ function SelectTrigger({
       data-size={size}
       className={cn(
         // визуал
-        "flex w-fit items-center justify-between gap-2 rounded-field px-3 py-2 text-sm whitespace-nowrap transition-[color]",
+        "flex w-fit items-center justify-between gap-2 rounded-field px-3 py-2 text-base whitespace-nowrap transition-[color]",
         // цвета (daisyui)
         "data-[placeholder]:text-base-content/70 [&_svg:not([class*='text-'])]:text-base-content/70",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary",
         "aria-invalid:ring-error/20 aria-invalid:border-error",
         // размеры
-        "data-[size=default]:h-10 data-[size=sm]:h-8",
+        "data-[size=default]:h-12 data-[size=sm]:h-8",
         // иконки/внутр
         "*:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2",
         "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
@@ -50,7 +50,7 @@ function SelectTrigger({
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDownIcon className="size-4 opacity-50" />
+        <ChevronDownIcon className="size-5 opacity-50" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   );
@@ -116,7 +116,7 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex w-full select-none items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden",
+        "relative flex w-full select-none items-center gap-2 rounded-sm py-3 pr-8 pl-2 text-base outline-hidden",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         // состояние фокуса/hover
         "focus:bg-primary focus:text-primary-content",

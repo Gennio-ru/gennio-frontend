@@ -11,6 +11,14 @@ import {
 import Input from "@/shared/ui/Input";
 import Button from "@/shared/ui/Button";
 import CategoriesSelect from "@/shared/ui/CategoriesSelect";
+import { EditIcon, TrashIcon } from "lucide-react";
+import { apiDeletePrompt } from "@/api/modules/prompts";
+import toast from "react-hot-toast";
+import Loader from "@/shared/ui/Loader";
+import AdminPromptEditModal from "./AdminPromptEditModal";
+import ImageThumb from "@/shared/ui/ImageThumb";
+import { cn } from "@/lib/utils";
+import { AppRoute, route } from "@/shared/config/routes";
 
 export default function PromptsAdminList() {
   const dispatch = useAppDispatch();
@@ -32,6 +40,24 @@ export default function PromptsAdminList() {
     dispatch(resetCategory());
   };
 
+  const handleDelete = useMemo(
+    () => async (id: string) => {
+      const target = items.find((i) => i.id === id);
+      const name = target?.title ?? "Промпт";
+      if (!confirm(`Удалить «${name}»? Это действие нельзя отменить.`)) return;
+
+      try {
+        await apiDeletePrompt(id);
+        toast.success("Удалено");
+        dispatch(fetchAdminPrompts({ page, limit: 50 }));
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "Unknown error";
+        toast.error(`Не удалось удалить. ${msg}`);
+      }
+    },
+    [dispatch, items, page]
+  );
+
   // локальный контрол для поиска + дебаунс
   const [searchLocal, setSearchLocal] = useState(search ?? "");
   const debouncedSearch = useDebounce(searchLocal, 300);
@@ -39,16 +65,13 @@ export default function PromptsAdminList() {
   // подгрузка при изменении страницы/фильтров
   useEffect(() => {
     dispatch(fetchAdminPrompts({ page, limit: 50 }));
-  }, [dispatch, page, categoryId, debouncedSearch]);
+  }, [dispatch, page, categoryId, search]);
 
   // синк дебаунс-поиска в стор
   useEffect(() => {
-    // чтобы не диспатчить на каждый keypress — только по debounce
-    if (debouncedSearch !== (search ?? "")) {
-      dispatch(setSearch(debouncedSearch.trim() ? debouncedSearch : null));
-      // страница сбросится в редьюсере setSearch -> page=1
-    }
-  }, [debouncedSearch, search, dispatch]);
+    dispatch(setSearch(debouncedSearch.trim() ? debouncedSearch : null));
+    // страница может сбрасываться внутри редьюсера
+  }, [debouncedSearch, dispatch]);
 
   const canPrev = page > 1;
   const canNext = page < totalPages;
@@ -57,106 +80,118 @@ export default function PromptsAdminList() {
 
   const rows = useMemo(
     () =>
-      items.map((prompt) => (
-        <tr
-          key={prompt.id}
-          className="cursor-pointer hover:bg-base-200/50"
-          onClick={() => navigate(`/admin/prompts/${prompt.id}`)}
-        >
-          <td className="p-3">{prompt.title}</td>
-          <td className="p-3 hidden sm:table-cell">{prompt.type}</td>
-          <td className="p-3 hidden md:table-cell">
-            {prompt.category?.name || "-"}
+      items.map((prompt, index) => (
+        <tr key={prompt.id} className={cn(index % 2 === 0 && "bg-base-200/40")}>
+          <td className="p-3">
+            <ImageThumb url={prompt.afterImageUrl} />
           </td>
-          <td className="p-3 hidden lg:table-cell">
-            {new Date(prompt.createdAt).toLocaleString()}
+          <td className="p-3">{prompt.title}</td>
+          <td className="p-3 table-cell">{prompt.category?.name || "-"}</td>
+          <td className="p-3">
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                title="Edit"
+                onClick={() => navigate(route.adminPrompt(prompt.id))}
+              >
+                <EditIcon size={16} />
+              </Button>
+
+              <Button
+                size="sm"
+                title="Delete"
+                onClick={() => void handleDelete(prompt.id)}
+              >
+                <TrashIcon size={16} />
+              </Button>
+            </div>
           </td>
         </tr>
       )),
-    [items, navigate]
+    [items, navigate, handleDelete]
   );
 
   return (
-    <div className="py-6">
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end">
-        <div className="flex-1">
-          <Input
-            value={searchLocal}
-            onChange={(e) => setSearchLocal(e.target.value)}
-            placeholder="Search by title or description"
-            className="bg-base-100!"
+    <>
+      <div className="py-6">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end">
+          <div className="flex-1">
+            <Input
+              value={searchLocal}
+              onChange={(e) => setSearchLocal(e.target.value)}
+              placeholder="Search by title or description"
+              className="bg-base-100!"
+            />
+          </div>
+
+          <CategoriesSelect
+            value={categoryId || null}
+            onChange={changeCategory}
+            onReset={clearCategory}
+            className="bg-base-100"
           />
+
+          <Button
+            className="sm:w-auto"
+            onClick={() => navigate(`${AppRoute.ADMIN_PROMPTS}/new`)}
+          >
+            + New prompt
+          </Button>
         </div>
 
-        <CategoriesSelect
-          value={categoryId || null}
-          onChange={changeCategory}
-          onReset={clearCategory}
-          className="bg-base-100"
-        />
+        {status === "failed" && (
+          <div className="mb-3 text-error">Failed to load</div>
+        )}
 
-        <Button
-          className="sm:w-auto"
-          onClick={() => navigate("/admin/prompts/new")}
-        >
-          + New prompt
-        </Button>
-      </div>
-
-      {status === "failed" && (
-        <div className="mb-3 text-error">Failed to load</div>
-      )}
-
-      <div className="overflow-hidden rounded-box bg-base-100">
-        <table className="w-full text-sm">
-          <thead className="bg-base-100 text-base-content/70 border-b border-base-300">
-            <tr>
-              <th className="p-3 text-left">Title</th>
-              <th className="p-3 text-left hidden sm:table-cell">Type</th>
-              <th className="p-3 text-left hidden md:table-cell">Category</th>
-              <th className="p-3 text-left hidden lg:table-cell">Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows}
-
-            {items.length === 0 && status !== "loading" && (
+        <div className="overflow-hidden rounded-box bg-base-100">
+          <table className="w-full text-sm">
+            <thead className="bg-base-100 text-base-content/70 border-b border-base-300">
               <tr>
-                <td className="p-4 text-base-content/50" colSpan={4}>
-                  Не найдено
-                </td>
+                <th />
+                <th className="p-3 text-left">Title</th>
+                <th className="p-3 text-left table-cell">Category</th>
+                <th className="p-3 w-0 whitespace-nowrap text-center" />
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {rows}
+
+              {items.length === 0 && status !== "loading" && (
+                <tr>
+                  <td className="p-4 text-base-content/50" colSpan={4}>
+                    Не найдено
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {isLoading && <Loader />}
+
+        <div className="mt-4 flex items-center justify-between text-sm text-base-content/70">
+          <div>
+            Page {page} of {totalPages}
+          </div>
+          <div className="flex gap-2">
+            <Button
+              disabled={!canPrev || isLoading}
+              onClick={() => dispatch(setPage(Math.max(1, page - 1)))}
+            >
+              Prev
+            </Button>
+            <Button
+              disabled={!canNext || isLoading}
+              onClick={() => dispatch(setPage(page + 1))}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
       </div>
 
-      {isLoading && (
-        <div className="flex justify-center py-6">
-          <span className="loading loading-spinner loading-md text-base-content/50" />
-        </div>
-      )}
-
-      <div className="mt-4 flex items-center justify-between text-sm text-base-content/70">
-        <div>
-          Page {page} of {totalPages}
-        </div>
-        <div className="flex gap-2">
-          <Button
-            disabled={!canPrev || isLoading}
-            onClick={() => dispatch(setPage(Math.max(1, page - 1)))}
-          >
-            Prev
-          </Button>
-          <Button
-            disabled={!canNext || isLoading}
-            onClick={() => dispatch(setPage(page + 1))}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
-    </div>
+      <AdminPromptEditModal />
+    </>
   );
 }
 

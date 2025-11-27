@@ -1,4 +1,6 @@
 import { cn } from "@/lib/utils";
+import Lottie from "lottie-react";
+import loaderAnimation from "@/assets/loader.json";
 
 type LoaderProps = {
   size?: "sm" | "md" | "lg";
@@ -7,9 +9,9 @@ type LoaderProps = {
 };
 
 const sizeMap: Record<NonNullable<LoaderProps["size"]>, string> = {
-  sm: "w-4 h-4", // 16px
-  md: "w-6 h-6", // 24px
-  lg: "w-10 h-10", // 40px
+  sm: "w-6 h-6", // немного больше, чтобы анимация не терялась
+  md: "w-10 h-10",
+  lg: "w-16 h-16",
 };
 
 export default function Loader({
@@ -24,15 +26,12 @@ export default function Loader({
       aria-live="polite"
       aria-busy="true"
     >
-      <span
-        className={cn(
-          "loading loading-spinner text-base-content/50",
-          sizeMap[size],
-          className
-        )}
+      <Lottie
+        animationData={loaderAnimation}
+        loop
+        className={cn(sizeMap[size], className)}
         aria-label="Загрузка"
       />
-      <span className="sr-only">Загрузка…</span>
     </div>
   );
 }

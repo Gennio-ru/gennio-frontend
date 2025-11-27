@@ -1,4 +1,4 @@
-# ---------- build stage ----------
+# ---------- build ----------
 FROM node:20-alpine AS builder
 WORKDIR /app
 
@@ -11,7 +11,7 @@ ENV NODE_ENV=production
 
 RUN npm run build
 
-# ---------- serve stage ----------
+# ---------- serve ----------
 FROM nginx:alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html

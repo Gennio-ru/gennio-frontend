@@ -4,6 +4,23 @@
  */
 
 export interface paths {
+    "/api/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить список промптов с фильтрами и пагинацией */
+        get: operations["UsersController_findMany"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/users/{id}": {
         parameters: {
             query?: never;
@@ -12,13 +29,47 @@ export interface paths {
             cookie?: never;
         };
         /** Получить пользователя по id */
-        get: operations["UsersController_getOne"];
+        get: operations["UsersController_findOne"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/users/{id}/block": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Заблокировать пользователя */
+        patch: operations["UsersController_blockUser"];
+        trace?: never;
+    };
+    "/api/users/{id}/unblock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Разблокировать пользователя */
+        patch: operations["UsersController_unblockUser"];
         trace?: never;
     };
     "/api/auth/register/email": {
@@ -235,6 +286,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/password/reset/request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Запросить письмо для восстановления пароля */
+        post: operations["AuthController_requestPasswordReset"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/password/reset/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Подтвердить восстановление пароля */
+        post: operations["AuthController_confirmPasswordReset"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/prompts": {
         parameters: {
             query?: never;
@@ -270,6 +355,22 @@ export interface paths {
         head?: never;
         /** Обновить промпт (только админ) */
         patch: operations["PromptsController_update"];
+        trace?: never;
+    };
+    "/api/files/ai-upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["FilesController_aiUpload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/files/upload": {
@@ -314,6 +415,40 @@ export interface paths {
             cookie?: never;
         };
         get: operations["HealthController_health"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/model-job": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить список генераций с фильтрами и пагинацией */
+        get: operations["ModelJobController_findMany"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/model-job/last-generations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить последние несколько генераций запросившего пользователя */
+        get: operations["ModelJobController_lastGenerations"];
         put?: never;
         post?: never;
         delete?: never;
@@ -387,6 +522,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/transactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить список платежей с фильтрами и пагинацией */
+        get: operations["UserTokenTransactionsController_findMany"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pricing/token-packs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Получить список доступных пакетов токенов
+         * @description Возвращает набор пакетов токенов, которые отображаются пользователю на фронте.
+         */
+        get: operations["PricingController_getTokenPacks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/categories": {
         parameters: {
             query?: never;
@@ -424,10 +596,173 @@ export interface paths {
         patch: operations["CategoriesController_update"];
         trace?: never;
     };
+    "/api/payments/tokens": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Создать платёж за пакет токенов */
+        post: operations["PaymentsController_createTokensPayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить список платежей с фильтрами и пагинацией */
+        get: operations["PaymentsController_findMany"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить информацию о платеже */
+        get: operations["PaymentsController_getPayment"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/full/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Получить полную информацию о платеже */
+        get: operations["PaymentsController_getFullPayment"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Отменить платеж */
+        post: operations["PaymentsController_cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/yookassa/webhook": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Вебхук от YooKassa
+         * @description Обрабатывает события YooKassa (payment.succeeded, payment.canceled и т.д.). Вызывается YooKassa, а не фронтом.
+         */
+        post: operations["PaymentsController_yookassaWebhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{id}/refund-tokens/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Предпросмотр: сколько токенов и денег можно вернуть по платежу */
+        get: operations["PaymentsController_getRefundTokensPreview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{id}/refund-tokens": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Сделать частичный рефанд по токенам */
+        post: operations["PaymentsController_refundTokens"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{id}/refund": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Запросить возврат платежа полностью/частично */
+        post: operations["PaymentsController_refundPayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        PaginationMetaDto: {
+            totalItems: number;
+            itemCount: number;
+            itemsPerPage: number;
+            totalPages: number;
+            currentPage: number;
+        };
         /** @enum {string} */
         UserRole: "user" | "admin";
         UserDto: {
@@ -445,26 +780,51 @@ export interface components {
             /** @example user */
             role: components["schemas"]["UserRole"];
             /**
-             * @description Баланс кредитов
+             * @description Баланс токенов
              * @example 100
              */
-            credits: number;
+            tokens: number;
             /**
              * @description Активен ли пользователь
              * @example true
              */
             isActive: boolean;
-            /** @example false */
+            /**
+             * @description Подтверждён ли email
+             * @example false
+             */
             isEmailVerified: boolean;
-            /** @example true */
+            /**
+             * @description Подтверждён ли телефон
+             * @example true
+             */
             isPhoneVerified: boolean;
+            /**
+             * @description Заблокирован ли пользователь
+             * @example false
+             */
+            isBlocked: boolean;
+            /**
+             * Format: date-time
+             * @description Дата блокировки пользователя
+             */
+            blockedAt?: string | null;
+            /** @description Причина блокировки (видна только администраторам) */
+            blockedReason?: string | null;
             /** Format: date-time */
             lastLoginAt?: string | null;
+        };
+        BlockUserDto: {
+            /**
+             * @description Причина блокировки (опционально)
+             * @example Спам / злоупотребление сервисом
+             */
+            reason?: string | null;
         };
         RegisterByEmailDto: {
             /** @example user@example.com */
             email: string;
-            /** @example StrongPass123! */
+            /** @example ПарольПароль123! */
             password: string;
         };
         RegisterByPhoneDto: {
@@ -475,6 +835,10 @@ export interface components {
              * @example secretPassword123
              */
             password?: string;
+        };
+        ResendConfirmEmailDto: {
+            /** @example user@example.com */
+            email: string;
         };
         LoginByEmailDto: {
             /** @example user@example.com */
@@ -503,30 +867,48 @@ export interface components {
             /** @example 123456 */
             code: string;
         };
-        PaginationMetaDto: {
-            totalItems: number;
-            itemCount: number;
-            itemsPerPage: number;
-            totalPages: number;
-            currentPage: number;
+        RequestPasswordResetDto: {
+            /** @example user@example.com */
+            email: string;
+        };
+        ConfirmPasswordResetDto: {
+            /** @example f4581a6a-a33a-48cd-a07b-5638d9f7c649 */
+            userId: string;
+            /** @example b471548384c7428bb90a8e8e5c2b9c2f1e3b4a8760f8d12e8fa7b2c2f48a8d91 */
+            token: string;
+            /**
+             * @description Новый пароль пользователя
+             * @example NewStrongPassword123!
+             */
+            password: string;
         };
         FileDto: {
             /** @example uploads/2025/09/04/photo.png */
             key: string;
+            /** @example my-bucket */
+            bucket: string;
             /**
              * Format: uri
              * @example https://cdn.example.com/uploads/2025/09/04/photo.png
              */
-            url?: Record<string, never> | null;
+            url?: string | null;
             /** @example image/png */
-            contentType?: Record<string, never> | null;
+            contentType?: string;
             /**
              * @description Размер файла в байтах
              * @example 204800
              */
-            size?: Record<string, never>;
-            /** @example my-bucket */
-            bucket: string;
+            size?: number;
+            /**
+             * @description Ширина файла в пикселях
+             * @example 1024
+             */
+            widthPx?: number | null;
+            /**
+             * @description Высота файла в пикселях
+             * @example 768
+             */
+            heightPx?: number | null;
             /** @example user-123 */
             ownerId?: Record<string, never> | null;
             /** @example {
@@ -633,23 +1015,6 @@ export interface components {
             /** Format: binary */
             file: string;
         };
-        UploadFileResponseDto: {
-            /** @example f47ac10b-58cc-4372-a567-0e02b2c3d479 */
-            id: string;
-            /** @example uploads/2025/09/04/file.png */
-            key: string;
-            /** @example https://cdn.example.com/uploads/2025/09/04/file.png */
-            url: Record<string, never> | null;
-            /** @example image/png */
-            contentType: Record<string, never> | null;
-            /**
-             * @description Размер файла в байтах
-             * @example 204800
-             */
-            size: Record<string, never>;
-            /** Format: date-time */
-            createdAt: string;
-        };
         DeleteFileResponseDto: {
             /** @example true */
             ok: boolean;
@@ -665,6 +1030,11 @@ export interface components {
         ModelJobType: "image-edit-by-prompt-id" | "image-edit-by-prompt-text" | "image-generate-by-prompt-text";
         /** @enum {string} */
         ModelJobStatusType: "queued" | "processing" | "succeeded" | "failed";
+        /**
+         * @description Тариф, по которому считали стоимость задачи
+         * @enum {string}
+         */
+        ModelTariffCode: "TEXT_BASIC" | "TEXT_PRO" | "IMAGE_BASIC_GENERATE" | "IMAGE_BASIC_EDIT" | "IMAGE_PRO_GENERATE" | "IMAGE_PRO_EDIT";
         ModelJobDto: {
             model: components["schemas"]["ModelType"];
             type: components["schemas"]["ModelJobType"];
@@ -675,6 +1045,7 @@ export interface components {
             promptId: string | null;
             /** @example user-123 */
             userId: string;
+            user: components["schemas"]["UserDto"] | null;
             /**
              * Format: uuid
              * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
@@ -685,16 +1056,33 @@ export interface components {
              * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
              */
             outputFileId: string | null;
-            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.png */
-            inputFileUrl: Record<string, never> | null;
-            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.png */
-            outputFileUrl: Record<string, never> | null;
+            /**
+             * Format: uuid
+             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
+             */
+            outputPreviewFileId: string | null;
+            outputText: string | null;
+            tariffCode: components["schemas"]["ModelTariffCode"];
+            /**
+             * @description Сколько токенов списано за эту задачу
+             * @example 8
+             */
+            tokensCharged: number;
+            /** @example {
+             *       "width": 400,
+             *       "height": 300
+             *     } */
+            usedTokens: Record<string, never> | null;
             /** @example OpenAI timeout error */
-            error: Record<string, never> | null;
+            error: string | null;
             /** Format: date-time */
             startedAt: string | null;
             /** Format: date-time */
             finishedAt: string | null;
+            /** Format: date-time */
+            resultsExpireAt: string | null;
+            /** Format: date-time */
+            resultsDeletedAt: string | null;
             /** Format: uuid */
             id: string;
             /** Format: date-time */
@@ -702,23 +1090,249 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
         };
+        ModelJobWithPreviewFileDto: {
+            model: components["schemas"]["ModelType"];
+            type: components["schemas"]["ModelJobType"];
+            status: components["schemas"]["ModelJobStatusType"];
+            /** @example Мягкое освещение, крупный план */
+            text: string | null;
+            /** @example Мягкое освещение, крупный план */
+            promptId: string | null;
+            /** @example user-123 */
+            userId: string;
+            user: components["schemas"]["UserDto"] | null;
+            /**
+             * Format: uuid
+             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
+             */
+            inputFileId: string | null;
+            /**
+             * Format: uuid
+             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
+             */
+            outputFileId: string | null;
+            /**
+             * Format: uuid
+             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
+             */
+            outputPreviewFileId: string | null;
+            outputText: string | null;
+            tariffCode: components["schemas"]["ModelTariffCode"];
+            /**
+             * @description Сколько токенов списано за эту задачу
+             * @example 8
+             */
+            tokensCharged: number;
+            /** @example {
+             *       "width": 400,
+             *       "height": 300
+             *     } */
+            usedTokens: Record<string, never> | null;
+            /** @example OpenAI timeout error */
+            error: string | null;
+            /** Format: date-time */
+            startedAt: string | null;
+            /** Format: date-time */
+            finishedAt: string | null;
+            /** Format: date-time */
+            resultsExpireAt: string | null;
+            /** Format: date-time */
+            resultsDeletedAt: string | null;
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            outputPreviewFile: components["schemas"]["FileDto"] | null;
+            /** Format: uri */
+            outputPreviewFileUrl: string | null;
+        };
+        ModelJobFullDto: {
+            model: components["schemas"]["ModelType"];
+            type: components["schemas"]["ModelJobType"];
+            status: components["schemas"]["ModelJobStatusType"];
+            /** @example Мягкое освещение, крупный план */
+            text: string | null;
+            /** @example Мягкое освещение, крупный план */
+            promptId: string | null;
+            /** @example user-123 */
+            userId: string;
+            user: components["schemas"]["UserDto"] | null;
+            /**
+             * Format: uuid
+             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
+             */
+            inputFileId: string | null;
+            /**
+             * Format: uuid
+             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
+             */
+            outputFileId: string | null;
+            /**
+             * Format: uuid
+             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
+             */
+            outputPreviewFileId: string | null;
+            outputText: string | null;
+            tariffCode: components["schemas"]["ModelTariffCode"];
+            /**
+             * @description Сколько токенов списано за эту задачу
+             * @example 8
+             */
+            tokensCharged: number;
+            /** @example {
+             *       "width": 400,
+             *       "height": 300
+             *     } */
+            usedTokens: Record<string, never> | null;
+            /** @example OpenAI timeout error */
+            error: string | null;
+            /** Format: date-time */
+            startedAt: string | null;
+            /** Format: date-time */
+            finishedAt: string | null;
+            /** Format: date-time */
+            resultsExpireAt: string | null;
+            /** Format: date-time */
+            resultsDeletedAt: string | null;
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            inputFile: components["schemas"]["FileDto"] | null;
+            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.jpeg */
+            inputFileUrl: string | null;
+            outputFile: components["schemas"]["FileDto"] | null;
+            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.jpeg */
+            outputFileUrl: string | null;
+            outputPreviewFile: components["schemas"]["FileDto"] | null;
+            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.jpeg */
+            outputPreviewFileUrl: string | null;
+        };
         StartImageEditByPromptIdDto: {
             model: components["schemas"]["ModelType"];
             promptId: string;
-            /** @example Мягкое освещение, крупный план */
+            /**
+             * @description Не более 500 символов
+             * @example Мягкое освещение, крупный план
+             */
             text: string;
             inputFileId: string;
         };
+        /** @enum {string} */
+        ErrorCode: "TOKENS_NOT_ENOUGH" | "MODEJ_JOB_TYPE_NOT_FOUND" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "MODERATION_BLOCKED" | "UNAUTHORIZED" | "EMAIL_NOT_CONFIRMED" | "ACCOUNT_IS_BLOCKED" | "FORBIDDEN" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
+        ErrorInfoDto: {
+            code: components["schemas"]["ErrorCode"];
+            /**
+             * @description Может быть undefined для бизнес-ошибок, фронт сам локализует по code
+             * @example Internal server error
+             */
+            message?: string;
+            /** @description Доп. детали, например { required: 10 } */
+            details?: Record<string, never>;
+        };
+        ErrorResponseDto: {
+            /** @example false */
+            success: boolean;
+            /** @example 400 */
+            statusCode: number;
+            error: components["schemas"]["ErrorInfoDto"];
+            /** @example /api/model-job/start-image-edit-by-prompt-id */
+            path: string;
+            /** @example 2025-11-12T22:31:59.153Z */
+            timestamp: string;
+        };
         StartImageEditByPromptTextDto: {
             model: components["schemas"]["ModelType"];
-            /** @example Мягкое освещение, крупный план */
+            /**
+             * @description Не более 500 символов
+             * @example Мягкое освещение, крупный план
+             */
             text: string;
             inputFileId: string;
         };
         StartImageGenerateByPromptTextDto: {
             model: components["schemas"]["ModelType"];
-            /** @example Мягкое освещение, крупный план */
+            /**
+             * @description Не более 500 символов
+             * @example Мягкое освещение, крупный план
+             */
             text: string;
+        };
+        /**
+         * @description Причина изменения токенов
+         * @enum {string}
+         */
+        TokenTransactionReason: "JOB_CHARGE" | "JOB_REFUND" | "MANUAL_ADD" | "MANUAL_SUBTRACT" | "PAYMENT_PURCHASE" | "PAYMENT_REFUND" | "PROMO";
+        UserTokenTransactionDto: {
+            /**
+             * Format: uuid
+             * @description ID пользователя
+             */
+            userId: string;
+            /** @description Пользователь (если подгружен) */
+            user: components["schemas"]["UserDto"] | null;
+            /**
+             * @description Изменение баланса: +100 начисление, -20 списание
+             * @example 50
+             */
+            delta: number;
+            reason: components["schemas"]["TokenTransactionReason"];
+            /**
+             * Format: uuid
+             * @description ID задачи модели, если транзакция связана с выполнением задания
+             */
+            modelJobId?: string | null;
+            /** @description Доп. данные — тариф, промокод, пакет токенов и т.п. */
+            meta?: Record<string, never> | null;
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        /**
+         * @description Уникальный идентификатор пакета
+         * @enum {string}
+         */
+        TokensPackId: "ONCE" | "STARTER" | "BASIC" | "PRO";
+        TokenPackDto: {
+            /** @example STARTER */
+            id: components["schemas"]["TokensPackId"];
+            /**
+             * @description Название пакета, отображаемое пользователю
+             * @example 5 генераций
+             */
+            name: string;
+            /**
+             * @description Количество токенов в пакете
+             * @example 25
+             */
+            tokens: number;
+            /**
+             * @description Ориентировочное количество генераций, которое покрывает пакет
+             * @example 5
+             */
+            generations: number;
+            /**
+             * @description Скидка в процентах относительно базовой цены
+             * @example 10
+             */
+            discountPercent: number;
+            /**
+             * @description Стоимость в рублях
+             * @example 35
+             */
+            priceRub: number;
+            /**
+             * @description Пометить пакет как рекомендованный / выделенный
+             * @example true
+             */
+            highlight?: boolean;
         };
         CreateCategoryDto: {
             /** @example Мультипликация */
@@ -730,6 +1344,238 @@ export interface components {
             name?: string;
             description?: string;
         };
+        CreateTokensPaymentDto: {
+            /**
+             * @description ID пакета токенов, выбранный пользователем
+             * @example pro
+             */
+            packId: string;
+            /**
+             * @description Путь на фронте, куда вернуть пользователя после оплаты. Если не указан — используем /payment/return.
+             * @example /pricing
+             */
+            returnPath?: string;
+        };
+        /**
+         * @description Текущий статус платежа
+         * @enum {string}
+         */
+        PaymentStatus: "PENDING" | "WAITING_FOR_CAPTURE" | "SUCCEEDED" | "CANCELED" | "REFUNDED" | "ERROR";
+        PaymentShortDto: {
+            /**
+             * @description ID платежа в системе Gennio
+             * @example c6a6a9ff-5d9c-4a0f-9c35-6f6d1d9f7a23
+             */
+            id: string;
+            /** @example PENDING */
+            status: components["schemas"]["PaymentStatus"];
+            /**
+             * @description URL для перехода в YooKassa
+             * @example https://yookassa.ru/checkout/...
+             */
+            confirmationUrl: string | null;
+        };
+        PaymentFullDto: {
+            /**
+             * Format: uuid
+             * @description ID пользователя, который оплатил (или null)
+             */
+            userId: string | null;
+            /**
+             * @description Сумма платежа (numeric хранится как строка)
+             * @example 199.00
+             */
+            amount: string;
+            /**
+             * @description Валюта платежа
+             * @example RUB
+             */
+            currency: string;
+            /**
+             * @description Платёжный провайдер
+             * @example yookassa
+             */
+            provider: string;
+            /**
+             * @description ID платежа в YooKassa
+             * @example 2fbb9a6b-000f-5000-8000-1e4b4c4d01e2
+             */
+            providerPaymentId: string | null;
+            status: components["schemas"]["PaymentStatus"];
+            /**
+             * @description Ссылка на страницу оплаты в YooKassa
+             * @example https://yookassa.ru/checkout/...
+             */
+            confirmationUrl: string | null;
+            /**
+             * @description Описание платежа
+             * @example Пакет 20 генераций
+             */
+            description: string | null;
+            /** @description Сырой объект платежа от YooKassa */
+            providerPayload: Record<string, never> | null;
+            /** @description Наши внутренние данные (пакет токенов и др.) */
+            meta: Record<string, never> | null;
+            /** @description Сколько токенов было начислено за этот платеж */
+            tokensPurchased: number | null;
+            /** @description Сколько токенов уже было отозвано рефандами */
+            tokensRefunded: number | null;
+            /**
+             * Format: date-time
+             * @description Когда платеж был захвачен (capture)
+             */
+            capturedAt: string | null;
+            /** Format: date-time */
+            canceledAt: string | null;
+            /** Format: date-time */
+            refundedAt: string | null;
+            /**
+             * @description Сумма возврата
+             * @example 199.00
+             */
+            refundedAmount: string | null;
+            /**
+             * @description Код ошибки от YooKassa
+             * @example canceled_by_user
+             */
+            errorCode: string | null;
+            /**
+             * @description Текст ошибки
+             * @example Отменено пользователем
+             */
+            errorMessage: string | null;
+            /**
+             * Format: date-time
+             * @description Когда бизнес-логика была успешно выполнена
+             */
+            processedAt: string | null;
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            user: components["schemas"]["UserDto"];
+        };
+        PaymentDto: {
+            /**
+             * Format: uuid
+             * @description ID пользователя, который оплатил (или null)
+             */
+            userId: string | null;
+            /**
+             * @description Сумма платежа (numeric хранится как строка)
+             * @example 199.00
+             */
+            amount: string;
+            /**
+             * @description Валюта платежа
+             * @example RUB
+             */
+            currency: string;
+            /**
+             * @description Платёжный провайдер
+             * @example yookassa
+             */
+            provider: string;
+            /**
+             * @description ID платежа в YooKassa
+             * @example 2fbb9a6b-000f-5000-8000-1e4b4c4d01e2
+             */
+            providerPaymentId: string | null;
+            status: components["schemas"]["PaymentStatus"];
+            /**
+             * @description Ссылка на страницу оплаты в YooKassa
+             * @example https://yookassa.ru/checkout/...
+             */
+            confirmationUrl: string | null;
+            /**
+             * @description Описание платежа
+             * @example Пакет 20 генераций
+             */
+            description: string | null;
+            /** @description Сырой объект платежа от YooKassa */
+            providerPayload: Record<string, never> | null;
+            /** @description Наши внутренние данные (пакет токенов и др.) */
+            meta: Record<string, never> | null;
+            /** @description Сколько токенов было начислено за этот платеж */
+            tokensPurchased: number | null;
+            /** @description Сколько токенов уже было отозвано рефандами */
+            tokensRefunded: number | null;
+            /**
+             * Format: date-time
+             * @description Когда платеж был захвачен (capture)
+             */
+            capturedAt: string | null;
+            /** Format: date-time */
+            canceledAt: string | null;
+            /** Format: date-time */
+            refundedAt: string | null;
+            /**
+             * @description Сумма возврата
+             * @example 199.00
+             */
+            refundedAmount: string | null;
+            /**
+             * @description Код ошибки от YooKassa
+             * @example canceled_by_user
+             */
+            errorCode: string | null;
+            /**
+             * @description Текст ошибки
+             * @example Отменено пользователем
+             */
+            errorMessage: string | null;
+            /**
+             * Format: date-time
+             * @description Когда бизнес-логика была успешно выполнена
+             */
+            processedAt: string | null;
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        YookassaWebhookResponseDto: {
+            /**
+             * @description Webhook успешно принят
+             * @example true
+             */
+            accepted: boolean;
+        };
+        RefundTokensPreviewDto: {
+            paymentId: string;
+            userId: string;
+            /** @description Всего токенов куплено этим платежом */
+            tokensPurchased: number;
+            /** @description Уже возвращено токенов по этому платежу */
+            tokensRefunded: number;
+            /** @description Осталось токенов, подвязанных к этому платежу */
+            remainingByPayment: number;
+            /** @description Текущий баланс токенов пользователя */
+            userBalance: number;
+            /** @description Максимум токенов, который можно вернуть сейчас */
+            maxTokensToRefund: number;
+            /** @description Цена одного токена по этому платежу (RUB) */
+            pricePerToken: number;
+            /** @description Максимальная сумма к возврату (RUB) */
+            maxAmountRub: number;
+            currency: string;
+        };
+        RefundTokensDto: {
+            /**
+             * @description Сколько токенов вернуть пользователю
+             * @example 100
+             */
+            tokens: number;
+            /**
+             * @description Комментарий к рефанду (уходит в YooKassa)
+             * @example Частичный возврат по просьбе пользователя
+             */
+            description?: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -739,7 +1585,39 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    UsersController_getOne: {
+    UsersController_findMany: {
+        parameters: {
+            query?: {
+                search?: string;
+                /** @description Фильтр по роли пользователя */
+                role?: components["schemas"]["UserRole"];
+                /** @description Минимальное количество токенов */
+                tokensMin?: number;
+                /** @description Максимальное количество токенов */
+                tokensMax?: number;
+                limit?: number;
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: components["schemas"]["UserDto"][];
+                        meta: components["schemas"]["PaginationMetaDto"];
+                    };
+                };
+            };
+        };
+    };
+    UsersController_findOne: {
         parameters: {
             query?: never;
             header?: never;
@@ -750,6 +1628,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Найденный пользователь */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -757,6 +1636,75 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["UserDto"];
                 };
+            };
+            /** @description Пользователь не найден */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UsersController_blockUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BlockUserDto"];
+            };
+        };
+        responses: {
+            /** @description Пользователь заблокирован */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserDto"];
+                };
+            };
+            /** @description Пользователь не найден */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UsersController_unblockUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Пользователь разблокирован */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserDto"];
+                };
+            };
+            /** @description Пользователь не найден */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -829,9 +1777,13 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResendConfirmEmailDto"];
+            };
+        };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -988,7 +1940,9 @@ export interface operations {
     };
     AuthController_redirectToYandex: {
         parameters: {
-            query?: never;
+            query: {
+                returnUrl: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1019,6 +1973,52 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    AuthController_requestPasswordReset: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestPasswordResetDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    AuthController_confirmPasswordReset: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmPasswordResetDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
             };
         };
     };
@@ -1162,6 +2162,33 @@ export interface operations {
             };
         };
     };
+    FilesController_aiUpload: {
+        parameters: {
+            query: {
+                folder: string;
+                public: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UploadDto"];
+            };
+        };
+        responses: {
+            /** @description Файл успешно загружен */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FileDto"];
+                };
+            };
+        };
+    };
     FilesController_upload: {
         parameters: {
             query: {
@@ -1184,7 +2211,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UploadFileResponseDto"];
+                    "application/json": components["schemas"]["FileDto"];
                 };
             };
         };
@@ -1266,6 +2293,60 @@ export interface operations {
             };
         };
     };
+    ModelJobController_findMany: {
+        parameters: {
+            query?: {
+                /** @description Общий поиск */
+                search?: string;
+                /** @description Фильтр по типу генерации */
+                type?: "image-edit-by-prompt-id" | "image-edit-by-prompt-text" | "image-generate-by-prompt-text";
+                /** @description Фильтр по статусу генерации */
+                status?: "queued" | "processing" | "succeeded" | "failed";
+                /** @description Дата создания — от */
+                createdFrom?: string;
+                /** @description Дата создания — до */
+                createdTo?: string;
+                limit?: number;
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: components["schemas"]["ModelJobDto"][];
+                        meta: components["schemas"]["PaginationMetaDto"];
+                    };
+                };
+            };
+        };
+    };
+    ModelJobController_lastGenerations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelJobWithPreviewFileDto"][];
+                };
+            };
+        };
+    };
     ModelJobController_findOne: {
         parameters: {
             query?: never;
@@ -1283,7 +2364,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ModelJobDto"];
+                    "application/json": components["schemas"]["ModelJobFullDto"];
                 };
             };
             /** @description Процесс не найден */
@@ -1317,6 +2398,15 @@ export interface operations {
                     "application/json": components["schemas"]["ModelJobDto"];
                 };
             };
+            /** @description Бизнес-ошибка (например, не хватает токенов) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
         };
     };
     ModelJobController_startImageEditByPromptText: {
@@ -1341,6 +2431,15 @@ export interface operations {
                     "application/json": components["schemas"]["ModelJobDto"];
                 };
             };
+            /** @description Бизнес-ошибка (например, не хватает токенов) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
         };
     };
     ModelJobController_startImageGenerateByPromptText: {
@@ -1363,6 +2462,70 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ModelJobDto"];
+                };
+            };
+            /** @description Бизнес-ошибка (например, не хватает токенов) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    UserTokenTransactionsController_findMany: {
+        parameters: {
+            query?: {
+                /** @description Поиск по userId, email, providerPaymentId, description */
+                search?: string;
+                /** @description Фильтр по направлению платежа */
+                delta?: number;
+                /** @description Фильтр по причине платежа */
+                reason?: "JOB_CHARGE" | "JOB_REFUND" | "MANUAL_ADD" | "MANUAL_SUBTRACT" | "PAYMENT_PURCHASE" | "PAYMENT_REFUND" | "PROMO";
+                /** @description Дата создания — от */
+                createdFrom?: string;
+                /** @description Дата создания — до */
+                createdTo?: string;
+                limit?: number;
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: components["schemas"]["UserTokenTransactionDto"][];
+                        meta: components["schemas"]["PaginationMetaDto"];
+                    };
+                };
+            };
+        };
+    };
+    PricingController_getTokenPacks: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Массив доступных пакетов токенов */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenPackDto"][];
                 };
             };
         };
@@ -1496,6 +2659,236 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    PaymentsController_createTokensPayment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateTokensPaymentDto"];
+            };
+        };
+        responses: {
+            /** @description Краткая информация о платеже, включая ссылку на оплату в YooKassa. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentShortDto"];
+                };
+            };
+            /** @description Ошибка валидации или бизнес-ошибка */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    PaymentsController_findMany: {
+        parameters: {
+            query?: {
+                /** @description Поиск по userId, email, providerPaymentId, description */
+                search?: string;
+                /** @description Фильтр по статусу платежа */
+                status?: "PENDING" | "WAITING_FOR_CAPTURE" | "SUCCEEDED" | "CANCELED" | "REFUNDED" | "ERROR";
+                /** @description Дата создания — от */
+                createdFrom?: string;
+                /** @description Дата создания — до */
+                createdTo?: string;
+                limit?: number;
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: components["schemas"]["PaymentFullDto"][];
+                        meta: components["schemas"]["PaginationMetaDto"];
+                    };
+                };
+            };
+        };
+    };
+    PaymentsController_getPayment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID платежа в системе Gennio */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"];
+                };
+            };
+        };
+    };
+    PaymentsController_getFullPayment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID платежа в системе Gennio */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentFullDto"];
+                };
+            };
+        };
+    };
+    PaymentsController_cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID платежа в системе Gennio */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"];
+                };
+            };
+        };
+    };
+    PaymentsController_yookassaWebhook: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["YookassaWebhookResponseDto"];
+                };
+            };
+        };
+    };
+    PaymentsController_getRefundTokensPreview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RefundTokensPreviewDto"];
+                };
+            };
+        };
+    };
+    PaymentsController_refundTokens: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RefundTokensDto"];
+            };
+        };
+        responses: {
+            /** @description Обновлённый платёж после запроса частичного рефанда */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentFullDto"];
+                };
+            };
+        };
+    };
+    PaymentsController_refundPayment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * @description Сумма возврата в рублях. Если не передана — вернуть максимально возможную сумму.
+                     * @example 1000
+                     */
+                    amount?: number | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Обновлённый платёж после запроса рефанда */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentFullDto"];
+                };
             };
         };
     };

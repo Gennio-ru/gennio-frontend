@@ -2,49 +2,80 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 type Props = React.ImgHTMLAttributes<HTMLImageElement> & {
-  loaderSize?: number;
   size?: "xs" | "md" | "xl";
+  widthPx?: number | null;
+  heightPx?: number | null;
 };
 
-const sizeClasses: Record<NonNullable<Props["size"]>, string> = {
-  xs: "h-[150px] min-w-[80px]",
-  md: "h-[350px] min-w-[140px]",
-  xl: "h-[500px] min-w-[200px]",
+const baseSide: Record<NonNullable<Props["size"]>, number> = {
+  xs: 150,
+  md: 350,
+  xl: 500,
 };
+
+// канонические соотношения сторон
+const RATIO_SQUARE = 1; // 1024x1024
+const RATIO_PORTRAIT = 1024 / 1536; // ~0.666...
+const RATIO_LANDSCAPE = 1536 / 1024; // 1.5
+
+function getCanonicalRatio(w?: number | null, h?: number | null) {
+  if (!w || !h || w <= 0 || h <= 0) return RATIO_SQUARE;
+
+  const actual = w / h;
+
+  const candidates = [
+    { ratio: RATIO_SQUARE, diff: Math.abs(actual - RATIO_SQUARE) },
+    { ratio: RATIO_PORTRAIT, diff: Math.abs(actual - RATIO_PORTRAIT) },
+    { ratio: RATIO_LANDSCAPE, diff: Math.abs(actual - RATIO_LANDSCAPE) },
+  ];
+
+  candidates.sort((a, b) => a.diff - b.diff);
+  return candidates[0].ratio;
+}
 
 export default function ImageWithLoader({
-  loaderSize = 40,
   size = "xl",
-  ...props
+  widthPx,
+  heightPx,
+  className,
+  ...imgProps
 }: Props) {
-  const [loading, setLoading] = useState(true);
+  const [loaded, setLoaded] = useState(false);
+
+  const ratio = getCanonicalRatio(widthPx, heightPx);
+  const base = baseSide[size];
+
+  // для landscape делаем ширину больше, для портрета — base
+  const maxWidthPx = ratio >= 1 ? base * ratio : base;
 
   return (
-    <div className="relative flex items-center justify-center">
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span
-            className="loading loading-spinner text-base-content/50"
-            style={{ width: loaderSize, height: loaderSize }}
-          />
-        </div>
+    <div
+      className="relative overflow-hidden rounded-field mx-auto"
+      style={{
+        width: "100%",
+        maxWidth: maxWidthPx,
+        aspectRatio: ratio,
+        maxHeight: base,
+      }}
+    >
+      {!loaded && (
+        <div className="absolute inset-0 animate-pulse bg-base-300/50" />
       )}
 
       <img
-        {...props}
+        {...imgProps}
         onLoad={(e) => {
-          setLoading(false);
-          props.onLoad?.(e);
+          setLoaded(true);
+          imgProps.onLoad?.(e);
         }}
         onError={(e) => {
-          setLoading(false);
-          props.onError?.(e);
+          setLoaded(true);
+          imgProps.onError?.(e);
         }}
         className={cn(
-          "w-auto rounded-field object-contain transition-opacity duration-300",
-          sizeClasses[size],
-          loading ? "opacity-0" : "opacity-100",
-          props.className
+          "h-full w-full object-cover transition-opacity duration-300",
+          loaded ? "opacity-100" : "opacity-0",
+          className
         )}
       />
     </div>

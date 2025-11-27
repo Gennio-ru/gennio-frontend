@@ -6,3 +6,6 @@ export interface PaginationResult<T> {
   items: T[];
   meta: PaginationMetaDto;
 }
+
+export type ErrorResponseDto = components["schemas"]["ErrorResponseDto"];
+export type ErrorCode = components["schemas"]["ErrorCode"];

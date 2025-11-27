@@ -1,9 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@import "@fontsource/roboto/300.css";
 @import "@fontsource/roboto/400.css";
 @import "@fontsource/roboto/500.css";
 @import "@fontsource/roboto/700.css";
+
+/* react-date-range */
+@import "react-date-range/dist/styles.css";
+@import "react-date-range/dist/theme/default.css";
 
 @custom-variant dark (&:is(.dark *));
 @plugin "daisyui";
@@ -19,7 +24,7 @@
   --color-base-content: oklch(22% 0.015 70); /* ОСНОВНОЙ текст */
 
   /* brand / accents */
-  --color-primary: oklch(0.5874 0.15 342);
+  --color-primary: oklch(0.586 0.2015 5.62);
   --color-primary-content: oklch(98% 0.003 95); /* текст на primary */
 
   --color-secondary: oklch(0.804 0.0387 232.06);
@@ -61,8 +66,8 @@
   --color-base-content: oklch(97% 0.003 95); /* ОСНОВНОЙ текст */
 
   /* brand / accents (ярче, чтобы «светились») */
-  --color-primary: oklch(70% 0.15 342);
-  --color-primary-content: oklch(18% 0.01 70);
+  --color-primary: oklch(0.586 0.2015 5.62);
+  --color-primary-content: oklch(98% 0.003 95);
 
   --color-secondary: oklch(66% 0.09 30);
   --color-secondary-content: oklch(18% 0.01 70);
@@ -106,4 +111,85 @@
 
 body {
   font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  overflow-y: auto;
+}
+
+/* общий слой фона */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* светлая тема */
+:root[data-theme="light"] body::before {
+  background-image: url("/background-light.webp");
+  background-color: rgb(88 185 32 / 38%);
+  background-blend-mode: screen;
+}
+
+/* тёмная тема */
+:root[data-theme="dark"] body::before {
+  background-image: url("/background-dark.webp");
+  background-color: rgb(0 0 0 / 60%);
+  background-blend-mode: luminosity;
+}
+
+@layer components {
+  .glass-panel-light,
+  .glass-panel-light-important {
+    /* @apply backdrop-blur-md bg-base-100/40 border border-white/10; */
+
+    --glass-bg: color-mix(in oklab, transparent 80%, transparent);
+    --glass-border: color-mix(in oklab, var(--glass-bg) 90%, white);
+  }
+
+  .glass-panel-light {
+    @apply shadow-xl/5 inset-shadow-sm inset-shadow-black/15 backdrop-blur-sm bg-base-100/40 inset-shadow-sm;
+
+    --tw-inset-shadow: inset 0 0 4px var(--tw-inset-shadow-color);
+  }
+
+  .glass-panel-light-important {
+    @apply !shadow-xl/5 !inset-shadow-sm !inset-shadow-black/15 !backdrop-blur-sm !bg-base-100/40 !inset-shadow-sm;
+
+    --tw-inset-shadow: inset 0 0 4px var(--tw-inset-shadow-color);
+  }
+
+  .glass-panel-dark,
+  .glass-panel-dark-important {
+    /* @apply backdrop-blur-md bg-base-100/40 border border-white/10; */
+
+    --glass-bg: color-mix(in oklab, transparent 80%, transparent);
+    --glass-border: color-mix(in oklab, var(--glass-bg) 90%, white);
+  }
+
+  .glass-panel-dark {
+    @apply shadow-xl/5 inset-shadow-sm inset-shadow-current/10 backdrop-blur-sm bg-base-100/40 inset-shadow-sm;
+
+    --tw-inset-shadow: inset 0 0 4px var(--tw-inset-shadow-color);
+  }
+
+  .glass-panel-dark-important {
+    @apply !shadow-xl/5 !inset-shadow-sm !inset-shadow-current/10 !backdrop-blur-sm !bg-base-100/40 !inset-shadow-sm;
+
+    --tw-inset-shadow: inset 0 0 4px var(--tw-inset-shadow-color);
+  }
+
+  /* ─────────── ИНТЕРАКТИВНОСТЬ ─────────── */
+  .glass-interactive-light {
+    @apply transition-[background-color,border-color,box-shadow] duration-200 ease-in-out;
+    @apply hover:bg-base-100/60;
+  }
+
+  .glass-interactive-dark {
+    @apply transition-[background-color,border-color,box-shadow] duration-200 ease-in-out;
+    @apply hover:bg-base-content/15;
+  }
 }
