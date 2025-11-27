@@ -7,6 +7,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import {
   selectResultPaymentModalOpen,
+  setPaymentModalOpen,
   setPaymentResultModalOpen,
 } from "@/features/app/appSlice";
 import { selectAppTheme } from "@/features/app/appSlice";
@@ -33,6 +34,7 @@ export default function PaymentResultModal() {
 
     if (paymentId) {
       dispatch(setPaymentResultModalOpen(true));
+      dispatch(setPaymentModalOpen(false));
       setLoading(true);
 
       apiGetPayment(paymentId)
