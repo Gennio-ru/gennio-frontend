@@ -4,7 +4,7 @@ import { apiGetPrompt, type Prompt } from "@/api/modules/prompts";
 import { setPaymentModalOpen } from "@/features/app/appSlice";
 import { setUser } from "@/features/auth/authSlice";
 import { customToast } from "@/lib/customToast";
-import { checkApiResponseErrorCode } from "@/lib/helpers";
+import { checkApiResponseErrorCode, isErrorResponseDto } from "@/lib/helpers";
 import { route } from "@/shared/config/routes";
 import Button from "@/shared/ui/Button";
 import GlassCard from "@/shared/ui/GlassCard";
@@ -109,15 +109,22 @@ export default function EditImageByPlatformPromptPage() {
                     throw new Error("Файл не передан");
                   }
 
-                  const res = await apiAIUploadFile(file);
+                  try {
+                    const res = await apiAIUploadFile(file);
 
-                  if (!res || !res.id || !res.url) {
-                    throw new Error("Не удалось загрузить файл");
+                    if (!res || !res.id || !res.url) {
+                      throw new Error("Не удалось загрузить файл");
+                    }
+
+                    field.onChange(res.id);
+                    return res;
+                  } catch (e) {
+                    if (isErrorResponseDto(e?.response?.data)) {
+                      customToast.error(e);
+                    }
                   }
-
-                  field.onChange(res.id);
-                  return res;
                 }}
+                onRemove={() => field.onChange("")}
               />
             )}
           />
