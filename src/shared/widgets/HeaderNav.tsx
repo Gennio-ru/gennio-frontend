@@ -12,12 +12,16 @@ import { cn } from "@/lib/utils";
 import ThemeSwitch from "../ui/ThemeSwitch";
 import Button from "../ui/Button";
 import { setAuthModalOpen } from "@/features/auth/authSlice";
+import { getUrlRootSegment } from "@/lib/helpers";
+import { AppRoute } from "../config/routes";
 
 export default function HeaderNav() {
   const dispatch = useAppDispatch();
   const theme = useAppSelector(selectAppTheme);
   const location = useLocation();
   const { isAuth, user } = useAuth();
+
+  const currentRoot = getUrlRootSegment(location.pathname);
 
   const showAdminMenu = useMemo(() => {
     return user?.role === "admin" && location.pathname.startsWith("/admin");
@@ -39,7 +43,10 @@ export default function HeaderNav() {
       >
         <SidebarToggleButton />
 
-        <Link to="/prompts" className="text-xl font-bold text-base-content">
+        <Link
+          to={AppRoute.PROMPTS}
+          className="text-xl font-bold text-base-content"
+        >
           <img
             src={theme === "dark" ? darkLogo : lightLogo}
             className="h-[30px] min-w-[97px] w-auto object-contain"
@@ -55,29 +62,34 @@ export default function HeaderNav() {
           showAdminMenu ? "lg:flex lg:col-span-6" : "md:flex md:col-span-6"
         )}
       >
-        {menuItems.map((item) => (
-          <NavLink
-            key={item.label}
-            to={item.href}
-            className={({ isActive }) =>
-              cn(
-                "relative block py-1 text-base transition-colors text-nowrap",
-                isActive
-                  ? "before:absolute before:left-0 before:right-0 before:bottom-[-14px] \
+        {menuItems.map((item) => {
+          const itemRoot = getUrlRootSegment(item.href);
+          const active = itemRoot === currentRoot;
+
+          return (
+            <NavLink
+              key={item.label}
+              to={item.href}
+              className={({ isActive }) =>
+                cn(
+                  "relative block py-1 text-base transition-colors text-nowrap",
+                  (showAdminMenu ? isActive : active)
+                    ? "before:absolute before:left-0 before:right-0 before:bottom-[-14px] \
                  before:h-[2px] before:bg-primary before:content-[''] \
                  before:scale-x-100 before:origin-left before:transition-transform \
                  before:duration-200 before:ease-in-out"
-                  : "text-base-content hover:before:absolute hover:before:left-0 hover:before:right-0 \
+                    : "text-base-content hover:before:absolute hover:before:left-0 hover:before:right-0 \
                  hover:before:bottom-[-14px] hover:before:h-[2px] hover:before:bg-primary \
                  hover:before:content-[''] before:scale-x-0 before:origin-left \
                  before:transition-transform before:duration-200 before:ease-in-out \
                  hover:before:scale-x-100"
-              )
-            }
-          >
-            {item.label}
-          </NavLink>
-        ))}
+                )
+              }
+            >
+              {item.label}
+            </NavLink>
+          );
+        })}
       </nav>
 
       {/* 🔹 Правая часть (UserMenu / Войти) — 6 колонок на мобилках, 2 на md+ */}

@@ -5,6 +5,7 @@ import { setPaymentModalOpen } from "@/features/app/appSlice";
 import { setUser } from "@/features/auth/authSlice";
 import { customToast } from "@/lib/customToast";
 import { checkApiResponseErrorCode } from "@/lib/helpers";
+import { route } from "@/shared/config/routes";
 import Button from "@/shared/ui/Button";
 import GlassCard from "@/shared/ui/GlassCard";
 import { ImageUploadWithCrop } from "@/shared/ui/ImageUploadWithCrop";
@@ -67,7 +68,7 @@ export default function EditImageByPlatformPromptPage() {
         model: "OPENAI",
       });
       dispatch(setUser(res.user));
-      navigate(`/model-job/${res.id}`);
+      navigate(route.jobWait(res));
     } catch (e) {
       if (checkApiResponseErrorCode(e, "TOKENS_NOT_ENOUGH")) {
         dispatch(setPaymentModalOpen(true));

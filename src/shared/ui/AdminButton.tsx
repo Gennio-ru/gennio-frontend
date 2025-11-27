@@ -1,13 +1,14 @@
 import { Lock } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import IconButton from "./IconButton";
+import { AppRoute } from "../config/routes";
 
 export function AdminButton() {
   const navigate = useNavigate();
   const location = useLocation();
 
   const goToAdmin = () => {
-    navigate("/admin/prompts");
+    navigate(AppRoute.ADMIN_PROMPTS);
   };
 
   if (location.pathname.includes("/admin")) {

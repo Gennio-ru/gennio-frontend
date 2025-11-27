@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { apiGetModelJob, ModelJobFull } from "@/api/modules/model-job";
 import Button from "@/shared/ui/Button";
 import ImageThumb from "@/shared/ui/ImageThumb";
+import { AppRoute } from "@/shared/config/routes";
 
 export default function AdminModelJobModal() {
   const { modelJobId } = useParams<{ modelJobId: string }>();
@@ -48,7 +49,7 @@ export default function AdminModelJobModal() {
   }, [modelJobId]);
 
   const closeModal = () => {
-    navigate("/admin/model-jobs", { replace: true });
+    navigate(AppRoute.ADMIN_JOBS, { replace: true });
   };
 
   const renderStatusBadge = (status: ModelJobFull["status"]) => {

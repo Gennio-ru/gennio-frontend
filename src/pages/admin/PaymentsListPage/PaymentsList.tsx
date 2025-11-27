@@ -20,6 +20,7 @@ import CustomSelect from "@/shared/ui/CustomSelect";
 import { PaymentStatus } from "@/api/modules/payments";
 import AdminPaymentInfoModal from "./AdminPaymentInfoModal";
 import { cn } from "@/lib/utils";
+import { route } from "@/shared/config/routes";
 
 type PaymentStatusSelectItem = {
   value: PaymentStatus;
@@ -147,7 +148,7 @@ export default function PaymentsAdminList() {
 
             <td className="p-3">
               <IconButton
-                onClick={() => navigate(`/admin/payments/${payment.id}`)}
+                onClick={() => navigate(route.adminPayment(payment.id))}
                 icon={<Edit size={20} />}
               />
             </td>

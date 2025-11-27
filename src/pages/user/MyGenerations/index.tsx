@@ -7,6 +7,7 @@ import {
 } from "@/api/modules/model-job";
 import { useNavigate } from "react-router-dom";
 import NotFound from "@/shared/ui/NotFound";
+import { route } from "@/shared/config/routes";
 
 export default function MyGenerations() {
   const [items, setItems] = useState<ModelJobWithPreviewFile[]>([]);
@@ -69,7 +70,7 @@ export default function MyGenerations() {
               heightPx={item.outputPreviewFile?.heightPx}
               className="rounded-xl shadow-sm bg-base-200 w-full cursor-pointer
               hover:scale-105 transition-transform duration-300"
-              onClick={() => navigate(`/model-job/${item.id}`)}
+              onClick={() => navigate(route.jobResult(item))}
             />
           </div>
         ))}

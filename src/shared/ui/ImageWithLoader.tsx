@@ -73,7 +73,7 @@ export default function ImageWithLoader({
           imgProps.onError?.(e);
         }}
         className={cn(
-          "h-full w-full object-contain transition-opacity duration-300",
+          "h-full w-full object-cover transition-opacity duration-300",
           loaded ? "opacity-100" : "opacity-0",
           className
         )}

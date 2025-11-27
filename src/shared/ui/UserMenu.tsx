@@ -12,6 +12,7 @@ import { useAuth } from "@/features/auth/useAuth";
 import { cn } from "@/lib/utils";
 import { selectAppTheme } from "@/features/app/appSlice";
 import { useNavigate } from "react-router-dom";
+import { AppRoute } from "../config/routes";
 
 export function UserMenu() {
   const { user } = useAuth();
@@ -67,7 +68,7 @@ export function UserMenu() {
               size="sm"
               color="ghost"
               onClick={() => {
-                navigate("/my-generations");
+                navigate(AppRoute.MY_GENERATIONS);
                 setOpen(false);
               }}
             >

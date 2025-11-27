@@ -29,6 +29,7 @@ import {
   resetFilters,
   setSearch,
 } from "@/features/admin-payments/adminPaymentSlice";
+import { AppRoute } from "@/shared/config/routes";
 
 export default function AdminUserInfoModal() {
   const { userId } = useParams<{ userId: string }>();
@@ -66,7 +67,7 @@ export default function AdminUserInfoModal() {
   }, [userId]);
 
   const closeModal = () => {
-    navigate("/admin/users", { replace: true });
+    navigate(AppRoute.ADMIN_USERS, { replace: true });
   };
 
   const formatDate = (d?: string | null) =>
@@ -252,7 +253,7 @@ export default function AdminUserInfoModal() {
                   onClick={() => {
                     dispatch(resetFilters());
                     dispatch(setSearch(user.email));
-                    navigate("/admin/payments");
+                    navigate(AppRoute.ADMIN_PAYMENTS);
                   }}
                 >
                   Платежи

@@ -30,6 +30,7 @@ import { apiUploadFile, FileDto } from "@/api/modules/files";
 import { customToast } from "@/lib/customToast";
 import { ImageUploadWithCrop } from "@/shared/ui/ImageUploadWithCrop";
 import { fetchAdminPrompts } from "@/features/admin-prompts/adminPromptSlice";
+import { AppRoute, route } from "@/shared/config/routes";
 
 const schema = z.object({
   title: z.string().min(1, "Укажите заголовок"),
@@ -116,7 +117,7 @@ export default function AdminPromptEditModal() {
   }, [promptId, reset, clearForm]);
 
   const closeModal = () => {
-    navigate("/admin/prompts", { replace: true });
+    navigate(AppRoute.ADMIN_PROMPTS, { replace: true });
     clearForm();
   };
 
@@ -130,7 +131,7 @@ export default function AdminPromptEditModal() {
         setPrompt(data);
       } else {
         const { id } = await apiCreatePrompt(dto);
-        navigate(`/admin/prompts/${id}`);
+        navigate(route.adminPrompt(id));
       }
       toast.success("Сохранено!");
 

@@ -60,3 +60,7 @@ export function declOfNum(
   if (n1 === 1) return forms[0];
   return forms[2];
 }
+
+export const getUrlRootSegment = (path: string) => {
+  return path.replace(/^\//, "").split("/")[0];
+};

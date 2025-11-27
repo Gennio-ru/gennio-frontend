@@ -21,6 +21,7 @@ import { AdminPaymentDetailsCard } from "./AdminPaymentDetailsCard";
 import { AdminPaymentUserCard } from "./AdminPaymentUserCard";
 import { AdminPaymentTimestampsCard } from "./AdminPaymentTimestampsCard";
 import { AdminPaymentRefundBlock } from "./AdminPaymentRefundBlock";
+import { AppRoute } from "@/shared/config/routes";
 
 export default function AdminPaymentInfoModal() {
   const { paymentId } = useParams<{ paymentId: string }>();
@@ -61,7 +62,7 @@ export default function AdminPaymentInfoModal() {
   // Закрытие модалки: уходим на список платежей
   //
   const closeModal = () => {
-    navigate("/admin/payments", { replace: true });
+    navigate(AppRoute.ADMIN_PAYMENTS, { replace: true });
   };
 
   return (

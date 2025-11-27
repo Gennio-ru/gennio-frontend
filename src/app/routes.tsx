@@ -9,6 +9,7 @@ const PricingPage = lazy(() => import("@/pages/user/PricingPage"));
 const LegalOfferPage = lazy(() => import("@/pages/user/LegalOfferPage"));
 const PrivacyPolicyPage = lazy(() => import("@/pages/user/PrivacyPolicyPage"));
 const MyGenerations = lazy(() => import("@/pages/user/MyGenerations"));
+
 const PromptsPage = lazy(
   () => import("@/pages/user/ai-generations/PromptsPage")
 );
@@ -21,12 +22,15 @@ const EditImageByCustomPromptPage = lazy(
 const GenerateImagePage = lazy(
   () => import("@/pages/user/ai-generations/GenerateImagePage")
 );
-// const GenerateTextPage = lazy(() => import("@/pages/user/GenerateTextPage"));
+
+const ModelJobWaitingResultPage = lazy(
+  () => import("@/pages/user/ai-generations/ModelJobWaitingResultPage")
+);
 const ModelJobResultPage = lazy(
   () => import("@/pages/user/ai-generations/ModelJobResultPage")
 );
 
-// админские
+// admin
 const PromptsAdminPage = lazy(() => import("@/pages/admin/PromptsListPage"));
 const PaymentsAdminPage = lazy(() => import("@/pages/admin/PaymentsListPage"));
 const UsersAdminPage = lazy(() => import("@/pages/admin/UsersListPage"));
@@ -43,6 +47,7 @@ const TransactionsAdminPage = lazy(
 export function AppRoutes() {
   return (
     <Routes>
+      {/* Публичные */}
       <Route
         path="/about"
         element={
@@ -84,57 +89,111 @@ export function AppRoutes() {
         }
       />
 
+      {/* --- AI GENERATION ROOT --- */}
       <Route element={<AIGenerationsLayout />}>
-        <Route path="/" element={<Navigate to="/prompts" replace />} />
         <Route
-          path="/prompts"
+          path="/"
+          element={<Navigate to="/ai-generation/prompts" replace />}
+        />
+
+        {/* Готовые шаблоны */}
+        <Route
+          path="/ai-generation/prompts"
           element={
             <Suspense fallback={<Loader />}>
               <PromptsPage />
             </Suspense>
           }
         />
-        {/* Обработка изображения по промпту платформы */}
+
+        {/* Обработка фото по платформенному шаблону */}
         <Route
-          path="/prompts/:promptId/edit-image"
+          path="/ai-generation/prompts/:promptId/edit-image"
           element={
             <Suspense fallback={<Loader />}>
               <EditImageByPlatformPromptPage />
             </Suspense>
           }
         />
-        {/* Обработка изображения по промпту пользователя */}
+
+        {/* Генерация изображения */}
         <Route
-          path="/edit-image"
-          element={
-            <Suspense fallback={<Loader />}>
-              <EditImageByCustomPromptPage />
-            </Suspense>
-          }
-        />
-        {/* Генерация изображения по промпту пользователя */}
-        <Route
-          path="/generate-image"
+          path="/ai-generation/generate-image"
           element={
             <Suspense fallback={<Loader />}>
               <GenerateImagePage />
             </Suspense>
           }
         />
-        {/* Генерация текста по промпту пользователя */}
-        {/* <Route path="/generate-text" element={<GenerateTextPage />} /> */}
-        {/* Результат генерации */}
+
+        {/* Обработка пользовательского фото */}
         <Route
-          path="/model-job/:modelJobId"
+          path="/ai-generation/edit-image"
+          element={
+            <Suspense fallback={<Loader />}>
+              <EditImageByCustomPromptPage />
+            </Suspense>
+          }
+        />
+
+        {/* --- РЕЗУЛЬТАТЫ (включая особый promptId кейс) --- */}
+
+        {/* Особый случай: platform prompt */}
+        <Route
+          path="/ai-generation/prompts/:promptId/edit-image/result/:modelJobId"
           element={
             <Suspense fallback={<Loader />}>
               <ModelJobResultPage />
             </Suspense>
           }
         />
+        <Route
+          path="/ai-generation/prompts/:promptId/edit-image/result/:modelJobId/wait"
+          element={
+            <Suspense fallback={<Loader />}>
+              <ModelJobWaitingResultPage />
+            </Suspense>
+          }
+        />
+
+        {/* Генерация изображения */}
+        <Route
+          path="/ai-generation/generate-image/result/:modelJobId"
+          element={
+            <Suspense fallback={<Loader />}>
+              <ModelJobResultPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/ai-generation/generate-image/result/:modelJobId/wait"
+          element={
+            <Suspense fallback={<Loader />}>
+              <ModelJobWaitingResultPage />
+            </Suspense>
+          }
+        />
+
+        {/* Обработка фото */}
+        <Route
+          path="/ai-generation/edit-image/result/:modelJobId"
+          element={
+            <Suspense fallback={<Loader />}>
+              <ModelJobResultPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/ai-generation/edit-image/result/:modelJobId/wait"
+          element={
+            <Suspense fallback={<Loader />}>
+              <ModelJobWaitingResultPage />
+            </Suspense>
+          }
+        />
       </Route>
 
-      {/* админка */}
+      {/* --- ADMIN --- */}
       <Route path="/admin" element={<AdminRoute />}>
         <Route
           path="prompts/*"
@@ -176,7 +235,6 @@ export function AppRoutes() {
             </Suspense>
           }
         />
-
         <Route
           path="transactions"
           element={

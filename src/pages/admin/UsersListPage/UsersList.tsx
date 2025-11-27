@@ -23,6 +23,7 @@ import { UserRole } from "@/api/modules/users";
 import AdminUserInfoModal from "./AdminUserModal";
 import { Tooltip } from "@/shared/ui/Tooltip";
 import { cn } from "@/lib/utils";
+import { route } from "@/shared/config/routes";
 
 type RoleSelectItem = {
   value: UserRole;
@@ -137,7 +138,7 @@ export default function AdminUsersList() {
             <td className="p-3 align-top">
               <div className="flex justify-end gap-2">
                 <IconButton
-                  onClick={() => navigate(`/admin/users/${user.id}`)}
+                  onClick={() => navigate(route.adminUser(user.id))}
                   icon={<Edit size={18} />}
                   title="Открыть карточку пользователя"
                 />

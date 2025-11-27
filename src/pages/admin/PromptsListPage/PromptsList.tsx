@@ -18,6 +18,7 @@ import Loader from "@/shared/ui/Loader";
 import AdminPromptEditModal from "./AdminPromptEditModal";
 import ImageThumb from "@/shared/ui/ImageThumb";
 import { cn } from "@/lib/utils";
+import { AppRoute, route } from "@/shared/config/routes";
 
 export default function PromptsAdminList() {
   const dispatch = useAppDispatch();
@@ -91,7 +92,7 @@ export default function PromptsAdminList() {
               <Button
                 size="sm"
                 title="Edit"
-                onClick={() => navigate(`/admin/prompts/${prompt.id}`)}
+                onClick={() => navigate(route.adminPrompt(prompt.id))}
               >
                 <EditIcon size={16} />
               </Button>
@@ -132,7 +133,7 @@ export default function PromptsAdminList() {
 
           <Button
             className="sm:w-auto"
-            onClick={() => navigate("/admin/prompts/new")}
+            onClick={() => navigate(`${AppRoute.ADMIN_PROMPTS}/new`)}
           >
             + New prompt
           </Button>

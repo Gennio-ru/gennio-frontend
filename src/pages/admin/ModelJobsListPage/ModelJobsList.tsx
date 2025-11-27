@@ -28,6 +28,7 @@ import {
 import AdminModelJobModal from "./AdminModelJobModal";
 import { Tooltip } from "@/shared/ui/Tooltip";
 import { cn } from "@/lib/utils";
+import { route } from "@/shared/config/routes";
 
 type ModelJobStatusSelectItem = {
   value: ModelJobStatus;
@@ -53,7 +54,6 @@ const typeItems: ModelJobTypeSelectItem[] = [
     value: "image-generate-by-prompt-text",
     label: "image-generate-by-prompt-text",
   },
-  { value: "text-generate", label: "text-generate" },
 ];
 
 export default function AdminModelJobsList() {
@@ -166,7 +166,7 @@ export default function AdminModelJobsList() {
             {/* Действия */}
             <td className="p-3 align-top flex justify-center">
               <IconButton
-                onClick={() => navigate(`/admin/model-jobs/${job.id}`)}
+                onClick={() => navigate(route.adminJob(job.id))}
                 icon={<Edit size={18} />}
                 title="Открыть карточку задачи"
               />
