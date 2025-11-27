@@ -16,9 +16,9 @@ jobs:
       - name: ⚙️ Deploy only frontend container
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
+          host: ${{ secrets.STAGE_SSH_HOST }}
+          username: ${{ secrets.STAGE_SSH_USER }}
+          key: ${{ secrets.STAGE_SSH_KEY }}
           script: |
             cd /opt/gennio/gennio-frontend
             git pull origin stage
