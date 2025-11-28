@@ -76,12 +76,17 @@ export default function EditImageByCustomPromptPage() {
       >
         <h2 className="text-xl font-bold">Загрузка фото</h2>
         {/* Референс */}
-        <div className="relative mb-12">
+        <div className="relative mb-0">
           <Controller
             name="inputFileId"
             control={control}
             render={({ field }) => (
               <ImageUploadWithCrop
+                onChange={(value) => {
+                  if (value === null) {
+                    field.onChange("");
+                  }
+                }}
                 onUpload={async (file) => {
                   clearErrors("inputFileId");
 
@@ -117,7 +122,7 @@ export default function EditImageByCustomPromptPage() {
 
         {/* Промпт */}
         {inputFileId && (
-          <div className="relative mb-8">
+          <div className="relative mb-0 mt-8">
             <div className="mb-3 text-base">Введите текст промпта</div>
 
             <Controller
@@ -143,9 +148,13 @@ export default function EditImageByCustomPromptPage() {
         )}
 
         {/* Кнопка */}
-        <div className="pt-4 flex justify-center">
-          {isAuth && (
-            <Button type="submit" disabled={isBusy} className="px-6 w-[200px]">
+        <div className="flex justify-center">
+          {isAuth && inputFileId && (
+            <Button
+              type="submit"
+              disabled={isBusy}
+              className="mt-8 px-6 w-[200px]"
+            >
               {isSubmitting ? "Загрузка..." : "Сгенерировать"}
             </Button>
           )}
@@ -153,7 +162,7 @@ export default function EditImageByCustomPromptPage() {
           {!isAuth && (
             <Button
               type="button"
-              className="px-6 w-[200px]"
+              className="mt-8 px-6 w-[200px]"
               onClick={() => dispatch(setAuthModalOpen(true))}
             >
               Войти в аккаунт

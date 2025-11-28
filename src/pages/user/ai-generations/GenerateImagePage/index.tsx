@@ -71,8 +71,8 @@ export default function GenerateImagePage() {
         className="space-y-6 text-base-content"
       >
         {!isAuth && (
-          <div className={cn("text-[18px] sm:px-30 text-warning text-center")}>
-            Войдите в аккаунт, чтобы загрузить фото и&nbsp;начать редактирование
+          <div className={cn("text-[18px] text-warning text-center")}>
+            Войдите в аккаунт, чтобы начать редактирование
           </div>
         )}
 

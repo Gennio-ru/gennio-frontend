@@ -107,7 +107,7 @@ export default function EditImageByPlatformPromptPage() {
           <h1 className="text-xl font-semibold">Загрузка фото</h1>
 
           {/* Референс */}
-          <div className="relative mb-8">
+          <div className="relative mb-0">
             <Controller
               name="inputFileId"
               control={control}
@@ -121,6 +121,11 @@ export default function EditImageByPlatformPromptPage() {
                         ]
                       : undefined
                   }
+                  onChange={(value) => {
+                    if (value === null) {
+                      field.onChange("");
+                    }
+                  }}
                   onUpload={async (file) => {
                     clearErrors("inputFileId");
 
@@ -156,7 +161,7 @@ export default function EditImageByPlatformPromptPage() {
 
           {/* Промпт */}
           {inputFileId && (
-            <div className="relative mb-8">
+            <div className="relative mt-8 mb-0">
               <div className="mb-3 text-base">
                 Введите детали (если необходимо)
               </div>
@@ -184,12 +189,12 @@ export default function EditImageByPlatformPromptPage() {
           )}
 
           {/* Кнопка */}
-          <div className="pt-4 flex justify-center">
-            {isAuth && (
+          <div className="flex justify-center">
+            {isAuth && inputFileId && (
               <Button
                 type="submit"
                 disabled={isBusy}
-                className="px-6 w-[200px]"
+                className="mt-8 px-6 w-[200px]"
               >
                 {isSubmitting
                   ? "Загрузка…"
@@ -202,7 +207,7 @@ export default function EditImageByPlatformPromptPage() {
             {!isAuth && (
               <Button
                 type="button"
-                className="px-6 w-[200px]"
+                className="mt-8 px-6 w-[200px]"
                 onClick={() => dispatch(setAuthModalOpen(true))}
               >
                 Войти в аккаунт
