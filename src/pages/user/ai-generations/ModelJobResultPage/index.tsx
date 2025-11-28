@@ -159,6 +159,11 @@ export default function ModelJobResultPage() {
 
       <ModelJobImageResult job={job} />
 
+      <div className="my-3 text-sm text-base-content/60 max-w-sm mx-auto">
+        <p>Изображение будет доступно в&nbsp;течение&nbsp;24&nbsp;часов.</p>
+        <p>По истечении этого времени оно удалится автоматически.</p>
+      </div>
+
       {job.outputFileUrl && (
         <Button
           onClick={handleDownloadOriginal}
