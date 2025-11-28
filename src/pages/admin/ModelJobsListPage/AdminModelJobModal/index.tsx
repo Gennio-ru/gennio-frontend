@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAppSelector } from "@/app/hooks";
-import { selectAppTheme } from "@/features/app/appSlice";
 
 import {
   Dialog,
@@ -21,8 +19,6 @@ import { AppRoute } from "@/shared/config/routes";
 export default function AdminModelJobModal() {
   const { modelJobId } = useParams<{ modelJobId: string }>();
   const open = Boolean(modelJobId);
-
-  const theme = useAppSelector(selectAppTheme);
   const navigate = useNavigate();
 
   const [modelJob, setModelJob] = useState<ModelJobFull | null>(null);
@@ -78,10 +74,7 @@ export default function AdminModelJobModal() {
       }}
     >
       <DialogContent
-        className={cn(
-          "sm:max-w-xl flex flex-col max-h-[80vh] overflow-y-auto",
-          theme === "dark" && "bg-base-100/70 backdrop-blur-md"
-        )}
+        className={cn("sm:max-w-xl flex flex-col max-h-[80vh] overflow-y-auto")}
         showCloseButton={false}
       >
         <DialogHeader className="relative pb-3 shrink-0">

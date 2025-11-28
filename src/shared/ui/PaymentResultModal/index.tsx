@@ -10,10 +10,8 @@ import {
   setPaymentModalOpen,
   setPaymentResultModalOpen,
 } from "@/features/app/appSlice";
-import { selectAppTheme } from "@/features/app/appSlice";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { XIcon, CheckCircle, XCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { apiGetPayment, Payment } from "@/api/modules/payments";
 import Button from "../Button";
@@ -21,7 +19,6 @@ import { useLocation } from "react-router-dom";
 
 export default function PaymentResultModal() {
   const location = useLocation();
-  const theme = useAppSelector(selectAppTheme);
   const open = useAppSelector(selectResultPaymentModalOpen);
   const dispatch = useAppDispatch();
 
@@ -65,13 +62,7 @@ export default function PaymentResultModal() {
         else dispatch(setPaymentResultModalOpen(true));
       }}
     >
-      <DialogContent
-        className={cn(
-          "sm:max-w-sm",
-          theme === "dark" && "bg-base-100/70 backdrop-blur-md"
-        )}
-        showCloseButton={false}
-      >
+      <DialogContent className="sm:max-w-sm" showCloseButton={false}>
         <DialogHeader className="relative">
           <DialogTitle className="mx-auto mt-1 mb-5">
             Результат оплаты

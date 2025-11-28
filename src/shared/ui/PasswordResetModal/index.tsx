@@ -9,10 +9,8 @@ import {
   setResetPasswordModalOpen,
   selectResetPasswordModalOpen,
 } from "@/features/auth/authSlice";
-import { cn } from "@/lib/utils";
 import { EyeClosedIcon, EyeIcon, XIcon } from "lucide-react";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { selectAppTheme } from "@/features/app/appSlice";
 import z from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -72,7 +70,6 @@ function strengthLabel(score: number) {
 type FormValues = z.infer<typeof schema>;
 
 export default function PasswordResetModal() {
-  const theme = useAppSelector(selectAppTheme);
   const resetModalOpen = useAppSelector(selectResetPasswordModalOpen);
   const dispatch = useAppDispatch();
   const [serverError, setServerError] = useState<string | null>(null);
@@ -168,10 +165,7 @@ export default function PasswordResetModal() {
         }
       }}
     >
-      <DialogContent
-        className={cn("sm:max-w-md", theme === "dark" && "bg-base-100/70")}
-        showCloseButton={false}
-      >
+      <DialogContent className="sm:max-w-md" showCloseButton={false}>
         <DialogHeader className="relative">
           <DialogTitle className="mx-auto mb-5 mt-1 flex gap-10">
             Восстановление пароля

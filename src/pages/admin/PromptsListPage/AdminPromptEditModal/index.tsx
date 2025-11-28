@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { selectAppTheme } from "@/features/app/appSlice";
 import {
   Dialog,
   DialogContent,
@@ -47,11 +46,9 @@ export default function AdminPromptEditModal() {
   const dispatch = useAppDispatch();
   const { promptId, "*": wildcard } = useParams();
   const open = Boolean(promptId) || wildcard === "new";
+  const navigate = useNavigate();
 
   const { page } = useAppSelector((s) => s.adminPrompts);
-
-  const theme = useAppSelector(selectAppTheme);
-  const navigate = useNavigate();
 
   const [prompt, setPrompt] = useState<Prompt | null>(null);
   const [loading, setLoading] = useState(false);
@@ -153,10 +150,7 @@ export default function AdminPromptEditModal() {
       }}
     >
       <DialogContent
-        className={cn(
-          "sm:max-w-xl flex flex-col max-h-[94%] overflow-y-auto",
-          theme === "dark" && "bg-base-100/70 backdrop-blur-md"
-        )}
+        className={cn("sm:max-w-xl flex flex-col max-h-[94%] overflow-y-auto")}
         showCloseButton={false}
       >
         <DialogHeader className="relative pb-3 shrink-0">

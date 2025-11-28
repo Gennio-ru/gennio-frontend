@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { selectAppTheme } from "@/features/app/appSlice";
-
 import {
   Dialog,
   DialogContent,
@@ -13,10 +11,8 @@ import {
 } from "@/shared/ui/shadcn/dialog";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { XCircle, XIcon } from "lucide-react";
-
 import { cn } from "@/lib/utils";
 import Button from "@/shared/ui/Button";
-
 import {
   apiGetUser,
   apiBlockUser,
@@ -35,7 +31,6 @@ export default function AdminUserInfoModal() {
   const { userId } = useParams<{ userId: string }>();
   const open = Boolean(userId);
 
-  const theme = useAppSelector(selectAppTheme);
   const currentPage = useAppSelector((s) => s.adminUsers.page);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -132,10 +127,7 @@ export default function AdminUserInfoModal() {
       }}
     >
       <DialogContent
-        className={cn(
-          "sm:max-w-lg flex flex-col max-h-[80vh] overflow-y-auto",
-          theme === "dark" && "bg-base-100/70 backdrop-blur-md"
-        )}
+        className={cn("sm:max-w-lg flex flex-col max-h-[80vh] overflow-y-auto")}
         showCloseButton={false}
       >
         <DialogHeader className="relative pb-3 shrink-0">

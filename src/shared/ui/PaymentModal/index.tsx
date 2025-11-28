@@ -70,7 +70,7 @@ export default function PaymentModal() {
         else dispatch(setPaymentModalOpen(true));
       }}
     >
-      <DialogContent className={cn("sm:w-[500px]")} showCloseButton={false}>
+      <DialogContent className="sm:w-[500px]" showCloseButton={false}>
         <DialogHeader className="relative">
           <DialogTitle
             className={cn(
