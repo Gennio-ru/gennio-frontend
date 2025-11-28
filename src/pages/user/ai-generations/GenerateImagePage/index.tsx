@@ -1,6 +1,7 @@
 import { apiStartImageGenerateByPromptText } from "@/api/modules/model-job";
 import { setPaymentModalOpen } from "@/features/app/appSlice";
-import { setUser } from "@/features/auth/authSlice";
+import { setAuthModalOpen, setUser } from "@/features/auth/authSlice";
+import { useAuth } from "@/features/auth/useAuth";
 import { customToast } from "@/lib/customToast";
 import { checkApiResponseErrorCode } from "@/lib/helpers";
 import { route } from "@/shared/config/routes";
@@ -24,6 +25,8 @@ export default function GenerateImagePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isFetching, setIsFetching] = useState(false);
+
+  const { isAuth } = useAuth();
 
   const {
     control,
@@ -92,13 +95,25 @@ export default function GenerateImagePage() {
 
         {/* Кнопка */}
         <div className="pt-4 flex justify-center">
-          <Button type="submit" disabled={isBusy} className="px-6 w-[200px]">
-            {isSubmitting
-              ? "Загрузка…"
-              : isFetching
-              ? "Загрузка…"
-              : "Сгенерировать"}
-          </Button>
+          {isAuth && (
+            <Button type="submit" disabled={isBusy} className="px-6 w-[200px]">
+              {isSubmitting
+                ? "Загрузка…"
+                : isFetching
+                ? "Загрузка…"
+                : "Сгенерировать"}
+            </Button>
+          )}
+
+          {!isAuth && (
+            <Button
+              type="button"
+              className="px-6 w-[200px]"
+              onClick={() => dispatch(setAuthModalOpen(true))}
+            >
+              Войти в аккаунт
+            </Button>
+          )}
         </div>
       </form>
     </GlassCard>

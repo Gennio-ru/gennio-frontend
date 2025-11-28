@@ -1,15 +1,23 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Cropper, { Area } from "react-easy-crop";
-import IconButton from "./IconButton";
-import { CloudUpload, XIcon } from "lucide-react";
-import { useAppSelector } from "@/app/hooks";
+import { CloudUpload, Undo } from "lucide-react";
+
+import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import { selectAppTheme } from "@/features/app/appSlice";
 import { cn } from "@/lib/utils";
-import { SegmentedControl } from "./SegmentedControl";
-import Button from "./Button";
-import { CustomRange } from "./CustomRange";
-import Loader from "./Loader";
+
+import { SegmentedControl } from "../SegmentedControl";
+import Button from "../Button";
+import { CustomRange } from "../CustomRange";
+import Loader from "../Loader";
+import ImageWithLoaderFixed from "../ImageWithLoaderFixed";
+import { useAuth } from "@/features/auth/useAuth";
+
 import { FileDto } from "@/api/modules/files";
+import { validateFile, fileToDataURL, getCroppedBlob } from "./utils";
+import { ImageUploadBanner, LocalBanner } from "./ImageUploadBanner";
+import { ImageUploadPreview } from "./ImageUploadPreview";
+import { setAuthModalOpen } from "@/features/auth/authSlice";
 
 type ImageUploadWithCropProps = {
   /** Уже загруженная картинка (например, из бэка) */
@@ -28,6 +36,8 @@ type ImageUploadWithCropProps = {
   outputFileName?: string;
   /** Опционально: колбек для удаления файла на бэке (DB/S3) */
   onRemove?: (file: FileDto) => Promise<void> | void;
+  /** URL изображений от - до */
+  fromToImagesUrls?: [string, string];
 };
 
 const ASPECT_PRESETS = [
@@ -57,11 +67,15 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
   initialAspectPreset = "square",
   outputFileName = "cropped-image.jpg",
   onRemove,
+  fromToImagesUrls,
 }) => {
   const theme = useAppSelector(selectAppTheme);
+  const dispatch = useAppDispatch();
+  const { isAuth } = useAuth();
 
   const [step, setStep] = useState<"idle" | "cropping" | "uploading">("idle");
-  const [error, setError] = useState<string | null>(null);
+  const [banner, setBanner] = useState<LocalBanner | null>(null);
+  const [showBanner, setShowBanner] = useState(false);
 
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [originalFile, setOriginalFile] = useState<File | null>(null);
@@ -87,19 +101,68 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
   const currentAspect =
     ASPECT_PRESETS.find((p) => p.id === aspectPresetId)?.value ?? 1;
 
-  // --- Общая обработка файла (и для input, и для dnd) ---
-  const processFile = async (file: File) => {
-    setError(null);
+  // --- Баннеры успех/ошибка ---
 
-    // 1. Валидация
+  const showError = (message: string) => {
+    setBanner({ id: Date.now(), message, type: "error" });
+  };
+
+  const showSuccess = (message: string = "Успешная загрузка") => {
+    setBanner({ id: Date.now(), message, type: "success" });
+  };
+
+  const hideBanner = () => {
+    setShowBanner(false);
+  };
+
+  useEffect(() => {
+    if (!banner) return;
+
+    setShowBanner(true);
+
+    const timer = setTimeout(() => {
+      setShowBanner(false);
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, [banner, banner?.id]);
+
+  useEffect(() => {
+    if (showBanner) return;
+    if (!banner) return;
+
+    const timer = setTimeout(() => {
+      setBanner(null);
+    }, 250); // чуть больше duration-200
+
+    return () => clearTimeout(timer);
+  }, [showBanner, banner]);
+
+  const handleCloseBanner = () => {
+    hideBanner();
+  };
+
+  // --- Проверка авторизации ---
+
+  const requireAuth = () => {
+    if (!isAuth) {
+      dispatch(setAuthModalOpen(true));
+      return true;
+    }
+    return false;
+  };
+
+  // --- Общая обработка файла ---
+
+  const processFile = async (file: File) => {
     try {
-      validateFile(file, maxFileSizeMb, accept);
+      validateFile(file, maxFileSizeMb ?? 10, accept);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Неверный файл");
+      const message = err instanceof Error ? err.message : "Неверный файл";
+      showError(message);
       return;
     }
 
-    // 2. Читаем в dataURL для кроппера
     try {
       const dataUrl = await fileToDataURL(file);
       setOriginalFile(file);
@@ -108,15 +171,21 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
       setCrop({ x: 0, y: 0 });
       setZoom(1);
     } catch {
-      setError("Не удалось прочитать файл");
+      showError("Не удалось прочитать файл");
     }
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (requireAuth()) {
+      e.target.value = "";
+      return;
+    }
+
     await processFile(file);
-    e.target.value = ""; // сброс инпута
+    e.target.value = "";
   };
 
   // --- Drag & Drop ---
@@ -138,10 +207,24 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     e.stopPropagation();
     setIsDragging(false);
 
+    if (requireAuth()) return;
+
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
 
     await processFile(file);
+  };
+
+  const handleUploadAreaClick = () => {
+    if (requireAuth()) return;
+    inputRef.current?.click();
+  };
+
+  const handleUploadAreaKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleUploadAreaClick();
+    }
   };
 
   // --- Cropper ---
@@ -157,36 +240,31 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     setImageSrc(null);
     setOriginalFile(null);
     setStep("idle");
-    setError(null);
+    hideBanner();
   };
 
   const handleRemove = async () => {
     if (!previewImage) return;
 
     try {
-      // если передан onRemove — даём возможности бэку удалить файл
       if (onRemove) {
         await onRemove(previewImage);
       }
 
-      // локально убираем превью и возвращаем аплоадер
       setPreviewImage(null);
       onChange?.(null);
-      setError(null);
+      hideBanner();
     } catch (e) {
       console.error(e);
-      setError("Не удалось удалить изображение");
+      showError("Не удалось удалить изображение");
     }
   };
 
   const handleConfirm = async () => {
-    if (step === "uploading") {
-      return;
-    }
-
+    if (step === "uploading") return;
     if (!imageSrc || !croppedAreaPixels || !originalFile) return;
 
-    setError(null);
+    hideBanner();
     setStep("uploading");
 
     try {
@@ -198,21 +276,20 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
       );
       const file = new File([blob], outputFileName, { type: blob.type });
 
-      // onUpload возвращает UploadedImage
       const uploaded = await Promise.resolve(onUpload(file));
 
-      // сохраняем данные загруженной картинки для превью
       setPreviewImage(uploaded);
       onChange?.(uploaded);
 
-      // сбрасываем кроппер и возвращаемся к idle
+      showSuccess();
+
       setStep("idle");
       setImageSrc(null);
       setOriginalFile(null);
     } catch (err) {
       console.error(err);
-      setError("Ошибка при обработке или загрузке файла");
-      setStep("cropping"); // даём возможность попробовать ещё раз
+      showError("Ошибка при обработке или загрузке файла");
+      setStep("cropping");
     }
   };
 
@@ -225,34 +302,25 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
   const stroke = theme === "dark" ? "%23CBD0DC" : "%237d7f84";
 
   return (
-    <div>
+    <div className="relative overflow-hidden">
+      <ImageUploadBanner
+        banner={banner}
+        showBanner={showBanner}
+        onClose={handleCloseBanner}
+      />
+
       {/* Превью загруженного изображения */}
       {previewImage && (
-        <div className="flex flex-col gap-2 h-[300px]">
-          <div className="h-full flex-1 relative flex items-center justify-center overflow-hidden bg-base-100 rounded-field">
-            {/* Кнопка удаления внутри превью */}
-            <IconButton
-              type="button"
-              size="sm"
-              color="ghost"
-              onClick={handleRemove}
-              icon={<XIcon />}
-              className="absolute top-2 right-2 z-20 bg-base-100/70 hover:bg-base-100 shadow-sm"
-            />
-
-            {/* Изображение */}
-            <img
-              src={previewImage.url}
-              alt=""
-              className="max-w-full max-h-full object-contain"
-            />
-          </div>
-        </div>
+        <ImageUploadPreview
+          previewImage={previewImage}
+          theme={theme}
+          onClickReplace={handleRemove}
+        />
       )}
 
       {/* Шаг выбора файла + Drag & Drop — показываем ТОЛЬКО если превью ещё нет */}
       {!previewImage && step === "idle" && (
-        <div className="flex flex-col gap-2 h-[300px]">
+        <div className="flex flex-col gap-2 h-[340px]">
           <div
             className={cn(
               "h-full flex items-center justify-center rounded-field px-4 text-center cursor-pointer transition-colors",
@@ -271,15 +339,10 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            onClick={() => inputRef.current?.click()}
+            onClick={handleUploadAreaClick}
             role="button"
             tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                inputRef.current?.click();
-              }
-            }}
+            onKeyDown={handleUploadAreaKeyDown}
           >
             <input
               type="file"
@@ -289,16 +352,52 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
               ref={inputRef}
             />
 
-            <div className="flex w-full flex-col items-center">
-              <CloudUpload size={26} stroke="var(--color-primary)" />
+            <div
+              className={cn(
+                "flex w-full flex-col items-center h-full",
+                fromToImagesUrls ? "justify-start mt-20" : "justify-center"
+              )}
+            >
+              {fromToImagesUrls && (
+                <div className="flex gap-2 mb-9 relative">
+                  <ImageWithLoaderFixed
+                    src={fromToImagesUrls[0]}
+                    alt="preview"
+                    containerClassName="w-[100px] h-[100px]"
+                    className="rounded-field"
+                  />
 
-              <div className="text-base mt-6">
-                Перетащите сюда изображение или{" "}
-                <span className="underline">выберите</span>
-              </div>
+                  <ImageWithLoaderFixed
+                    src={fromToImagesUrls[1]}
+                    alt="preview"
+                    containerClassName="w-[100px] h-[100px]"
+                    className="rounded-field"
+                  />
+
+                  <Undo className="absolute top-[-20px] left-1/2 -translate-x-1/2 -scale-x-100 rotate-14" />
+                </div>
+              )}
+
+              {isAuth && (
+                <CloudUpload size={26} stroke="var(--color-primary)" />
+              )}
+
+              {isAuth && (
+                <div className="text-base mt-6">
+                  Перетащите сюда изображение или{" "}
+                  <span className="underline">выберите</span>
+                </div>
+              )}
+
+              {!isAuth && (
+                <div className={cn("text-[18px] sm:px-30 text-warning")}>
+                  Войдите в аккаунт, чтобы загрузить фото и&nbsp;начать
+                  редактирование
+                </div>
+              )}
 
               <div className="mt-4 text-sm text-base-content/60">
-                Форматы JPEG, PNG, WEBP не более 10MB
+                Форматы JPEG, PNG, WEBP не более {maxFileSizeMb} МБ
               </div>
             </div>
           </div>
@@ -307,8 +406,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 
       {/* Шаг кропа */}
       {step !== "idle" && imageSrc && (
-        <div className="w-full h-[360px] flex flex-col gap-3">
-          {/* Пресеты аспектов */}
+        <div className="w-full h-[360px] flex flex-col gap-3 mt-2">
           <div className="flex gap-2 flex-wrap">
             <SegmentedControl
               size="xs"
@@ -323,8 +421,6 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
           </div>
 
           <div className="relative h-full rounded-field overflow-hidden bg-black/80">
-            {/* КРОППЕР */}
-            {/* При загрузке полностью отключаем его */}
             <div
               className={cn(
                 step === "uploading" && "pointer-events-none opacity-40"
@@ -362,7 +458,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
               max={3}
               step={0.1}
               onChange={setZoom}
-              disabled={step === "uploading"} // ← важное место
+              disabled={step === "uploading"}
               className={
                 step === "uploading" ? "opacity-50 pointer-events-none" : ""
               }
@@ -376,7 +472,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
               size="sm"
               color="ghost"
               bordered
-              disabled={step === "uploading"} // ← дизейблим
+              disabled={step === "uploading"}
             >
               Отмена
             </Button>
@@ -385,112 +481,13 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
               type="button"
               onClick={handleConfirm}
               size="sm"
-              disabled={step === "uploading"} // ← дизейблим
+              disabled={step === "uploading"}
             >
               Сохранить
             </Button>
           </div>
         </div>
       )}
-
-      {/* Ошибка */}
-      {error && <div className="text-sm text-red-500">{error}</div>}
     </div>
   );
 };
-
-/** Валидация файла по типу и размеру */
-function validateFile(file: File, maxSizeMb: number, accept: string) {
-  const maxBytes = maxSizeMb * 1024 * 1024;
-
-  if (file.size > maxBytes) {
-    throw new Error(`Файл больше ${maxSizeMb} МБ`);
-  }
-
-  // Простая проверка по accept
-  if (accept && accept !== "*/*") {
-    const allowed = accept
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-
-    const isAllowed = allowed.some((pattern) => {
-      if (pattern === file.type) return true;
-      if (pattern.endsWith("/*")) {
-        const prefix = pattern.split("/")[0];
-        return file.type.startsWith(prefix + "/");
-      }
-      return false;
-    });
-
-    if (!isAllowed) {
-      throw new Error("Тип файла не поддерживается");
-    }
-  }
-}
-
-/** Читаем File в dataURL для кроппера */
-function fileToDataURL(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(new Error("Ошибка чтения файла"));
-    reader.onload = () => resolve(reader.result as string);
-    reader.readAsDataURL(file);
-  });
-}
-
-/** Загружаем картинку как HTMLImageElement */
-function loadImage(src: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => resolve(img);
-    img.onerror = (e) => reject(e);
-    img.src = src;
-  });
-}
-
-/** Режем картинку через canvas и возвращаем Blob */
-async function getCroppedBlob(
-  imageSrc: string,
-  crop: Area,
-  mimeType: string = "image/jpeg",
-  quality: number = 0.92
-): Promise<Blob> {
-  const img = await loadImage(imageSrc);
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-
-  if (!ctx) {
-    throw new Error("Canvas не поддерживается");
-  }
-
-  canvas.width = crop.width;
-  canvas.height = crop.height;
-
-  ctx.drawImage(
-    img,
-    crop.x,
-    crop.y,
-    crop.width,
-    crop.height,
-    0,
-    0,
-    crop.width,
-    crop.height
-  );
-
-  return new Promise<Blob>((resolve, reject) => {
-    canvas.toBlob(
-      (blob) => {
-        if (!blob) {
-          reject(new Error("Не удалось создать Blob"));
-        } else {
-          resolve(blob);
-        }
-      },
-      mimeType,
-      quality
-    );
-  });
-}

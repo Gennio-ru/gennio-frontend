@@ -74,9 +74,8 @@ export default function PaymentModal() {
         <DialogHeader className="relative">
           <DialogTitle
             className={cn(
-              "mx-auto mb-5 text-base font-bold",
-              "flex items-start justify-center gap-2 pr-6",
-              theme === "dark" ? "text-[#FA9313]" : "text-[#da7900]"
+              "mx-auto mb-5 text-base font-bold text-warning",
+              "flex items-start justify-center gap-2 pr-6"
             )}
           >
             <CircleAlert
