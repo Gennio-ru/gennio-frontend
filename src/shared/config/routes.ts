@@ -24,8 +24,8 @@ export enum AppRoute {
 //
 export const jobTypeBasePath: Record<ModelJobType, string> = {
   "image-edit-by-prompt-id": AppRoute.PROMPTS,
-  "image-edit-by-prompt-text": AppRoute.GENERATE_IMAGE,
-  "image-generate-by-prompt-text": AppRoute.EDIT_IMAGE,
+  "image-edit-by-prompt-text": AppRoute.EDIT_IMAGE,
+  "image-generate-by-prompt-text": AppRoute.GENERATE_IMAGE,
 };
 
 //

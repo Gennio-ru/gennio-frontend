@@ -48,13 +48,11 @@ export function ModelJobImageResult({ job }: Props) {
   return (
     <>
       {showPrompt && (
-        <GlassCard className="mb-4 mx-auto inline-block max-w-xl text-left">
-          <div className="flex gap-2 items-start">
-            <b className="shrink-0 w-20">Промпт:</b>
-            <p className="break-words whitespace-pre-wrap max-h-40 overflow-y-auto pr-2 text-base-content/80">
-              {text}
-            </p>
-          </div>
+        <GlassCard className="mb-4 mx-auto py-4 max-w-xl text-left">
+          <p className="font-bold">Промпт</p>
+          <p className="mt-1.5 break-words whitespace-pre-wrap max-h-40 overflow-y-auto text-base-content/80">
+            {text}
+          </p>
         </GlassCard>
       )}
 

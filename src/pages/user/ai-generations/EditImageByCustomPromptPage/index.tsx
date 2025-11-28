@@ -45,8 +45,6 @@ export default function EditImageByCustomPromptPage() {
 
   const inputFileId = useWatch({ control, name: "inputFileId" });
 
-  console.log(inputFileId);
-
   const onSubmit = async (data: ModelJobFormValues) => {
     try {
       setIsFetching(true);
