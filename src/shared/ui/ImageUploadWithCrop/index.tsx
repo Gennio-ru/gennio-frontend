@@ -354,8 +354,8 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 
             <div
               className={cn(
-                "flex w-full flex-col items-center h-full",
-                fromToImagesUrls ? "justify-start mt-20" : "justify-center"
+                "flex w-full flex-col items-center h-full pb-4",
+                fromToImagesUrls ? "justify-start pt-10" : "justify-center"
               )}
             >
               {fromToImagesUrls && (

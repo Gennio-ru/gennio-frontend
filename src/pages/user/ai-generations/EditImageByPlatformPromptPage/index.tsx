@@ -90,114 +90,128 @@ export default function EditImageByPlatformPromptPage() {
   }
 
   return (
-    <GlassCard className="mx-auto w-full max-w-2xl mt-5">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="mx-auto w-full space-y-6 text-base-content"
-      >
-        <h1 className="text-lg font-semibold">{currentPrompt.title}</h1>
+    <div className="mx-auto max-w-2xl mt-3 flex flex-col gap-10">
+      <div className="w-full text-center">
+        <p className="font-bold text-[36px] sm:text-[44px]">
+          {currentPrompt.title}
+        </p>
 
-        {/* Референс */}
-        <div className="relative mb-8">
-          <Controller
-            name="inputFileId"
-            control={control}
-            render={({ field }) => (
-              <ImageUploadWithCrop
-                fromToImagesUrls={
-                  currentPrompt.beforeImageUrl && currentPrompt.afterImageUrl
-                    ? [
-                        currentPrompt.beforeImageUrl,
-                        currentPrompt.afterImageUrl,
-                      ]
-                    : undefined
-                }
-                onUpload={async (file) => {
-                  clearErrors("inputFileId");
+        <p className="mt-2">{currentPrompt.description}</p>
+      </div>
 
-                  if (!file) {
-                    throw new Error("Файл не передан");
-                  }
+      <GlassCard className="w-full">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="mx-auto w-full space-y-6 text-base-content"
+        >
+          <h1 className="text-lg font-semibold">Загрузка фото</h1>
 
-                  try {
-                    const res = await apiAIUploadFile(file);
-
-                    if (!res || !res.id || !res.url) {
-                      throw new Error("Не удалось загрузить файл");
-                    }
-
-                    field.onChange(res.id);
-                    return res;
-                  } catch (e) {
-                    if (isErrorResponseDto(e?.response?.data)) {
-                      customToast.error(e);
-                    }
-                  }
-                }}
-                onRemove={() => field.onChange("")}
-              />
-            )}
-          />
-
-          {errors.inputFileId && (
-            <p className="absolute top-full mt-1 text-xs text-error">
-              {errors.inputFileId.message}
-            </p>
-          )}
-        </div>
-
-        {/* Промпт */}
-        {inputFileId && (
+          {/* Референс */}
           <div className="relative mb-8">
-            <div className="mb-3 text-base">
-              Введите детали (если необходимо)
-            </div>
-
             <Controller
-              name="text"
+              name="inputFileId"
               control={control}
               render={({ field }) => (
-                <Textarea
-                  {...field}
-                  rows={1}
-                  placeholder="Например: Добавь красный колпак на голову"
-                  className="w-full rounded-field"
-                  onChange={(e) => {
-                    field.onChange(e);
-                    clearErrors("text");
+                <ImageUploadWithCrop
+                  fromToImagesUrls={
+                    currentPrompt.beforeImageUrl && currentPrompt.afterImageUrl
+                      ? [
+                          currentPrompt.beforeImageUrl,
+                          currentPrompt.afterImageUrl,
+                        ]
+                      : undefined
+                  }
+                  onUpload={async (file) => {
+                    clearErrors("inputFileId");
+
+                    if (!file) {
+                      throw new Error("Файл не передан");
+                    }
+
+                    try {
+                      const res = await apiAIUploadFile(file);
+
+                      if (!res || !res.id || !res.url) {
+                        throw new Error("Не удалось загрузить файл");
+                      }
+
+                      field.onChange(res.id);
+                      return res;
+                    } catch (e) {
+                      if (isErrorResponseDto(e?.response?.data)) {
+                        customToast.error(e);
+                      }
+                    }
                   }}
-                  errored={!!errors.text}
-                  errorMessage={errors.text?.message}
-                  maxLength={200}
+                  onRemove={() => field.onChange("")}
                 />
               )}
             />
+
+            {errors.inputFileId && (
+              <p className="absolute top-full mt-1 text-xs text-error">
+                {errors.inputFileId.message}
+              </p>
+            )}
           </div>
-        )}
 
-        {/* Кнопка */}
-        <div className="pt-4 flex justify-center">
-          {isAuth && (
-            <Button type="submit" disabled={isBusy} className="px-6 w-[200px]">
-              {isSubmitting
-                ? "Загрузка…"
-                : isFetching
-                ? "Загрузка…"
-                : "Сгенерировать"}
-            </Button>
+          {/* Промпт */}
+          {inputFileId && (
+            <div className="relative mb-8">
+              <div className="mb-3 text-base">
+                Введите детали (если необходимо)
+              </div>
+
+              <Controller
+                name="text"
+                control={control}
+                render={({ field }) => (
+                  <Textarea
+                    {...field}
+                    rows={2}
+                    placeholder="Например: Добавь красный колпак на голову"
+                    className="w-full rounded-field"
+                    onChange={(e) => {
+                      field.onChange(e);
+                      clearErrors("text");
+                    }}
+                    errored={!!errors.text}
+                    errorMessage={errors.text?.message}
+                    maxLength={200}
+                  />
+                )}
+              />
+            </div>
           )}
 
-          {!isAuth && (
-            <Button
-              type="button"
-              className="px-6 w-[200px]"
-              onClick={() => dispatch(setAuthModalOpen(true))}
-            >
-              Войти в аккаунт
-            </Button>
-          )}
-        </div>
-      </form>
-    </GlassCard>
+          {/* Кнопка */}
+          <div className="pt-4 flex justify-center">
+            {isAuth && (
+              <Button
+                type="submit"
+                disabled={isBusy}
+                className="px-6 w-[200px]"
+              >
+                {isSubmitting
+                  ? "Загрузка…"
+                  : isFetching
+                  ? "Загрузка…"
+                  : "Сгенерировать"}
+              </Button>
+            )}
+
+            {!isAuth && (
+              <Button
+                type="button"
+                className="px-6 w-[200px]"
+                onClick={() => dispatch(setAuthModalOpen(true))}
+              >
+                Войти в аккаунт
+              </Button>
+            )}
+          </div>
+        </form>
+      </GlassCard>
+    </div>
   );
 }

@@ -129,7 +129,7 @@ export default function EditImageByCustomPromptPage() {
               render={({ field }) => (
                 <Textarea
                   {...field}
-                  rows={1}
+                  rows={2}
                   placeholder="Например: “сделай в стиле акварели, но сохрани композицию”"
                   className="w-full rounded-field"
                   onChange={(e) => {
