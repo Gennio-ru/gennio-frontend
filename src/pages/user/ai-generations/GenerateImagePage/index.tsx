@@ -4,6 +4,7 @@ import { setAuthModalOpen, setUser } from "@/features/auth/authSlice";
 import { useAuth } from "@/features/auth/useAuth";
 import { customToast } from "@/lib/customToast";
 import { checkApiResponseErrorCode } from "@/lib/helpers";
+import { cn } from "@/lib/utils";
 import { route } from "@/shared/config/routes";
 import Button from "@/shared/ui/Button";
 import GlassCard from "@/shared/ui/GlassCard";
@@ -69,9 +70,15 @@ export default function GenerateImagePage() {
         onSubmit={handleSubmit(onSubmit)}
         className="space-y-6 text-base-content"
       >
+        {!isAuth && (
+          <div className={cn("text-[18px] sm:px-30 text-warning text-center")}>
+            Войдите в аккаунт, чтобы загрузить фото и&nbsp;начать редактирование
+          </div>
+        )}
+
         {/* Промпт */}
         <div className="relative mb-6">
-          <div className="mb-3 text-base">Введите текст промпта</div>
+          <div className="mb-3 text-xl">Введите текст промпта</div>
 
           <Controller
             name="text"

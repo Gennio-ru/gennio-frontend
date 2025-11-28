@@ -59,17 +59,8 @@ export const ImageUploadBanner: React.FC<Props> = ({
               size="sm"
               color="ghost"
               onClick={onClose}
-              className="w-6 h-6 absolute right-2"
-              icon={
-                <XIcon
-                  size={16}
-                  stroke={
-                    banner.type === "error"
-                      ? "var(--color-error)"
-                      : "var(--color-success)"
-                  }
-                />
-              }
+              className="w-6 h-6 absolute right-2 cursor-pointer"
+              icon={<XIcon size={16} stroke={"white"} />}
             />
           </div>
         </motion.div>

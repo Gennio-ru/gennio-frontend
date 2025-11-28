@@ -66,7 +66,6 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
   maxFileSizeMb = 10,
   initialAspectPreset = "square",
   outputFileName = "cropped-image.jpg",
-  onRemove,
   fromToImagesUrls,
 }) => {
   const theme = useAppSelector(selectAppTheme);
@@ -184,6 +183,11 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
       return;
     }
 
+    if (previewImage) {
+      setPreviewImage(null);
+      onChange?.(null);
+    }
+
     await processFile(file);
     e.target.value = "";
   };
@@ -211,6 +215,11 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
+
+    if (previewImage) {
+      setPreviewImage(null);
+      onChange?.(null);
+    }
 
     await processFile(file);
   };
@@ -241,23 +250,6 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     setOriginalFile(null);
     setStep("idle");
     hideBanner();
-  };
-
-  const handleRemove = async () => {
-    if (!previewImage) return;
-
-    try {
-      if (onRemove) {
-        await onRemove(previewImage);
-      }
-
-      setPreviewImage(null);
-      onChange?.(null);
-      hideBanner();
-    } catch (e) {
-      console.error(e);
-      showError("Не удалось удалить изображение");
-    }
   };
 
   const handleConfirm = async () => {
@@ -303,6 +295,14 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 
   return (
     <div className="relative overflow-hidden">
+      <input
+        type="file"
+        accept={accept}
+        onChange={handleFileChange}
+        className="hidden"
+        ref={inputRef}
+      />
+
       <ImageUploadBanner
         banner={banner}
         showBanner={showBanner}
@@ -314,7 +314,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
         <ImageUploadPreview
           previewImage={previewImage}
           theme={theme}
-          onClickReplace={handleRemove}
+          onClickReplace={handleUploadAreaClick}
         />
       )}
 
@@ -344,14 +344,6 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
             tabIndex={0}
             onKeyDown={handleUploadAreaKeyDown}
           >
-            <input
-              type="file"
-              accept={accept}
-              onChange={handleFileChange}
-              className="hidden"
-              ref={inputRef}
-            />
-
             <div
               className={cn(
                 "flex w-full flex-col items-center h-full pb-4",

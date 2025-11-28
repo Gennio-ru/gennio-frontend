@@ -104,7 +104,7 @@ export default function EditImageByPlatformPromptPage() {
           onSubmit={handleSubmit(onSubmit)}
           className="mx-auto w-full space-y-6 text-base-content"
         >
-          <h1 className="text-lg font-semibold">Загрузка фото</h1>
+          <h1 className="text-xl font-semibold">Загрузка фото</h1>
 
           {/* Референс */}
           <div className="relative mb-8">
@@ -143,7 +143,6 @@ export default function EditImageByPlatformPromptPage() {
                       }
                     }
                   }}
-                  onRemove={() => field.onChange("")}
                 />
               )}
             />
