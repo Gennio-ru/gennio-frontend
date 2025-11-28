@@ -153,16 +153,25 @@ export default function ModelJobResultPage() {
     <div className="mx-auto max-w-2xl text-center">
       {job.error && (
         <div className="mb-4 rounded-lg bg-error/10 p-2 text-sm text-error">
-          Что-то пошло не так при обработке результата.
+          {job.error === "JOB_STALLED" ? (
+            <>
+              Извините, сейчас высокая нагрузка. Попробуйте повторить попытку
+              чуть позже.
+            </>
+          ) : (
+            <>Что-то пошло не так при обработке результата.</>
+          )}
         </div>
       )}
 
       <ModelJobImageResult job={job} />
 
-      <div className="my-3 text-sm text-base-content/60 max-w-sm mx-auto">
-        <p>Изображение будет доступно в&nbsp;течение&nbsp;24&nbsp;часов.</p>
-        <p>По истечении этого времени оно удалится автоматически.</p>
-      </div>
+      {job.outputFileUrl && (
+        <div className="my-3 text-sm text-base-content/60 max-w-sm mx-auto">
+          <p>Изображение будет доступно в&nbsp;течение&nbsp;24&nbsp;часов.</p>
+          <p>По истечении этого времени оно удалится автоматически.</p>
+        </div>
+      )}
 
       {job.outputFileUrl && (
         <Button
