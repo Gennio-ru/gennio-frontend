@@ -1,29 +1,31 @@
+import { FileDto } from "@/api/modules/files";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
-type ImageWithLoaderFixedProps = React.ImgHTMLAttributes<HTMLImageElement> & {
+type ResultImageWithPreviewProps = React.ImgHTMLAttributes<HTMLImageElement> & {
+  file?: FileDto;
   /** Классы для контейнера (задаёшь фиксированный размер тут) */
   containerClassName?: string;
+  /** Любые элементы, выводимые поверх картинки */
+  children?: React.ReactNode;
 };
 
-export default function ImageWithLoaderFixed({
+export default function ResultImageWithPreview({
   containerClassName,
   className,
+  children,
   ...imgProps
-}: ImageWithLoaderFixedProps) {
+}: ResultImageWithPreviewProps) {
   const [loaded, setLoaded] = useState(false);
 
   return (
-    <div
-      className={cn(
-        "relative overflow-hidden rounded-selector",
-        containerClassName
-      )}
-    >
+    <div className={cn("relative rounded-selector", containerClassName)}>
+      {/* Скелетон */}
       {!loaded && (
-        <div className="absolute inset-0 animate-pulse bg-base-300/50" />
+        <div className="absolute rounded-selector inset-0 animate-pulse bg-base-300/50" />
       )}
 
+      {/* Картинка */}
       <img
         {...imgProps}
         onLoad={(e) => {
@@ -40,6 +42,11 @@ export default function ImageWithLoaderFixed({
           className
         )}
       />
+
+      {/* Контент поверх картинки */}
+      {children && (
+        <div className="absolute inset-0 pointer-events-none">{children}</div>
+      )}
     </div>
   );
 }

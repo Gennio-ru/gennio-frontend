@@ -27,7 +27,7 @@
   --color-primary: oklch(0.586 0.2015 5.62);
   --color-primary-content: oklch(98% 0.003 95); /* текст на primary */
 
-  --color-secondary: oklch(0.804 0.0387 232.06);
+  --color-secondary: #535353;
   --color-secondary-content: oklch(98% 0.003 95);
 
   --color-accent: oklch(0.1347 0 0);
@@ -50,9 +50,9 @@
   --color-error-content: oklch(98% 0.003 95);
 
   /* system (используются компонентами daisyUI) */
-  --radius-box: 0.85rem; /* карточки/модалки*/
-  --radius-field: 0.6rem; /* кнопки */
-  --radius-selector: 1rem; /* бейджи */
+  --radius-box: 24px; /* карточки/модалки*/
+  --radius-field: 8px; /* кнопки */
+  --radius-selector: 16px; /* бейджи */
   --border: 1px; /* base border-width для компонентов */
 }
 
@@ -69,8 +69,8 @@
   --color-primary: oklch(0.586 0.2015 5.62);
   --color-primary-content: oklch(98% 0.003 95);
 
-  --color-secondary: oklch(66% 0.09 30);
-  --color-secondary-content: oklch(18% 0.01 70);
+  --color-secondary: #535353;
+  --color-secondary-content: oklch(98% 0.003 95);
 
   --color-accent: oklch(72% 0.09 85);
   --color-accent-content: oklch(18% 0.01 70);
@@ -92,9 +92,9 @@
   --color-error-content: oklch(98% 0.003 95);
 
   /* system */
-  --radius-box: 0.85rem; /* карточки/модалки*/
-  --radius-field: 0.6rem; /* кнопки */
-  --radius-selector: 1rem; /* бейджи */
+  --radius-box: 24px; /* карточки/модалки*/
+  --radius-field: 8px; /* кнопки */
+  --radius-selector: 16px; /* бейджи */
   --border: 1px; /* base border-width для компонентов */
 }
 

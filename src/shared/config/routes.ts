@@ -61,6 +61,12 @@ export const route = {
   adminPrompt: (id: string) => `${AppRoute.ADMIN_PROMPTS}/${id}`,
   adminUser: (id: string) => `${AppRoute.ADMIN_USERS}/${id}`,
 
+  aiGenerate: (type: ModelJobType, promptId?: string) => {
+    if (type === "image-edit-by-prompt-id") {
+      return route.editImageByPlatformPrompt(promptId);
+    }
+    return jobTypeBasePath[type];
+  },
   editImageByPlatformPrompt: (promptId: string) =>
     `/ai-generation/prompts/${promptId}/edit-image`,
 };

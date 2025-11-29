@@ -1043,6 +1043,7 @@ export interface components {
             text: string | null;
             /** @example Мягкое освещение, крупный план */
             promptId: string | null;
+            prompt: components["schemas"]["PromptDto"] | null;
             /** @example user-123 */
             userId: string;
             user: components["schemas"]["UserDto"] | null;
@@ -1098,6 +1099,7 @@ export interface components {
             text: string | null;
             /** @example Мягкое освещение, крупный план */
             promptId: string | null;
+            prompt: components["schemas"]["PromptDto"] | null;
             /** @example user-123 */
             userId: string;
             user: components["schemas"]["UserDto"] | null;
@@ -1156,6 +1158,7 @@ export interface components {
             text: string | null;
             /** @example Мягкое освещение, крупный план */
             promptId: string | null;
+            prompt: components["schemas"]["PromptDto"] | null;
             /** @example user-123 */
             userId: string;
             user: components["schemas"]["UserDto"] | null;
@@ -1223,7 +1226,7 @@ export interface components {
             inputFileId: string;
         };
         /** @enum {string} */
-        ErrorCode: "TOKENS_NOT_ENOUGH" | "MODEJ_JOB_TYPE_NOT_FOUND" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "MODERATION_BLOCKED" | "UNAUTHORIZED" | "EMAIL_NOT_CONFIRMED" | "ACCOUNT_IS_BLOCKED" | "FORBIDDEN" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
+        ErrorCode: "TOKENS_NOT_ENOUGH" | "MODEJ_JOB_TYPE_NOT_FOUND" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "JOB_STALLED" | "PROCESSING_TIMEOUT" | "MODERATION_BLOCKED" | "UNAUTHORIZED" | "EMAIL_NOT_CONFIRMED" | "ACCOUNT_IS_BLOCKED" | "FORBIDDEN" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
         ErrorInfoDto: {
             code: components["schemas"]["ErrorCode"];
             /**
