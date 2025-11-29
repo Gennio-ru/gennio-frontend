@@ -151,13 +151,13 @@ body::before {
   }
 
   .glass-panel-light {
-    @apply shadow-xl/5 inset-shadow-sm inset-shadow-black/15 backdrop-blur-sm bg-base-100/40 inset-shadow-sm;
+    @apply shadow-xl/3 inset-shadow-sm inset-shadow-black/15 backdrop-blur-sm bg-base-100/40 inset-shadow-sm;
 
     --tw-inset-shadow: inset 0 0 4px var(--tw-inset-shadow-color);
   }
 
   .glass-panel-light-important {
-    @apply !shadow-xl/5 !inset-shadow-sm !inset-shadow-black/15 !backdrop-blur-sm !bg-base-100/40 !inset-shadow-sm;
+    @apply shadow-xl/3 !inset-shadow-sm !inset-shadow-black/15 !backdrop-blur-sm !bg-base-100/40 !inset-shadow-sm;
 
     --tw-inset-shadow: inset 0 0 4px var(--tw-inset-shadow-color);
   }
@@ -171,13 +171,13 @@ body::before {
   }
 
   .glass-panel-dark {
-    @apply shadow-xl/5 inset-shadow-sm inset-shadow-current/10 backdrop-blur-sm bg-base-100/40 inset-shadow-sm;
+    @apply inset-shadow-sm inset-shadow-current/10 backdrop-blur-sm bg-base-100/40 inset-shadow-sm;
 
     --tw-inset-shadow: inset 0 0 4px var(--tw-inset-shadow-color);
   }
 
   .glass-panel-dark-important {
-    @apply !shadow-xl/5 !inset-shadow-sm !inset-shadow-current/10 !backdrop-blur-sm !bg-base-100/40 !inset-shadow-sm;
+    @apply !inset-shadow-sm !inset-shadow-current/10 !backdrop-blur-sm !bg-base-100/40 !inset-shadow-sm;
 
     --tw-inset-shadow: inset 0 0 4px var(--tw-inset-shadow-color);
   }
