@@ -95,8 +95,7 @@ export function ModelJobImageResult({ job }: Props) {
       {job.prompt && (
         <div className="mt-2 mb-10 mx-auto max-w-2xl">
           <p className="font-bold text-[36px] sm:text-[44px]">
-            {job.prompt.title +
-              "dadsad adasd adasd adasdasd dasdas da das das as das a "}
+            {job.prompt.title}
           </p>
         </div>
       )}
