@@ -10,6 +10,7 @@ import JpegLogo from "@/assets/jpeg-icon.svg?react";
 import { useNavigate } from "react-router-dom";
 import { route } from "@/shared/config/routes";
 import { cn } from "@/lib/utils";
+import { CircleAlert } from "lucide-react";
 
 type Props = {
   job: ModelJobFull;
@@ -180,12 +181,13 @@ export function ModelJobImageResult({ job }: Props) {
             </p>
           )}
 
-          <div className="flex justify-center gap-4 mt-8">
+          <div className="flex flex-col-reverse min-[500px]:flex-row justify-center items-center gap-4 mt-8">
             <Button
               color="secondary"
               onClick={() =>
                 navigate(route.aiGenerate(job.type, job.promptId || undefined))
               }
+              className="min-w-[230px] max-w-[300px] min-[500px]:max-w-auto"
             >
               Попробовать еще
             </Button>
@@ -193,6 +195,7 @@ export function ModelJobImageResult({ job }: Props) {
             <Button
               onClick={handleDownloadOriginal}
               disabled={downloadingOriginal}
+              className="min-w-[224px] max-w-[300px] min-[500px]:max-w-auto"
             >
               <div className="flex gap-1 items-center justify-center">
                 <JpegLogo fontSize={24} className="mr-1.5" />
@@ -208,9 +211,15 @@ export function ModelJobImageResult({ job }: Props) {
             </Button>
           </div>
 
-          <div className="my-3 text-sm text-base-content/60 max-w-sm mx-auto">
-            <p>Изображение будет доступно в&nbsp;течение&nbsp;24&nbsp;часов.</p>
-            <p>По истечении этого времени оно удалится автоматически.</p>
+          <div className="my-3 text-sm text-base-content/60">
+            <CircleAlert
+              size={18}
+              className="min-w-[18px] inline mr-1.5 relative top-[-2px]"
+            />
+            <span>
+              Готовая генерация будет доступна в личном кабинете
+              в&nbsp;течение&nbsp;24&nbsp;часов
+            </span>
           </div>
         </div>
       )}
