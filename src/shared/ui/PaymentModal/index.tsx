@@ -70,23 +70,22 @@ export default function PaymentModal() {
         else dispatch(setPaymentModalOpen(true));
       }}
     >
-      <DialogContent className={cn("sm:w-[500px]")} showCloseButton={false}>
+      <DialogContent className="sm:w-[500px]" showCloseButton={false}>
         <DialogHeader className="relative">
           <DialogTitle
             className={cn(
-              "mx-auto mb-5 text-base font-bold",
-              "flex items-start justify-center gap-2 pr-6",
-              theme === "dark" ? "text-[#FA9313]" : "text-[#da7900]"
+              "mx-auto mb-5 px-10 text-base font-thin text-warning",
+              "text-center"
             )}
           >
             <CircleAlert
               size={18}
-              className="min-w-[18px] relative top-[3px]"
+              className="inline-block min-w-[18px] mr-1.5 relative top-[-1px]"
             />
 
-            <p className="text-left">
-              У&nbsp;вас&nbsp;не&nbsp;хватает токенов&nbsp;для&nbsp;генерации
-            </p>
+            <span className="align-middle">
+              У&nbsp;вас&nbsp;не&nbsp;хватает токенов для&nbsp;генерации
+            </span>
           </DialogTitle>
 
           <DialogClose

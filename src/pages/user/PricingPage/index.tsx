@@ -170,7 +170,7 @@ export default function PricingPage() {
                   <span className="line-through text-primary-content/70">
                     {packs[2].tokens}
                   </span>{" "}
-                  {packs[1].priceRub} ₽
+                  {packs[2].priceRub} ₽
                 </Button>
               </GlassCard>
 
@@ -219,7 +219,7 @@ export default function PricingPage() {
                 >
                   Купить за{" "}
                   <span className="line-through text-primary-content/70">
-                    {packs[2].tokens}
+                    {packs[3].tokens}
                   </span>{" "}
                   {packs[3].priceRub} ₽
                 </Button>

@@ -1,9 +1,10 @@
 import { apiAIUploadFile } from "@/api/modules/files";
 import { apiStartImageEditByPromptText } from "@/api/modules/model-job";
 import { setPaymentModalOpen } from "@/features/app/appSlice";
-import { setUser } from "@/features/auth/authSlice";
+import { setAuthModalOpen, setUser } from "@/features/auth/authSlice";
+import { useAuth } from "@/features/auth/useAuth";
 import { customToast } from "@/lib/customToast";
-import { checkApiResponseErrorCode } from "@/lib/helpers";
+import { checkApiResponseErrorCode, isErrorResponseDto } from "@/lib/helpers";
 import { route } from "@/shared/config/routes";
 import Button from "@/shared/ui/Button";
 import GlassCard from "@/shared/ui/GlassCard";
@@ -27,6 +28,8 @@ export default function EditImageByCustomPromptPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isFetching, setIsFetching] = useState(false);
+
+  const { isAuth } = useAuth();
 
   const {
     control,
@@ -73,12 +76,17 @@ export default function EditImageByCustomPromptPage() {
       >
         <h2 className="text-xl font-bold">Загрузка фото</h2>
         {/* Референс */}
-        <div className="relative mb-12">
+        <div className="relative mb-0">
           <Controller
             name="inputFileId"
             control={control}
             render={({ field }) => (
               <ImageUploadWithCrop
+                onChange={(value) => {
+                  if (value === null) {
+                    field.onChange("");
+                  }
+                }}
                 onUpload={async (file) => {
                   clearErrors("inputFileId");
 
@@ -86,14 +94,20 @@ export default function EditImageByCustomPromptPage() {
                     throw new Error("Файл не передан");
                   }
 
-                  const res = await apiAIUploadFile(file);
+                  try {
+                    const res = await apiAIUploadFile(file);
 
-                  if (!res || !res.id || !res.url) {
-                    throw new Error("Не удалось загрузить файл");
+                    if (!res || !res.id || !res.url) {
+                      throw new Error("Не удалось загрузить файл");
+                    }
+
+                    field.onChange(res.id);
+                    return res;
+                  } catch (e) {
+                    if (isErrorResponseDto(e?.response?.data)) {
+                      customToast.error(e);
+                    }
                   }
-
-                  field.onChange(res.id);
-                  return res;
                 }}
               />
             )}
@@ -107,37 +121,51 @@ export default function EditImageByCustomPromptPage() {
         </div>
 
         {/* Промпт */}
-        {inputFileId && (
-          <div className="relative mb-8">
-            <div className="mb-3 text-base">Введите текст промпта</div>
+        <div className="relative mb-0 mt-8">
+          <div className="mb-3 text-base">Введите текст промпта</div>
 
-            <Controller
-              name="text"
-              control={control}
-              render={({ field }) => (
-                <Textarea
-                  {...field}
-                  rows={1}
-                  placeholder="Например: “сделай в стиле акварели, но сохрани композицию”"
-                  className="w-full rounded-field"
-                  onChange={(e) => {
-                    field.onChange(e);
-                    clearErrors("text");
-                  }}
-                  errored={!!errors.text}
-                  errorMessage={errors.text?.message}
-                  maxLength={200}
-                />
-              )}
-            />
-          </div>
-        )}
+          <Controller
+            name="text"
+            control={control}
+            render={({ field }) => (
+              <Textarea
+                {...field}
+                rows={2}
+                placeholder="Например: “сделай в стиле акварели, но сохрани композицию”"
+                className="w-full rounded-field bg-base-100/60"
+                onChange={(e) => {
+                  field.onChange(e);
+                  clearErrors("text");
+                }}
+                errored={!!errors.text}
+                errorMessage={errors.text?.message}
+                maxLength={700}
+              />
+            )}
+          />
+        </div>
 
         {/* Кнопка */}
-        <div className="pt-4 flex justify-center">
-          <Button type="submit" disabled={isBusy} className="px-6 w-[200px]">
-            {isSubmitting ? "Загрузка..." : "Сгенерировать"}
-          </Button>
+        <div className="flex justify-center">
+          {isAuth && inputFileId && (
+            <Button
+              type="submit"
+              disabled={isBusy}
+              className="mt-8 px-6 w-[200px]"
+            >
+              {isSubmitting ? "Загрузка..." : "Сгенерировать"}
+            </Button>
+          )}
+
+          {!isAuth && (
+            <Button
+              type="button"
+              className="mt-8 px-6 w-[200px]"
+              onClick={() => dispatch(setAuthModalOpen(true))}
+            >
+              Войти в аккаунт
+            </Button>
+          )}
         </div>
       </form>
     </GlassCard>

@@ -116,7 +116,9 @@ export function GennioSelect({
             className={cn(
               "absolute left-1 mt-2 z-10 min-w-[300px] sm:min-w-[360px] w-full max-h-[290px] overflow-y-auto \
               text-2xl rounded-field py-2",
-              theme === "dark" ? "glass-panel-dark" : "glass-panel-light"
+              theme === "dark"
+                ? "glass-panel-dark"
+                : "glass-panel-light shadow-md"
             )}
           >
             {filteredOptions.map((opt, i) => (

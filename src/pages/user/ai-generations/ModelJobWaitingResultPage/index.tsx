@@ -65,10 +65,11 @@ export default function ModelJobWaitingResultPage() {
     socket.emit(MODEL_JOB_EVENTS.SUBSCRIBE, modelJobId);
 
     const onUpdate = (updated: ModelJobFull) => {
+      if (updated.id !== modelJobId) return;
+
       setJob(updated);
       if (updated.user) dispatch(setUser(updated.user));
 
-      // → ПРАВИЛЬНО: job уже есть, значит можем корректно редиректить
       if (isJobFinished(updated)) {
         navigate(route.jobResult(updated), { replace: true });
       }

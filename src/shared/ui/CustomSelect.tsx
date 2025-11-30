@@ -22,6 +22,7 @@ interface Props<T extends string> {
   items: Item<T>[];
   placeholder?: string;
   className?: string;
+  color?: "primary" | "secondary";
 }
 
 export default function CustomSelect<T extends string>({
@@ -31,6 +32,7 @@ export default function CustomSelect<T extends string>({
   items,
   placeholder,
   className,
+  color = "primary",
 }: Props<T>) {
   const theme = useAppSelector(selectAppTheme);
   const showResetButton = onReset && value;
@@ -43,8 +45,9 @@ export default function CustomSelect<T extends string>({
       >
         <SelectTrigger
           className={cn(
-            "flex-1 bg-base-100 text-base-content",
+            "flex-1 text-base-content",
             showResetButton && "gap-8",
+            color === "primary" ? "bg-base-100" : "bg-base-200",
             className
           )}
         >
@@ -53,7 +56,7 @@ export default function CustomSelect<T extends string>({
 
         <SelectContent
           className={cn(
-            "shadow-lg",
+            "shadow-md",
             theme === "light" ? "shadow-neutral-900/20" : "shadow-base-200"
           )}
         >

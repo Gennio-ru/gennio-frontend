@@ -34,7 +34,7 @@ export function UserMenu() {
       <PopoverTrigger asChild>
         <div
           className="flex items-center justify-center w-9 h-9 rounded-full text-white
-          font-bold select-none shadow-md cursor-pointer"
+          font-bold select-none cursor-pointer"
           style={{
             background: `
           linear-gradient(

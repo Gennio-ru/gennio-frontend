@@ -64,3 +64,13 @@ export function declOfNum(
 export const getUrlRootSegment = (path: string) => {
   return path.replace(/^\//, "").split("/")[0];
 };
+
+export const formatFileSize = (bytes: number): string => {
+  const kb = bytes / 1024;
+  if (kb < 1024) {
+    return `${Math.round(kb)} КБ`;
+  }
+
+  const mb = kb / 1024;
+  return `${mb.toFixed(1)} МБ`;
+};

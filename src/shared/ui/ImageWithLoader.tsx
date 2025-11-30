@@ -5,6 +5,7 @@ type Props = React.ImgHTMLAttributes<HTMLImageElement> & {
   size?: "xs" | "md" | "xl";
   widthPx?: number | null;
   heightPx?: number | null;
+  containerClassName?: string;
 };
 
 const baseSide: Record<NonNullable<Props["size"]>, number> = {
@@ -38,6 +39,7 @@ export default function ImageWithLoader({
   widthPx,
   heightPx,
   className,
+  containerClassName,
   ...imgProps
 }: Props) {
   const [loaded, setLoaded] = useState(false);
@@ -50,7 +52,10 @@ export default function ImageWithLoader({
 
   return (
     <div
-      className="relative overflow-hidden rounded-field mx-auto"
+      className={cn(
+        "relative overflow-hidden rounded-selector mx-auto",
+        containerClassName
+      )}
       style={{
         width: "100%",
         maxWidth: maxWidthPx,

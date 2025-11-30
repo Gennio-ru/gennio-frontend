@@ -1,6 +1,17 @@
-import ImageWithLoader from "@/shared/ui/ImageWithLoader";
-import GlassCard from "@/shared/ui/GlassCard";
+import Lottie from "lottie-react";
+import { useState } from "react";
 import { ModelJobFull } from "@/api/modules/model-job";
+import ImageWithLoaderFixed from "@/shared/ui/ImageWithLoaderFixed";
+import ResultImageWithPreview from "./ResultImageWithPreview";
+import { formatFileSize } from "@/lib/helpers";
+import Button from "@/shared/ui/Button";
+import spinnerAnimation from "@/assets/loader-white.json";
+import JpegLogo from "@/assets/jpeg-icon.svg?react";
+import { useNavigate } from "react-router-dom";
+import { route } from "@/shared/config/routes";
+import { cn } from "@/lib/utils";
+import { CircleAlert } from "lucide-react";
+import { Tooltip } from "@/shared/ui/Tooltip";
 
 type Props = {
   job: ModelJobFull;
@@ -25,12 +36,16 @@ function getOrientation(meta?: ImageMeta | null): Orientation {
 }
 
 export function ModelJobImageResult({ job }: Props) {
+  const [downloadingOriginal, setDownloadingOriginal] = useState(false);
+  const navigate = useNavigate();
+
   const {
     text,
     inputFileUrl,
     inputFile,
     outputPreviewFileUrl,
     outputPreviewFile,
+    outputFile,
   } = job;
 
   const showPrompt = !!text;
@@ -44,119 +59,187 @@ export function ModelJobImageResult({ job }: Props) {
 
   const hasInput = !!inputFileUrl;
   const hasOutput = !!outputPreviewFileUrl;
+  const hasOutputOriginal = !!outputFile;
+
+  //
+  // === DOWNLOAD ORIGINAL FILE ===
+  //
+  const handleDownloadOriginal = async () => {
+    if (!job?.outputFileUrl) return;
+
+    try {
+      setDownloadingOriginal(true);
+
+      const res = await fetch(job.outputFileUrl);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "gennio_original.jpeg";
+      a.click();
+
+      URL.revokeObjectURL(url);
+    } finally {
+      setDownloadingOriginal(false);
+    }
+  };
+
+  const sizeLabel = outputFile?.size ? formatFileSize(outputFile.size) : null;
+  const dimsLabel =
+    outputFile?.widthPx && outputFile?.heightPx
+      ? `${outputFile.widthPx} x ${outputFile.heightPx} px`
+      : null;
+  const metaText = [sizeLabel, dimsLabel].filter(Boolean).join(", ");
 
   return (
     <>
+      {job.prompt && (
+        <div className="mt-2 mb-10 mx-auto max-w-2xl">
+          <p className="font-bold text-[36px] sm:text-[44px]">
+            {job.prompt.title}
+          </p>
+        </div>
+      )}
+
       {showPrompt && (
-        <GlassCard className="mb-4 mx-auto inline-block max-w-xl text-left">
-          <div className="flex gap-2 items-start">
-            <b className="shrink-0 w-20">Промпт:</b>
-            <p className="break-words whitespace-pre-wrap max-h-40 overflow-y-auto pr-2 text-base-content/80">
+        <Tooltip content={text} className="max-w-[320px]">
+          <div className="my-4 max-w-2xl mx-auto line-clamp-2 overflow-hidden text-ellipsis">
+            <span>
+              {job.type === "image-edit-by-prompt-id"
+                ? "Детали:  "
+                : "Промпт:  "}
               {text}
-            </p>
+            </span>
           </div>
-        </GlassCard>
+        </Tooltip>
       )}
 
       {/* HORIZONTAL: 1.5 / 1 — две полосы одна под другой */}
       {orientation === "horizontal" && hasOutput && (
-        <div className="flex flex-col gap-4 items-center">
-          {hasInput && (
-            <ImageWithLoader
-              src={inputFileUrl ?? undefined}
-              alt="Исходное изображение"
-              size="xs"
-              widthPx={inputFile?.widthPx ?? undefined}
-              heightPx={inputFile?.heightPx ?? undefined}
-              className="rounded-xl shadow-sm bg-base-200 max-w-3xl w-full"
-            />
-          )}
-
-          <ImageWithLoader
+        <div className="w-full flex justify-center">
+          <ResultImageWithPreview
             src={outputPreviewFileUrl ?? undefined}
             alt="Результат"
-            size="xl"
-            widthPx={outputPreviewFile?.widthPx ?? undefined}
-            heightPx={outputPreviewFile?.heightPx ?? undefined}
-            className="rounded-xl shadow-sm bg-base-200 max-w-3xl w-full"
-          />
+            containerClassName="relative rounded-selector w-full max-w-[600px] aspect-[3/2]"
+            className="rounded-selector h-full w-full object-cover"
+          >
+            {hasInput && (
+              <ImageWithLoaderFixed
+                src={inputFileUrl ?? undefined}
+                alt="Исходное изображение"
+                containerClassName="absolute hidden lg:block top-0 left-[-174px] max-w-[150px] aspect-[3/2]"
+                className="rounded-selector w-full h-full object-cover"
+              />
+            )}
+          </ResultImageWithPreview>
         </div>
       )}
 
       {/* VERTICAL: 1 / 1.5 — отдельный кейс */}
       {orientation === "vertical" && hasOutput && (
-        <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-4">
-          {/* Превью (input) — поменьше, слева, если есть */}
-          {hasInput && (
-            <div className="inline-flex">
-              <ImageWithLoader
+        <div className="w-full flex justify-center">
+          <ResultImageWithPreview
+            src={outputPreviewFileUrl ?? undefined}
+            alt="Результат"
+            containerClassName="relative rounded-selector w-full max-w-[350px] aspect-[2/3]"
+            className="rounded-selector h-full w-full object-cover"
+          >
+            {hasInput && (
+              <ImageWithLoaderFixed
                 src={inputFileUrl ?? undefined}
                 alt="Исходное изображение"
-                size="xs"
-                widthPx={inputFile?.widthPx ?? undefined}
-                heightPx={inputFile?.heightPx ?? undefined}
-                className="rounded-xl shadow-sm bg-base-200"
+                containerClassName="absolute hidden lg:block top-0 left-[-124px] max-w-[100px] aspect-[2/3]"
+                className="rounded-selector w-full h-full object-cover"
               />
-            </div>
-          )}
-
-          {/* Результат — справа */}
-          <div className="inline-flex">
-            <ImageWithLoader
-              src={outputPreviewFileUrl ?? undefined}
-              alt="Результат"
-              size="xl"
-              widthPx={outputPreviewFile?.widthPx ?? undefined}
-              heightPx={outputPreviewFile?.heightPx ?? undefined}
-              className="rounded-xl shadow-sm bg-base-200"
-            />
-          </div>
+            )}
+          </ResultImageWithPreview>
         </div>
       )}
 
       {/* SQUARE: 1 / 1 — свой кейс, более симметричный */}
       {orientation === "square" && hasOutput && (
-        <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-3">
-          {/* Превью (input) — слева, если есть */}
-          {hasInput && (
-            <div className="inline-flex">
-              <ImageWithLoader
+        <div className="w-full flex justify-center">
+          <ResultImageWithPreview
+            src={outputPreviewFileUrl ?? undefined}
+            alt="Результат"
+            containerClassName="relative rounded-selector w-full max-w-[500px] aspect-[1/1]"
+            className="rounded-selector h-full w-full object-cover"
+          >
+            {hasInput && (
+              <ImageWithLoaderFixed
                 src={inputFileUrl ?? undefined}
                 alt="Исходное изображение"
-                size="xs"
-                widthPx={inputFile?.widthPx ?? undefined}
-                heightPx={inputFile?.heightPx ?? undefined}
-                className="rounded-xl shadow-sm bg-base-200"
+                containerClassName="absolute hidden lg:block top-0 left-[-149px] max-w-[125px] aspect-[1/1]"
+                className="rounded-selector w-full h-full object-cover"
               />
-            </div>
+            )}
+          </ResultImageWithPreview>
+        </div>
+      )}
+
+      {hasOutputOriginal && (
+        <div className="w-full flex flex-col fustify-center mt-2">
+          {metaText && (
+            <p className="text-xs text-base-content/60 text-nowrap">
+              Оригинальный размер: {metaText}
+            </p>
           )}
 
-          {/* Результат — справа */}
-          <div className="inline-flex">
-            <ImageWithLoader
-              src={outputPreviewFileUrl ?? undefined}
-              alt="Результат"
-              size="xl"
-              widthPx={outputPreviewFile?.widthPx ?? undefined}
-              heightPx={outputPreviewFile?.heightPx ?? undefined}
-              className="rounded-xl shadow-sm bg-base-200"
+          <div className="flex flex-col-reverse min-[500px]:flex-row justify-center items-center gap-4 mt-8">
+            <Button
+              color="secondary"
+              onClick={() =>
+                navigate(route.aiGenerate(job.type, job.promptId || undefined))
+              }
+              className="min-w-[230px] max-w-[300px] min-[500px]:max-w-auto"
+            >
+              Попробовать еще
+            </Button>
+
+            <Button
+              onClick={handleDownloadOriginal}
+              disabled={downloadingOriginal}
+              className="min-w-[224px] max-w-[300px] min-[500px]:max-w-auto"
+            >
+              <div className="flex gap-1 items-center justify-center">
+                <JpegLogo fontSize={24} className="mr-1.5" />
+                Скачать генерацию
+                {downloadingOriginal && (
+                  <Lottie
+                    animationData={spinnerAnimation}
+                    loop
+                    className="w-6 h-6 ml-2"
+                  />
+                )}
+              </div>
+            </Button>
+          </div>
+
+          <div className="my-3 text-sm text-base-content/60">
+            <CircleAlert
+              size={18}
+              className="min-w-[18px] inline mr-1.5 relative top-[-2px]"
             />
+            <span>
+              Готовая генерация будет доступна в личном кабинете
+              в&nbsp;течение&nbsp;24&nbsp;часов
+            </span>
           </div>
         </div>
       )}
 
-      {/* На всякий случай: если вдруг нет output (неизвестный стейт) */}
-      {!hasOutput && hasInput && (
-        <div className="flex items-center justify-center">
-          <ImageWithLoader
-            src={inputFileUrl ?? undefined}
-            alt="Изображение"
-            size="xl"
-            widthPx={inputFile?.widthPx ?? undefined}
-            heightPx={inputFile?.heightPx ?? undefined}
-            className="rounded-xl shadow-sm bg-base-200 max-w-3xl w-full"
-          />
-        </div>
+      {hasInput && (
+        <ImageWithLoaderFixed
+          src={inputFileUrl ?? undefined}
+          alt="Исходное изображение"
+          containerClassName={cn(
+            "block lg:hidden mt-4 mx-auto",
+            orientation === "horizontal" && "max-w-[150px] aspect-[3/2]",
+            orientation === "vertical" && "max-w-[100px] aspect-[2/3]",
+            orientation === "square" && "max-w-[125px] aspect-[1/1]"
+          )}
+        />
       )}
     </>
   );

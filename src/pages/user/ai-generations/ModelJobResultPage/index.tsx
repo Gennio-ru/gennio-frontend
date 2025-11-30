@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import Lottie from "lottie-react";
 import { apiGetModelJob, ModelJobFull } from "@/api/modules/model-job";
-import Button from "@/shared/ui/Button";
-import spinnerAnimation from "@/assets/loader-white.json";
 import { socket } from "@/api/socket/socket";
 import { MODEL_JOB_EVENTS } from "@/api/socket/model-job-events";
 import { ModelJobImageResult } from "./ModelJobImageResult";
@@ -23,7 +20,6 @@ export default function ModelJobResultPage() {
   const [job, setJob] = useState<ModelJobFull | null>(null);
   const [loadingJob, setLoadingJob] = useState(true);
   const [serverError, setServerError] = useState<string>();
-  const [downloadingOriginal, setDownloadingOriginal] = useState(false);
 
   //
   // === LOAD JOB ===
@@ -70,6 +66,8 @@ export default function ModelJobResultPage() {
     socket.emit(MODEL_JOB_EVENTS.SUBSCRIBE, modelJobId);
 
     const onUpdate = (updated: ModelJobFull) => {
+      if (updated.id !== modelJobId) return;
+
       setJob(updated);
       if (updated.user) dispatch(setUser(updated.user));
 
@@ -86,29 +84,12 @@ export default function ModelJobResultPage() {
     };
   }, [modelJobId, dispatch, navigate]);
 
-  //
-  // === DOWNLOAD ORIGINAL FILE ===
-  //
-  const handleDownloadOriginal = async () => {
-    if (!job?.outputFileUrl) return;
-
-    try {
-      setDownloadingOriginal(true);
-
-      const res = await fetch(job.outputFileUrl);
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "gennio_original.jpeg";
-      a.click();
-
-      URL.revokeObjectURL(url);
-    } finally {
-      setDownloadingOriginal(false);
+  useEffect(() => {
+    if (!job) return;
+    if (isJobPending(job)) {
+      navigate(route.jobWait(job), { replace: true });
     }
-  };
+  }, [job, navigate]);
 
   //
   // === ERROR CASES ===
@@ -133,12 +114,6 @@ export default function ModelJobResultPage() {
     return <ErrorBlock>Не удалось загрузить результат</ErrorBlock>;
   }
 
-  // Если по каким-то причинам всё ещё pending — отправляем на страницу ожидания
-  if (isJobPending(job)) {
-    navigate(route.jobWait(job), { replace: true });
-    return null;
-  }
-
   const isModerationBlocked =
     job.error === "MODERATION_BLOCKED" || job.error === "moderation_blocked";
 
@@ -150,33 +125,21 @@ export default function ModelJobResultPage() {
   // === RESULT VIEW ===
   //
   return (
-    <div className="mx-auto max-w-2xl text-center">
+    <div className="w-full text-center">
       {job.error && (
         <div className="mb-4 rounded-lg bg-error/10 p-2 text-sm text-error">
-          Что-то пошло не так при обработке результата.
+          {job.error === "JOB_STALLED" ? (
+            <>
+              Извините, сейчас высокая нагрузка. Попробуйте повторить попытку
+              чуть позже.
+            </>
+          ) : (
+            <>Что-то пошло не так при обработке результата.</>
+          )}
         </div>
       )}
 
       <ModelJobImageResult job={job} />
-
-      {job.outputFileUrl && (
-        <Button
-          onClick={handleDownloadOriginal}
-          className="mt-4"
-          disabled={downloadingOriginal}
-        >
-          <div className="flex gap-1 items-center justify-center">
-            Скачать оригинал
-            {downloadingOriginal && (
-              <Lottie
-                animationData={spinnerAnimation}
-                loop
-                className="w-6 h-6 ml-2"
-              />
-            )}
-          </div>
-        </Button>
-      )}
     </div>
   );
 }

@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAppSelector } from "@/app/hooks";
-import { selectAppTheme } from "@/features/app/appSlice";
 
 import {
   Dialog,
@@ -26,8 +24,6 @@ import { AppRoute } from "@/shared/config/routes";
 export default function AdminPaymentInfoModal() {
   const { paymentId } = useParams<{ paymentId: string }>();
   const open = Boolean(paymentId);
-
-  const theme = useAppSelector(selectAppTheme);
   const navigate = useNavigate();
 
   const [payment, setPayment] = useState<PaymentFull | null>(null);
@@ -74,8 +70,7 @@ export default function AdminPaymentInfoModal() {
     >
       <DialogContent
         className={cn(
-          "sm:max-w-lg max-h-[80vh] flex flex-col max-h-[94%] overflow-y-auto",
-          theme === "dark" && "bg-base-100/70 backdrop-blur-md"
+          "sm:max-w-lg max-h-[80vh] flex flex-col max-h-[94%] overflow-y-auto"
         )}
         showCloseButton={false}
       >

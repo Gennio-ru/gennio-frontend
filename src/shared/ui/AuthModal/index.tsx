@@ -15,14 +15,12 @@ import { XIcon } from "lucide-react";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { AuthLoginForm } from "./AuthLoginForm";
 import { AuthRegistrationForm } from "./AuthRegistrationForm";
-import { selectAppTheme } from "@/features/app/appSlice";
 import { AuthEmailConfirmationPanel } from "./AuthEmailConfirmationPanel";
 import { AuthResetPasswordForm } from "./AuthResetPasswordForm";
 
 type Mode = "login" | "register" | "confirmEmail" | "reset";
 
 export default function AuthModal() {
-  const theme = useAppSelector(selectAppTheme);
   const dispatch = useAppDispatch();
   const authModalOpen = useAppSelector(selectAuthModalOpen);
 
@@ -58,10 +56,7 @@ export default function AuthModal() {
         }
       }}
     >
-      <DialogContent
-        className={cn("sm:max-w-md", theme === "dark" && "bg-base-100/70")}
-        showCloseButton={false}
-      >
+      <DialogContent className="sm:max-w-md" showCloseButton={false}>
         <DialogHeader className="relative">
           <DialogTitle className="mx-auto mb-5 flex gap-10">
             <button

@@ -139,7 +139,7 @@ export function AuthLoginForm({
           )}
           onClick={onForgotPassword}
         >
-          <span>Не помню пароль</span>
+          <span className="text-nowrap">Не помню пароль</span>
         </div>
 
         <button
