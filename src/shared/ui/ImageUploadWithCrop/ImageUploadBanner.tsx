@@ -27,7 +27,7 @@ export const ImageUploadBanner: React.FC<Props> = ({
       {banner && showBanner && (
         <motion.div
           key={banner.id}
-          className="pointer-events-none absolute left-1.5 right-1.5 top-0 flex justify-center z-10"
+          className="pointer-events-none absolute left-1.5 right-1.5 top-0 flex justify-center z-30"
           initial={{ y: "-140%", opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: "-140%", opacity: 0 }}
