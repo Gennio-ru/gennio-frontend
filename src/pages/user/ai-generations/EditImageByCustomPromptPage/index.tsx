@@ -121,31 +121,29 @@ export default function EditImageByCustomPromptPage() {
         </div>
 
         {/* Промпт */}
-        {inputFileId && (
-          <div className="relative mb-0 mt-8">
-            <div className="mb-3 text-base">Введите текст промпта</div>
+        <div className="relative mb-0 mt-8">
+          <div className="mb-3 text-base">Введите текст промпта</div>
 
-            <Controller
-              name="text"
-              control={control}
-              render={({ field }) => (
-                <Textarea
-                  {...field}
-                  rows={2}
-                  placeholder="Например: “сделай в стиле акварели, но сохрани композицию”"
-                  className="w-full rounded-field"
-                  onChange={(e) => {
-                    field.onChange(e);
-                    clearErrors("text");
-                  }}
-                  errored={!!errors.text}
-                  errorMessage={errors.text?.message}
-                  maxLength={200}
-                />
-              )}
-            />
-          </div>
-        )}
+          <Controller
+            name="text"
+            control={control}
+            render={({ field }) => (
+              <Textarea
+                {...field}
+                rows={2}
+                placeholder="Например: “сделай в стиле акварели, но сохрани композицию”"
+                className="w-full rounded-field bg-base-100/60"
+                onChange={(e) => {
+                  field.onChange(e);
+                  clearErrors("text");
+                }}
+                errored={!!errors.text}
+                errorMessage={errors.text?.message}
+                maxLength={700}
+              />
+            )}
+          />
+        </div>
 
         {/* Кнопка */}
         <div className="flex justify-center">

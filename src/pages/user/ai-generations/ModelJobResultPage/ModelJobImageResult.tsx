@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { route } from "@/shared/config/routes";
 import { cn } from "@/lib/utils";
 import { CircleAlert } from "lucide-react";
+import { Tooltip } from "@/shared/ui/Tooltip";
 
 type Props = {
   job: ModelJobFull;
@@ -102,12 +103,16 @@ export function ModelJobImageResult({ job }: Props) {
       )}
 
       {showPrompt && (
-        <div className="my-4">
-          <span>
-            {job.type === "image-edit-by-prompt-id" ? "Детали:  " : "Промпт:  "}
-            {text}
-          </span>
-        </div>
+        <Tooltip content={text} className="max-w-[320px]">
+          <div className="my-4 max-w-2xl mx-auto line-clamp-2 overflow-hidden text-ellipsis">
+            <span>
+              {job.type === "image-edit-by-prompt-id"
+                ? "Детали:  "
+                : "Промпт:  "}
+              {text}
+            </span>
+          </div>
+        </Tooltip>
       )}
 
       {/* HORIZONTAL: 1.5 / 1 — две полосы одна под другой */}

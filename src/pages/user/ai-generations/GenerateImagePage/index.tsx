@@ -88,11 +88,12 @@ export default function GenerateImagePage() {
                 {...field}
                 rows={4}
                 placeholder="Например: “рыжий котик на подоконнике, мягкий свет, реалистичный стиль"
-                className="w-full rounded-field"
+                className="w-full rounded-field bg-base-100/60"
                 onChange={(e) => {
                   field.onChange(e);
                   clearErrors("text");
                 }}
+                maxLength={700}
                 errored={!!errors.text}
                 errorMessage={errors.text?.message}
               />

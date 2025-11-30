@@ -52,7 +52,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           defaultValue={defaultValue}
           onChange={handleChange}
           className={cn(
-            "block w-full rounded-field bg-base-100/60 px-3 py-3 text-base text-base-content min-h-12",
+            "block w-full rounded-field bg-base-200 px-3 py-3 text-base text-base-content min-h-12",
             "placeholder:text-base-content/60 focus:border-primary focus:outline-none focus:ring-0",
             hasError && "border-b border-b-[var(--color-error)]!",
             className

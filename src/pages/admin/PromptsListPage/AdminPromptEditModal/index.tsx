@@ -190,7 +190,6 @@ export default function AdminPromptEditModal() {
                   }}
                   errored={!!errors.title}
                   errorMessage={errors.title?.message}
-                  className="bg-base-100"
                 />
               )}
             />
@@ -238,6 +237,7 @@ export default function AdminPromptEditModal() {
                     field.onChange(v);
                     clearErrors("categoryId");
                   }}
+                  color="secondary"
                 />
               )}
             />

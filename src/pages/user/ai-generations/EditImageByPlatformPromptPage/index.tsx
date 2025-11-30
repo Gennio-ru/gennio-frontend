@@ -174,14 +174,14 @@ export default function EditImageByPlatformPromptPage() {
                     {...field}
                     rows={2}
                     placeholder="Например: Добавь красный колпак на голову"
-                    className="w-full rounded-field"
+                    className="w-full rounded-field bg-base-100/60"
                     onChange={(e) => {
                       field.onChange(e);
                       clearErrors("text");
                     }}
                     errored={!!errors.text}
                     errorMessage={errors.text?.message}
-                    maxLength={200}
+                    maxLength={300}
                   />
                 )}
               />

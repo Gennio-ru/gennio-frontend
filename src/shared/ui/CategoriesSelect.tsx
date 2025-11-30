@@ -8,6 +8,7 @@ interface Props {
   onReset?: () => void;
   placeholder?: string;
   className?: string;
+  color?: "primary" | "secondary";
 }
 
 export default function CategoriesSelect({
@@ -16,6 +17,7 @@ export default function CategoriesSelect({
   onReset,
   placeholder = "Выберите категорию",
   className,
+  color = "primary",
 }: Props) {
   const [categories, setCategories] = useState<Category[]>([]);
 
@@ -36,6 +38,7 @@ export default function CategoriesSelect({
       items={selectItems}
       placeholder={placeholder}
       className={className}
+      color={color}
     />
   );
 }
