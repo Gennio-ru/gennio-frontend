@@ -1,7 +1,9 @@
-import { CloudUpload } from "lucide-react";
+import { CloudUpload, Repeat } from "lucide-react";
 import Button from "../Button";
 import { cn } from "@/lib/utils";
 import { FileDto } from "@/api/modules/files";
+import { useIsTouchDevice } from "@/shared/hooks/useIsTouchDevice";
+import IconButton from "../IconButton";
 
 type Props = {
   previewImage: FileDto;
@@ -14,6 +16,8 @@ export const ImageUploadPreview: React.FC<Props> = ({
   theme,
   onClickReplace,
 }) => {
+  const isTouch = useIsTouchDevice();
+
   return (
     <div className="flex flex-col gap-2 h-[340px]">
       <div
@@ -28,20 +32,33 @@ export const ImageUploadPreview: React.FC<Props> = ({
           className="max-w-full max-h-full object-contain transition-opacity duration-200 group-hover:opacity-40"
         />
 
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
-          <Button
+        {!isTouch && (
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
+            <Button
+              type="button"
+              color="ghost"
+              bordered
+              onClick={onClickReplace}
+              className="font-thin text-white border-white"
+            >
+              <div className="flex gap-2 items-center">
+                <CloudUpload size={20} stroke="var(--color-white)" />
+                Загрузить новое фото
+              </div>
+            </Button>
+          </div>
+        )}
+
+        {isTouch && (
+          <IconButton
             type="button"
+            size="md"
             color="ghost"
-            bordered
             onClick={onClickReplace}
-            className="font-thin text-white border-white"
-          >
-            <div className="flex gap-2 items-center">
-              <CloudUpload size={20} stroke="var(--color-white)" />
-              Загрузить новое фото
-            </div>
-          </Button>
-        </div>
+            className="absolute top-2 right-2 z-20 bg-base-100/70"
+            icon={<Repeat size={20} />}
+          />
+        )}
       </div>
     </div>
   );
