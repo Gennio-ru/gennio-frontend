@@ -6,6 +6,7 @@ import { useAuth } from "@/features/auth/useAuth";
 import { customToast } from "@/lib/customToast";
 import { checkApiResponseErrorCode, isErrorResponseDto } from "@/lib/helpers";
 import { route } from "@/shared/config/routes";
+import { AIGenerationTitle } from "@/shared/ui/AIGenerationTitle";
 import Button from "@/shared/ui/Button";
 import GlassCard from "@/shared/ui/GlassCard";
 import { ImageUploadWithCrop } from "@/shared/ui/ImageUploadWithCrop";
@@ -69,105 +70,112 @@ export default function EditImageByCustomPromptPage() {
   const isBusy = isFetching || isSubmitting;
 
   return (
-    <GlassCard className="mx-auto w-full max-w-2xl mt-5">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="space-y-7 text-base-content"
-      >
-        <h2 className="text-xl font-bold">Загрузка фото</h2>
-        {/* Референс */}
-        <div className="relative mb-0">
-          <Controller
-            name="inputFileId"
-            control={control}
-            render={({ field }) => (
-              <ImageUploadWithCrop
-                onChange={(value) => {
-                  if (value === null) {
-                    field.onChange("");
-                  }
-                }}
-                onUpload={async (file) => {
-                  clearErrors("inputFileId");
+    <>
+      <AIGenerationTitle
+        title="Редактируйте по-своему"
+        description="Загружайте фото и изменяйте их с помощью своих индивидуальных промптов"
+      />
 
-                  if (!file) {
-                    throw new Error("Файл не передан");
-                  }
+      <GlassCard className="w-full max-w-2xl mx-auto">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-7 text-base-content"
+        >
+          <h2 className="text-xl font-bold">Загрузка фото</h2>
+          {/* Референс */}
+          <div className="relative mb-0">
+            <Controller
+              name="inputFileId"
+              control={control}
+              render={({ field }) => (
+                <ImageUploadWithCrop
+                  onChange={(value) => {
+                    if (value === null) {
+                      field.onChange("");
+                    }
+                  }}
+                  onUpload={async (file) => {
+                    clearErrors("inputFileId");
 
-                  try {
-                    const res = await apiAIUploadFile(file);
-
-                    if (!res || !res.id || !res.url) {
-                      throw new Error("Не удалось загрузить файл");
+                    if (!file) {
+                      throw new Error("Файл не передан");
                     }
 
-                    field.onChange(res.id);
-                    return res;
-                  } catch (e) {
-                    if (isErrorResponseDto(e?.response?.data)) {
-                      customToast.error(e);
+                    try {
+                      const res = await apiAIUploadFile(file);
+
+                      if (!res || !res.id || !res.url) {
+                        throw new Error("Не удалось загрузить файл");
+                      }
+
+                      field.onChange(res.id);
+                      return res;
+                    } catch (e) {
+                      if (isErrorResponseDto(e?.response?.data)) {
+                        customToast.error(e);
+                      }
                     }
-                  }
-                }}
-              />
+                  }}
+                />
+              )}
+            />
+
+            {errors.inputFileId && (
+              <p className="absolute top-full mt-1 text-xs text-error">
+                {errors.inputFileId.message}
+              </p>
             )}
-          />
+          </div>
 
-          {errors.inputFileId && (
-            <p className="absolute top-full mt-1 text-xs text-error">
-              {errors.inputFileId.message}
-            </p>
-          )}
-        </div>
+          {/* Промпт */}
+          <div className="relative mb-0 mt-8">
+            <div className="mb-3 text-base">Введите текст промпта</div>
 
-        {/* Промпт */}
-        <div className="relative mb-0 mt-8">
-          <div className="mb-3 text-base">Введите текст промпта</div>
+            <Controller
+              name="text"
+              control={control}
+              render={({ field }) => (
+                <Textarea
+                  {...field}
+                  rows={2}
+                  placeholder="Например: “сделай в стиле акварели, но сохрани композицию”"
+                  className="w-full rounded-field bg-base-100/60"
+                  onChange={(e) => {
+                    field.onChange(e);
+                    clearErrors("text");
+                  }}
+                  errored={!!errors.text}
+                  errorMessage={errors.text?.message}
+                  maxLength={700}
+                />
+              )}
+            />
+          </div>
 
-          <Controller
-            name="text"
-            control={control}
-            render={({ field }) => (
-              <Textarea
-                {...field}
-                rows={2}
-                placeholder="Например: “сделай в стиле акварели, но сохрани композицию”"
-                className="w-full rounded-field bg-base-100/60"
-                onChange={(e) => {
-                  field.onChange(e);
-                  clearErrors("text");
-                }}
-                errored={!!errors.text}
-                errorMessage={errors.text?.message}
-                maxLength={700}
-              />
+          {/* Кнопка */}
+          <div className="flex justify-center">
+            {isAuth && inputFileId && (
+              <Button
+                type="submit"
+                disabled={isBusy}
+                className="mt-8 px-6 w-[200px]"
+              >
+                {isSubmitting ? "Загрузка..." : "Сгенерировать"}
+              </Button>
             )}
-          />
-        </div>
 
-        {/* Кнопка */}
-        <div className="flex justify-center">
-          {isAuth && inputFileId && (
-            <Button
-              type="submit"
-              disabled={isBusy}
-              className="mt-8 px-6 w-[200px]"
-            >
-              {isSubmitting ? "Загрузка..." : "Сгенерировать"}
-            </Button>
-          )}
-
-          {!isAuth && (
-            <Button
-              type="button"
-              className="mt-8 px-6 w-[200px]"
-              onClick={() => dispatch(setAuthModalOpen(true))}
-            >
-              Войти в аккаунт
-            </Button>
-          )}
-        </div>
-      </form>
-    </GlassCard>
+            {!isAuth && (
+              <Button
+                type="button"
+                className="mt-8 px-6 w-[200px]"
+                onClick={() => dispatch(setAuthModalOpen(true))}
+              >
+                Войти в аккаунт
+              </Button>
+            )}
+          </div>
+        </form>
+      </GlassCard>
+    </>
   );
 }

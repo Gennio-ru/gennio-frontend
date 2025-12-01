@@ -23,6 +23,6 @@ export const adminHeaderMenu: NavItem[] = [
 
 export const aiGenerationsMenu: NavItem[] = [
   { label: "Готовые шаблоны", href: AppRoute.PROMPTS },
-  { label: "Генерация картинок", href: AppRoute.GENERATE_IMAGE },
+  { label: "Создание с нуля", href: AppRoute.GENERATE_IMAGE },
   { label: "Обработка фото", href: AppRoute.EDIT_IMAGE },
 ];

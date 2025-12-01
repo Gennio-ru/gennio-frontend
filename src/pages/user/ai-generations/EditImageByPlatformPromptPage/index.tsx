@@ -7,6 +7,7 @@ import { useAuth } from "@/features/auth/useAuth";
 import { customToast } from "@/lib/customToast";
 import { checkApiResponseErrorCode, isErrorResponseDto } from "@/lib/helpers";
 import { route } from "@/shared/config/routes";
+import { AIGenerationTitle } from "@/shared/ui/AIGenerationTitle";
 import Button from "@/shared/ui/Button";
 import GlassCard from "@/shared/ui/GlassCard";
 import { ImageUploadWithCrop } from "@/shared/ui/ImageUploadWithCrop";
@@ -90,16 +91,13 @@ export default function EditImageByPlatformPromptPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl mt-3 flex flex-col gap-10">
-      <div className="w-full text-center">
-        <p className="font-bold text-[36px] sm:text-[44px]">
-          {currentPrompt.title}
-        </p>
+    <>
+      <AIGenerationTitle
+        title={currentPrompt.title}
+        description={currentPrompt.description}
+      />
 
-        <p className="mt-2">{currentPrompt.description}</p>
-      </div>
-
-      <GlassCard className="w-full">
+      <GlassCard className="w-full mx-auto max-w-2xl">
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="mx-auto w-full space-y-6 text-base-content"
@@ -216,6 +214,6 @@ export default function EditImageByPlatformPromptPage() {
           </div>
         </form>
       </GlassCard>
-    </div>
+    </>
   );
 }

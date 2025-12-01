@@ -219,7 +219,7 @@ export function ModelJobImageResult({ job }: Props) {
           <div className="my-3 text-sm text-base-content/60">
             <CircleAlert
               size={18}
-              className="min-w-[18px] inline mr-1.5 relative top-[-2px]"
+              className="min-w-[18px] inline mr-1.5 relative top-[-2px] rotate-180"
             />
             <span>
               Готовая генерация будет доступна в личном кабинете
