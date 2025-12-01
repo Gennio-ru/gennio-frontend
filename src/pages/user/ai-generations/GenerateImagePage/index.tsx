@@ -6,6 +6,7 @@ import { customToast } from "@/lib/customToast";
 import { checkApiResponseErrorCode } from "@/lib/helpers";
 import { cn } from "@/lib/utils";
 import { route } from "@/shared/config/routes";
+import { AIGenerationTitle } from "@/shared/ui/AIGenerationTitle";
 import Button from "@/shared/ui/Button";
 import GlassCard from "@/shared/ui/GlassCard";
 import Textarea from "@/shared/ui/Textarea";
@@ -65,65 +66,76 @@ export default function GenerateImagePage() {
   const isBusy = isFetching || isSubmitting;
 
   return (
-    <GlassCard className="mx-auto w-full max-w-2xl mt-5">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="space-y-6 text-base-content"
-      >
-        {!isAuth && (
-          <div className={cn("text-[18px] text-warning text-center")}>
-            Войдите в аккаунт, чтобы начать редактирование
-          </div>
-        )}
+    <>
+      <AIGenerationTitle
+        title="Создавайте изображения с&nbsp;нуля"
+        description="Используйте свой текстовый запрос для создания уникального изображения"
+      />
 
-        {/* Промпт */}
-        <div className="relative mb-6">
-          <div className="mb-3 text-xl">Введите текст промпта</div>
-
-          <Controller
-            name="text"
-            control={control}
-            render={({ field }) => (
-              <Textarea
-                {...field}
-                rows={4}
-                placeholder="Например: “рыжий котик на подоконнике, мягкий свет, реалистичный стиль"
-                className="w-full rounded-field bg-base-100/60"
-                onChange={(e) => {
-                  field.onChange(e);
-                  clearErrors("text");
-                }}
-                maxLength={700}
-                errored={!!errors.text}
-                errorMessage={errors.text?.message}
-              />
-            )}
-          />
-        </div>
-
-        {/* Кнопка */}
-        <div className="pt-4 flex justify-center">
-          {isAuth && (
-            <Button type="submit" disabled={isBusy} className="px-6 w-[200px]">
-              {isSubmitting
-                ? "Загрузка…"
-                : isFetching
-                ? "Загрузка…"
-                : "Сгенерировать"}
-            </Button>
-          )}
-
+      <GlassCard className="w-full mx-auto max-w-2xl">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-6 text-base-content"
+        >
           {!isAuth && (
-            <Button
-              type="button"
-              className="px-6 w-[200px]"
-              onClick={() => dispatch(setAuthModalOpen(true))}
-            >
-              Войти в аккаунт
-            </Button>
+            <div className={cn("text-[18px] text-warning text-center")}>
+              Войдите в аккаунт, чтобы начать редактирование
+            </div>
           )}
-        </div>
-      </form>
-    </GlassCard>
+
+          {/* Промпт */}
+          <div className="relative mb-6">
+            <div className="mb-3 text-xl">Введите текст промпта</div>
+
+            <Controller
+              name="text"
+              control={control}
+              render={({ field }) => (
+                <Textarea
+                  {...field}
+                  rows={4}
+                  placeholder="Например: “рыжий котик на подоконнике, мягкий свет, реалистичный стиль"
+                  className="w-full rounded-field bg-base-100/60"
+                  onChange={(e) => {
+                    field.onChange(e);
+                    clearErrors("text");
+                  }}
+                  maxLength={700}
+                  errored={!!errors.text}
+                  errorMessage={errors.text?.message}
+                />
+              )}
+            />
+          </div>
+
+          {/* Кнопка */}
+          <div className="pt-4 flex justify-center">
+            {isAuth && (
+              <Button
+                type="submit"
+                disabled={isBusy}
+                className="px-6 w-[200px]"
+              >
+                {isSubmitting
+                  ? "Загрузка…"
+                  : isFetching
+                  ? "Загрузка…"
+                  : "Сгенерировать"}
+              </Button>
+            )}
+
+            {!isAuth && (
+              <Button
+                type="button"
+                className="px-6 w-[200px]"
+                onClick={() => dispatch(setAuthModalOpen(true))}
+              >
+                Войти в аккаунт
+              </Button>
+            )}
+          </div>
+        </form>
+      </GlassCard>
+    </>
   );
 }

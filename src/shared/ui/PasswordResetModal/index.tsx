@@ -22,12 +22,8 @@ import { apiConfirmPasswordReset } from "@/api/modules/auth";
 
 const passwordSchema = z
   .string()
-  .min(12, "Минимум 12 символов")
-  .regex(/[a-z]/, "Нужна строчная латинская буква")
-  .regex(/[A-Z]/, "Нужна прописная латинская буква")
-  .regex(/[0-9]/, "Нужна цифра")
-  .regex(/[^A-Za-z0-9]/, "Нужен спецсимвол")
-  .refine((v) => v.length === 0 || !/\s/.test(v), "Без пробелов");
+  .min(8, "Минимум 8 символов")
+  .max(64, "Максимум 64 символа");
 
 const schema = z
   .object({
@@ -40,13 +36,18 @@ const schema = z
   });
 
 function scorePassword(pw: string) {
+  if (!pw) return 0;
+
   let score = 0;
+
+  if (pw.length >= 8) score++;
   if (pw.length >= 12) score++;
   if (pw.length >= 16) score++;
-  if (/[a-z]/.test(pw)) score++;
-  if (/[A-Z]/.test(pw)) score++;
+
   if (/[0-9]/.test(pw)) score++;
+  if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
   if (/[^A-Za-z0-9]/.test(pw)) score++;
+
   return Math.min(score, 5);
 }
 
@@ -243,41 +244,8 @@ export default function PasswordResetModal() {
                 </>
               )}
               <ul className="mt-3 space-y-0.5 text-xs text-base-content/70">
-                <li
-                  className={passwordValue.length >= 12 ? "text-success" : ""}
-                >
-                  • Минимум 12 символов
-                </li>
-                <li
-                  className={/[a-z]/.test(passwordValue) ? "text-success" : ""}
-                >
-                  • Строчная латиница (a–z)
-                </li>
-                <li
-                  className={/[A-Z]/.test(passwordValue) ? "text-success" : ""}
-                >
-                  • Прописная латиница (A–Z)
-                </li>
-                <li
-                  className={/[0-9]/.test(passwordValue) ? "text-success" : ""}
-                >
-                  • Цифра (0–9)
-                </li>
-                <li
-                  className={
-                    /[^A-Za-z0-9]/.test(passwordValue) ? "text-success" : ""
-                  }
-                >
-                  • Спецсимвол (например, !@#$%^&*)
-                </li>
-                <li
-                  className={
-                    passwordValue.trim().length > 0 && !/\s/.test(passwordValue)
-                      ? "text-success"
-                      : ""
-                  }
-                >
-                  • Без пробелов
+                <li className={passwordValue.length >= 8 ? "text-success" : ""}>
+                  • Минимум 8 символов
                 </li>
               </ul>
             </div>

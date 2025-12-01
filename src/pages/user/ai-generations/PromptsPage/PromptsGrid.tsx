@@ -58,7 +58,7 @@ export default function PromptsGrid() {
 
       {!hasMore && items.length > 0 && (
         <div className="py-10 grid place-items-center text-base-content/60">
-          Больше ничего не нашлось
+          Уже работаем над новыми стилями
         </div>
       )}
 

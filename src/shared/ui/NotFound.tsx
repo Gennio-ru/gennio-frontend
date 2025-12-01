@@ -21,10 +21,22 @@ export function NotFound({ enableDescription = true }: Props) {
         )}
       />
 
-      <p className="text-2xl mb-3 text-base-content">Ничего не нашлось</p>
+      <p
+        className={cn(
+          "text-2xl mb-3",
+          theme === "dark" ? "text-base-content/50" : "text-base-content/50"
+        )}
+      >
+        Ничего не нашлось
+      </p>
 
       {enableDescription && (
-        <p className="text-base max-w-sm">
+        <p
+          className={cn(
+            "text-base max-w-sm",
+            theme === "dark" ? "text-base-content/50" : "text-base-content/50"
+          )}
+        >
           Попробуйте изменить запрос, добавить деталей
         </p>
       )}
