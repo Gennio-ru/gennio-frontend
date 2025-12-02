@@ -1,11 +1,9 @@
-import Lottie from "lottie-react";
 import { useState } from "react";
 import { ModelJobFull } from "@/api/modules/model-job";
 import ImageWithLoaderFixed from "@/shared/ui/ImageWithLoaderFixed";
 import ResultImageWithPreview from "./ResultImageWithPreview";
 import { formatFileSize } from "@/lib/helpers";
 import Button from "@/shared/ui/Button";
-import spinnerAnimation from "@/assets/loader-white.json";
 import JpegLogo from "@/assets/jpeg-icon.svg?react";
 import { useNavigate } from "react-router-dom";
 import { route } from "@/shared/config/routes";
@@ -201,17 +199,11 @@ export function ModelJobImageResult({ job }: Props) {
               onClick={handleDownloadOriginal}
               disabled={downloadingOriginal}
               className="min-w-[224px] max-w-[300px] min-[500px]:max-w-auto"
+              loading={downloadingOriginal}
             >
               <div className="flex gap-1 items-center justify-center">
                 <JpegLogo fontSize={24} className="mr-1.5" />
                 Скачать генерацию
-                {downloadingOriginal && (
-                  <Lottie
-                    animationData={spinnerAnimation}
-                    loop
-                    className="w-6 h-6 ml-2"
-                  />
-                )}
               </div>
             </Button>
           </div>

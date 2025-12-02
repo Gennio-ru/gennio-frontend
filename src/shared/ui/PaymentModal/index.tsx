@@ -112,7 +112,7 @@ export default function PaymentModal() {
               return (
                 <div
                   className={cn(
-                    "rounded-box p-4 flex justify-between items-center cursor-pointer gap-4 transition-shadow duration-200",
+                    "rounded-selector p-4 flex justify-between items-center cursor-pointer gap-4 transition-shadow duration-200",
                     theme === "dark" ? "bg-white/15" : "bg-base-200",
                     selectedPackId === pack.id
                       ? "shadow-[0_0_0_1.5px_var(--color-primary)]"
@@ -152,6 +152,7 @@ export default function PaymentModal() {
           disabled={!selectedPackId || !!creatingPayment}
           className="w-min mx-auto px-10 mt-2 text-nowrap"
           onClick={handleBuy}
+          loading={!!creatingPayment}
         >
           Оплатить
           {selectedPack ? ` ${selectedPack.priceRub} ₽` : ""}
