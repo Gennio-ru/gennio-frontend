@@ -118,7 +118,7 @@ export function GennioSelect({
               text-2xl rounded-field py-2",
               theme === "dark"
                 ? "glass-panel-dark"
-                : "glass-panel-light shadow-md"
+                : "glass-panel-light shadow-md bg-base-100/60"
             )}
           >
             {filteredOptions.map((opt, i) => (

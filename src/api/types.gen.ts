@@ -1219,7 +1219,7 @@ export interface components {
             model: components["schemas"]["ModelType"];
             promptId: string;
             /**
-             * @description Не более 500 символов
+             * @description Не более 300 символов
              * @example Мягкое освещение, крупный план
              */
             text: string;
@@ -1251,7 +1251,7 @@ export interface components {
         StartImageEditByPromptTextDto: {
             model: components["schemas"]["ModelType"];
             /**
-             * @description Не более 500 символов
+             * @description Не более 700 символов
              * @example Мягкое освещение, крупный план
              */
             text: string;
@@ -1260,7 +1260,7 @@ export interface components {
         StartImageGenerateByPromptTextDto: {
             model: components["schemas"]["ModelType"];
             /**
-             * @description Не более 500 символов
+             * @description Не более 700 символов
              * @example Мягкое освещение, крупный план
              */
             text: string;

@@ -1,6 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import CustomSelect from "@/shared/ui/CustomSelect";
-import { apiGetCategories, Category } from "@/api/modules/categories";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import {
+  fetchCategories,
+  selectCategories,
+  selectCategoriesLoading,
+} from "@/features/app/appSlice";
 
 interface Props {
   value: string | null;
@@ -19,11 +24,15 @@ export default function CategoriesSelect({
   className,
   color = "primary",
 }: Props) {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const dispatch = useAppDispatch();
+  const categories = useAppSelector(selectCategories);
+  const loading = useAppSelector(selectCategoriesLoading);
 
   useEffect(() => {
-    apiGetCategories().then((res) => setCategories(res));
-  }, []);
+    if (!categories.length) {
+      dispatch(fetchCategories());
+    }
+  }, [dispatch, categories.length]);
 
   const selectItems = useMemo(
     () => categories.map((item) => ({ value: item.id, label: item.name })),
@@ -36,7 +45,7 @@ export default function CategoriesSelect({
       onChange={onChange}
       onReset={onReset}
       items={selectItems}
-      placeholder={placeholder}
+      placeholder={loading ? "Загрузка категорий…" : placeholder}
       className={className}
       color={color}
     />

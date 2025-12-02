@@ -1,41 +1,37 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import Input from "@/shared/ui/Input";
 import Button from "@/shared/ui/Button";
-import {
-  apiGetCategories,
-  apiDeleteCategory,
-  type Category,
-} from "@/api/modules/categories";
+import { apiDeleteCategory } from "@/api/modules/categories";
 import EditCategoryModal from "./EditCategoryModal";
 import { Edit as EditIcon, Trash2 as TrashIcon } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import {
+  fetchCategories,
+  selectCategories,
+  selectCategoriesLoading,
+} from "@/features/app/appSlice";
 
 export default function CategoriesAdminList() {
+  const dispatch = useAppDispatch();
+
+  const categories = useAppSelector(selectCategories);
+  const isLoading = useAppSelector(selectCategoriesLoading);
+
   const [editOpen, setEditOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const [searchLocal, setSearchLocal] = useState("");
-  const [searchValue, setSearchValue] = useState(""); // 🔸 значение после дебаунса
-  const [items, setItems] = useState<Category[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
-  const fetchCategories = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const res = await apiGetCategories();
-      setItems(res);
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "Unknown error";
-      toast.error(`Failed to load categories. ${msg}`);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const loadCategories = useCallback(() => {
+    void dispatch(fetchCategories());
+  }, [dispatch]);
 
   useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
+    loadCategories();
+  }, [loadCategories]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -47,11 +43,11 @@ export default function CategoriesAdminList() {
 
   const filtered = useMemo(() => {
     const q = searchValue.trim().toLowerCase();
-    if (!q) return items;
-    return items.filter((c) =>
+    if (!q) return categories;
+    return categories.filter((c) =>
       [c.name, c.description ?? ""].some((v) => v.toLowerCase().includes(q))
     );
-  }, [items, searchValue]);
+  }, [categories, searchValue]);
 
   const handleCreate = () => {
     setEditingId(null);
@@ -64,14 +60,14 @@ export default function CategoriesAdminList() {
   };
 
   const handleDelete = async (id: string) => {
-    const target = items.find((i) => i.id === id);
+    const target = categories.find((i) => i.id === id);
     const name = target?.name ?? "category";
     if (!confirm(`Удалить «${name}»? Это действие нельзя отменить.`)) return;
 
     try {
       await apiDeleteCategory(id);
       toast.success("Удалено");
-      fetchCategories();
+      loadCategories();
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Unknown error";
       toast.error(`Не удалось удалить. ${msg}`);
@@ -86,7 +82,7 @@ export default function CategoriesAdminList() {
             value={searchLocal}
             onChange={(e) => setSearchLocal(e.target.value)}
             placeholder="Search by name or description"
-            className="bg-base-100!"
+            className="bg-base-100"
           />
         </div>
 
@@ -97,13 +93,13 @@ export default function CategoriesAdminList() {
 
       <div className="overflow-hidden rounded-box bg-base-100">
         <table className="w-full text-sm">
-          <thead className="bg-base-100 text-base-content/70 border-b border-base-300">
+          <thead className="border-b border-base-300 bg-base-100 text-base-content/70">
             <tr>
               <th className="p-3 text-left">Name</th>
-              <th className="p-3 text-left hidden sm:table-cell">
+              <th className="hidden p-3 text-left sm:table-cell">
                 Description
               </th>
-              <th className="p-3 w-[88px] text-left"></th>
+              <th className="w-[88px] p-3 text-left" />
             </tr>
           </thead>
 
@@ -115,7 +111,7 @@ export default function CategoriesAdminList() {
                   className={cn(index % 2 === 0 && "bg-base-200/40")}
                 >
                   <td className="p-3">{category.name}</td>
-                  <td className="p-3 hidden sm:table-cell">
+                  <td className="hidden p-3 sm:table-cell">
                     {category.description || "-"}
                   </td>
                   <td className="p-3">
@@ -152,13 +148,13 @@ export default function CategoriesAdminList() {
               Array.from({ length: 5 }).map((_, i) => (
                 <tr key={i} className="animate-pulse">
                   <td className="p-3">
-                    <div className="h-4 w-32 bg-base-200 rounded" />
+                    <div className="h-4 w-32 rounded bg-base-200" />
                   </td>
-                  <td className="p-3 hidden sm:table-cell">
-                    <div className="h-4 w-56 bg-base-200 rounded" />
+                  <td className="hidden p-3 sm:table-cell">
+                    <div className="h-4 w-56 rounded bg-base-200" />
                   </td>
                   <td className="p-3">
-                    <div className="h-8 w-[88px] bg-base-200 rounded" />
+                    <div className="h-8 w-[88px] rounded bg-base-200" />
                   </td>
                 </tr>
               ))}
@@ -170,7 +166,7 @@ export default function CategoriesAdminList() {
         open={editOpen}
         onOpenChange={setEditOpen}
         categoryId={editingId ?? undefined}
-        onSaved={fetchCategories}
+        onSaved={loadCategories}
       />
     </div>
   );

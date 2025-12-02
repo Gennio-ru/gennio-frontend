@@ -58,6 +58,8 @@ const ASPECT_PRESETS = [
   },
 ];
 
+export type ImageUploadWithCropSteps = "idle" | "cropping" | "uploading";
+
 export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
   value,
   onChange,
@@ -72,7 +74,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
   const dispatch = useAppDispatch();
   const { isAuth } = useAuth();
 
-  const [step, setStep] = useState<"idle" | "cropping" | "uploading">("idle");
+  const [step, setStep] = useState<ImageUploadWithCropSteps>("idle");
   const [banner, setBanner] = useState<LocalBanner | null>(null);
   const [showBanner, setShowBanner] = useState(false);
 
@@ -270,6 +272,10 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 
       const uploaded = await Promise.resolve(onUpload(file));
 
+      if (!uploaded || !uploaded.id) {
+        throw new Error("Не удалось загрузить файл");
+      }
+
       setPreviewImage(uploaded);
       onChange?.(uploaded);
 
@@ -279,8 +285,12 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
       setImageSrc(null);
       setOriginalFile(null);
     } catch (err) {
-      console.error(err);
-      showError("Ошибка при обработке или загрузке файла");
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Ошибка при обработке или загрузке файла";
+
+      showError(message);
       setStep("cropping");
     }
   };
@@ -305,6 +315,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 
       <ImageUploadBanner
         banner={banner}
+        step={step}
         showBanner={showBanner}
         onClose={handleCloseBanner}
       />
@@ -440,7 +451,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 
       {/* Кнопки управления при кропе */}
       {imageSrc && (
-        <div className="flex items-center justify-between gap-3 mt-3">
+        <div className="flex flex-col min-[440px]:flex-row items-center justify-between gap-3 mt-3">
           <div className="flex items-center gap-2">
             <span className="text-md">Масштаб</span>
 

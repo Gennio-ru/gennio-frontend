@@ -5,7 +5,7 @@ import { setPaymentModalOpen } from "@/features/app/appSlice";
 import { setAuthModalOpen, setUser } from "@/features/auth/authSlice";
 import { useAuth } from "@/features/auth/useAuth";
 import { customToast } from "@/lib/customToast";
-import { checkApiResponseErrorCode, isErrorResponseDto } from "@/lib/helpers";
+import { checkApiResponseErrorCode } from "@/lib/helpers";
 import { route } from "@/shared/config/routes";
 import { AIGenerationTitle } from "@/shared/ui/AIGenerationTitle";
 import Button from "@/shared/ui/Button";
@@ -141,7 +141,7 @@ export default function EditImageByPlatformPromptPage() {
                       field.onChange(res.id);
                       return res;
                     } catch (e) {
-                      if (isErrorResponseDto(e?.response?.data)) {
+                      if (checkApiResponseErrorCode(e, "UNAUTHORIZED")) {
                         customToast.error(e);
                       }
                     }
