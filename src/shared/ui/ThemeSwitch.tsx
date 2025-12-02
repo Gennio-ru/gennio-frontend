@@ -1,29 +1,41 @@
-import { setAppTheme } from "@/features/app/appSlice";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { selectAppTheme, setAppTheme } from "@/features/app/appSlice";
 import { Sun, Moon } from "lucide-react";
 
 const THEME_KEY = "theme";
 
 export default function ThemeSwitch() {
-  const dispatch = useDispatch();
-  const [theme, setTheme] = useState<"light" | "dark">(() => {
+  const dispatch = useAppDispatch();
+  const theme = useAppSelector(selectAppTheme);
+
+  // Инициализация темы один раз при монтировании компонента
+  useEffect(() => {
     const saved = localStorage.getItem(THEME_KEY) as "light" | "dark" | null;
-    if (saved) return saved;
+
+    if (saved) {
+      dispatch(setAppTheme(saved));
+      return;
+    }
+
     const prefersDark = window.matchMedia(
       "(prefers-color-scheme: dark)"
     ).matches;
-    return prefersDark ? "dark" : "light";
-  });
 
+    dispatch(setAppTheme(prefersDark ? "dark" : "light"));
+  }, [dispatch]);
+
+  // Сайд-эффекты при смене темы (DOM + localStorage)
   useEffect(() => {
+    if (!theme) return;
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem(THEME_KEY, theme);
-    dispatch(setAppTheme(theme));
-  }, [theme, dispatch]);
+  }, [theme]);
 
-  const toggle = () =>
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  const toggle = () => {
+    const next = theme === "light" ? "dark" : "light";
+    dispatch(setAppTheme(next));
+  };
 
   return (
     <button
@@ -31,7 +43,7 @@ export default function ThemeSwitch() {
       className={`
         relative w-12 min-w-12 h-7 flex items-center rounded-full p-1 cursor-pointer
         overflow-hidden transition-colors duration-300 border-base-content/20 border-[1px]
-        `}
+      `}
     >
       <div
         className={`

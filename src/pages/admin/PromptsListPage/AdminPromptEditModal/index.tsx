@@ -30,6 +30,7 @@ import { customToast } from "@/lib/customToast";
 import { ImageUploadWithCrop } from "@/shared/ui/ImageUploadWithCrop";
 import { fetchAdminPrompts } from "@/features/admin-prompts/adminPromptSlice";
 import { AppRoute, route } from "@/shared/config/routes";
+import { selectCategoriesLoading } from "@/features/app/appSlice";
 
 const schema = z.object({
   title: z.string().min(1, "Укажите заголовок"),
@@ -51,7 +52,8 @@ export default function AdminPromptEditModal() {
   const { page } = useAppSelector((s) => s.adminPrompts);
 
   const [prompt, setPrompt] = useState<Prompt | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loadingPrompt, setLoadingPrompt] = useState(false);
+  const loadingCategories = useAppSelector(selectCategoriesLoading);
 
   const {
     control,
@@ -95,7 +97,7 @@ export default function AdminPromptEditModal() {
       return;
     }
 
-    setLoading(true);
+    setLoadingPrompt(true);
 
     apiGetPrompt(promptId)
       .then((data) => {
@@ -112,7 +114,7 @@ export default function AdminPromptEditModal() {
       .catch((e) => {
         customToast.error(e);
       })
-      .finally(() => setLoading(false));
+      .finally(() => setLoadingPrompt(false));
   }, [promptId, reset, clearForm]);
 
   const closeModal = () => {
@@ -140,6 +142,7 @@ export default function AdminPromptEditModal() {
     }
   };
 
+  const loading = loadingPrompt || loadingCategories;
   const isBusy = loading || isSubmitting;
 
   return (

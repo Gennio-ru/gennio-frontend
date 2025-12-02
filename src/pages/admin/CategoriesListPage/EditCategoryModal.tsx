@@ -1,6 +1,4 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,6 +20,9 @@ import {
   apiUpdateCategory,
   type Category,
 } from "@/api/modules/categories";
+import { fetchCategories } from "@/features/app/appSlice";
+import { useAppDispatch } from "@/app/hooks";
+import Loader from "@/shared/ui/Loader";
 
 const schema = z.object({
   name: z.string().min(1, "Укажите название категории"),
@@ -43,8 +44,8 @@ export default function EditCategoryModal({
   categoryId,
   onSaved,
 }: Props) {
+  const dispatch = useAppDispatch();
   const [isFetching, setIsFetching] = useState(false);
-  const abortRef = useRef<AbortController | null>(null);
 
   const {
     control,
@@ -62,20 +63,24 @@ export default function EditCategoryModal({
     reValidateMode: "onSubmit",
   });
 
-  // Загружаем категорию при редактировании или сбрасываем форму при создании
   useEffect(() => {
     if (!open) return;
 
-    const controller = new AbortController();
-    abortRef.current = controller;
-
-    // если есть id — редактирование
     if (categoryId) {
+      setIsFetching(true);
+      reset({
+        name: "",
+        description: "",
+      });
+
+      const controller = new AbortController();
+
       (async () => {
         try {
-          setIsFetching(true);
           const data = await apiGetCategory(categoryId);
+
           if (controller.signal.aborted) return;
+
           reset({
             name: data.name ?? "",
             description: data.description ?? "",
@@ -92,17 +97,18 @@ export default function EditCategoryModal({
           }
         }
       })();
-    } else {
-      // если ID нет — очищаем форму
-      reset({
-        name: "",
-        description: "",
-      });
+
+      return () => {
+        controller.abort();
+      };
     }
 
-    return () => {
-      controller.abort();
-    };
+    // если ID нет — создаём новую категорию, просто очищаем форму
+    reset({
+      name: "",
+      description: "",
+    });
+    setIsFetching(false);
   }, [open, categoryId, reset]);
 
   const onSubmit = async (values: FormValues) => {
@@ -110,13 +116,13 @@ export default function EditCategoryModal({
       let saved: Category;
 
       if (categoryId) {
-        // обновление
         saved = await apiUpdateCategory(categoryId, values);
       } else {
-        // создание
         saved = await apiCreateCategory(values);
       }
 
+      // обновляем список категорий в слайсе
+      dispatch(fetchCategories());
       toast.success("Сохранено!");
       onSaved?.(saved);
       onOpenChange(false);
@@ -142,63 +148,69 @@ export default function EditCategoryModal({
           </DialogDescription>
         </DialogHeader>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="space-y-5 py-2"
-          id="category-form"
-        >
-          {/* Название */}
-          <div className="relative">
-            <label className="mb-1 block text-sm text-muted-foreground">
-              Название
-            </label>
-
-            <Controller
-              name="name"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  placeholder="Например, «Пейзажи»"
-                  onChange={(e) => {
-                    field.onChange(e);
-                    clearErrors("name");
-                  }}
-                  disabled={isBusy}
-                  autoFocus
-                  errored={!!errors.name}
-                  errorMessage={errors.name?.message}
-                />
-              )}
-            />
+        {isFetching ? (
+          <div className="flex min-h-[140px] items-center justify-center py-4">
+            <Loader />
           </div>
+        ) : (
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-5 py-2"
+            id="category-form"
+          >
+            {/* Название */}
+            <div className="relative">
+              <label className="mb-1 block text-sm text-muted-foreground">
+                Название
+              </label>
 
-          {/* Описание */}
-          <div className="relative">
-            <label className="mb-1 block text-sm text-muted-foreground">
-              Описание <span className="opacity-50">(необязательно)</span>
-            </label>
+              <Controller
+                name="name"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    placeholder="Например, «Пейзажи»"
+                    onChange={(e) => {
+                      field.onChange(e);
+                      clearErrors("name");
+                    }}
+                    disabled={isBusy}
+                    autoFocus
+                    errored={!!errors.name}
+                    errorMessage={errors.name?.message}
+                  />
+                )}
+              />
+            </div>
 
-            <Controller
-              name="description"
-              control={control}
-              render={({ field }) => (
-                <Textarea
-                  {...field}
-                  rows={4}
-                  placeholder="Краткое описание категории"
-                  onChange={(e) => {
-                    field.onChange(e);
-                    clearErrors("description");
-                  }}
-                  disabled={isBusy}
-                  errored={!!errors.description}
-                  errorMessage={errors.description?.message}
-                />
-              )}
-            />
-          </div>
-        </form>
+            {/* Описание */}
+            <div className="relative">
+              <label className="mb-1 block text-sm text-muted-foreground">
+                Описание <span className="opacity-50">(необязательно)</span>
+              </label>
+
+              <Controller
+                name="description"
+                control={control}
+                render={({ field }) => (
+                  <Textarea
+                    {...field}
+                    rows={4}
+                    placeholder="Краткое описание категории"
+                    onChange={(e) => {
+                      field.onChange(e);
+                      clearErrors("description");
+                    }}
+                    disabled={isBusy}
+                    errored={!!errors.description}
+                    errorMessage={errors.description?.message}
+                  />
+                )}
+              />
+            </div>
+          </form>
+        )}
 
         <DialogFooter className="pt-3">
           <Button
@@ -208,7 +220,11 @@ export default function EditCategoryModal({
           >
             Отмена
           </Button>
-          <Button type="submit" form="category-form" disabled={isBusy}>
+          <Button
+            type="submit"
+            form="category-form"
+            disabled={isBusy || isFetching}
+          >
             {isSubmitting
               ? "Сохранение…"
               : isFetching

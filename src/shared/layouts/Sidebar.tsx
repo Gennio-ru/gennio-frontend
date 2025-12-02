@@ -118,9 +118,11 @@ export function SidebarMobile({ items }: SidebarProps) {
       <aside
         className={cn(
           "absolute left-2 top-2 h-[calc(100%-1rem)] w-[82%] max-w-[240px]",
-          "rounded-field",
+          "rounded-selector",
           "px-6 py-3 transition-transform duration-300 ease-in-out",
-          theme === "dark" ? "glass-panel-dark" : "glass-panel-light",
+          theme === "dark"
+            ? "glass-panel-dark"
+            : "glass-panel-light bg-base-100/60",
           isShownMobileSidebar
             ? "translate-x-0"
             : "-translate-x-[calc(100%+1rem)]"

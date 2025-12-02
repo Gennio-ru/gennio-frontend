@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { CircleAlert, CircleCheck, XIcon } from "lucide-react";
 import IconButton from "../IconButton";
 import { cn } from "@/lib/utils";
+import { ImageUploadWithCropSteps } from ".";
 
 export type BannerType = "error" | "success";
 
@@ -13,12 +14,14 @@ export type LocalBanner = {
 
 type Props = {
   banner: LocalBanner | null;
+  step: ImageUploadWithCropSteps;
   showBanner: boolean;
   onClose: () => void;
 };
 
 export const ImageUploadBanner: React.FC<Props> = ({
   banner,
+  step,
   showBanner,
   onClose,
 }) => {
@@ -27,7 +30,10 @@ export const ImageUploadBanner: React.FC<Props> = ({
       {banner && showBanner && (
         <motion.div
           key={banner.id}
-          className="pointer-events-none absolute left-1.5 right-1.5 top-0 flex justify-center z-30"
+          className={cn(
+            "pointer-events-none absolute left-1.5 right-1.5 top-0 flex justify-center z-30",
+            step === "cropping" ? "top-[56px]" : "top-0"
+          )}
           initial={{ y: "-140%", opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: "-140%", opacity: 0 }}
