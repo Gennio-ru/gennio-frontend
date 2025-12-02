@@ -15,7 +15,9 @@ export default function PricingPage() {
   const [packs, setPacks] = useState<TokenPack[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [creatingPayment, setCreatingPayment] = useState<string | null>(null);
+  const [creatingPayment, setCreatingPayment] = useState<TokenPackId | null>(
+    null
+  );
 
   const { startPayment } = useStartPayment();
 
@@ -29,8 +31,7 @@ export default function PricingPage() {
           setPacks(data);
           setError(null);
         }
-      } catch (e) {
-        console.error(e);
+      } catch {
         if (!cancelled) {
           setError("Не удалось загрузить тарифы. Попробуйте позже.");
         }
@@ -114,8 +115,9 @@ export default function PricingPage() {
 
                 <Button
                   onClick={() => handleBuy("STARTER")}
-                  disabled={!!creatingPayment}
                   className="w-full text-nowrap self-end"
+                  loading={creatingPayment === "STARTER"}
+                  disabled={creatingPayment === "STARTER"}
                 >
                   Купить за {packs[1].priceRub} ₽
                 </Button>
@@ -163,8 +165,9 @@ export default function PricingPage() {
 
                 <Button
                   onClick={() => handleBuy("BASIC")}
-                  disabled={!!creatingPayment}
                   className="w-full text-nowrap self-end"
+                  loading={creatingPayment === "BASIC"}
+                  disabled={creatingPayment === "BASIC"}
                 >
                   Купить за{" "}
                   <span className="line-through text-primary-content/70">
@@ -214,8 +217,9 @@ export default function PricingPage() {
 
                 <Button
                   onClick={() => handleBuy("PRO")}
-                  disabled={!!creatingPayment}
                   className="w-full text-nowrap self-end"
+                  loading={creatingPayment === "PRO"}
+                  disabled={creatingPayment === "PRO"}
                 >
                   Купить за{" "}
                   <span className="line-through text-primary-content/70">

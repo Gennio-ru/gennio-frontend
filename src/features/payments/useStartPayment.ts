@@ -7,6 +7,7 @@ import { TokenPackId } from "@/api/modules/pricing";
 import { socket } from "@/api/socket/socket";
 import { PAYMENT_EVENTS } from "@/api/socket/payment-events";
 import { Payment } from "@/api/modules/payments";
+import { customToast } from "@/lib/customToast";
 
 export function useStartPayment() {
   const dispatch = useAppDispatch();
@@ -60,8 +61,7 @@ export function useStartPayment() {
         window.open(res.confirmationUrl, "_blank");
       }
     } catch (e) {
-      console.error("Ошибка создания платежа", e);
-      throw e;
+      customToast.error(e);
     }
   };
 

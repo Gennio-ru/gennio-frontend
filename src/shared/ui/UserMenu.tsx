@@ -64,7 +64,8 @@ export function UserMenu() {
             </div>
 
             <Button
-              className="p-0 text-left text-base font-thin"
+              className="p-0 text-base font-thin"
+              contentClassName="p-0 justify-start text-base font-thin"
               size="sm"
               color="ghost"
               onClick={() => {
