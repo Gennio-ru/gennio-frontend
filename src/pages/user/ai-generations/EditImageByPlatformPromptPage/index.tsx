@@ -6,6 +6,7 @@ import { setAuthModalOpen, setUser } from "@/features/auth/authSlice";
 import { useAuth } from "@/features/auth/useAuth";
 import { customToast } from "@/lib/customToast";
 import { checkApiResponseErrorCode } from "@/lib/helpers";
+import { ymGoal } from "@/lib/metrics/yandexMetrika";
 import { route } from "@/shared/config/routes";
 import { AIGenerationTitle } from "@/shared/ui/AIGenerationTitle";
 import Button from "@/shared/ui/Button";
@@ -70,6 +71,7 @@ export default function EditImageByPlatformPromptPage() {
         text: data.text || null,
         model: "OPENAI",
       });
+      ymGoal("generate_by_platform_prompt");
       dispatch(setUser(res.user));
       navigate(route.jobWait(res));
     } catch (e) {

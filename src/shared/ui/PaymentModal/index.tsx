@@ -25,6 +25,7 @@ import { useStartPayment } from "@/features/payments/useStartPayment";
 import Loader from "../Loader";
 import { RadioDot } from "../ RadioDot";
 import { declOfNum } from "@/lib/helpers";
+import { ymGoal } from "@/lib/metrics/yandexMetrika";
 
 export default function PaymentModal() {
   const theme = useAppSelector(selectAppTheme);
@@ -58,6 +59,7 @@ export default function PaymentModal() {
 
   const handleBuy = async () => {
     startPayment(selectedPackId, () => {
+      ymGoal("buy_tokens_on_modal", { packId: selectedPackId });
       setCreatingPayment(selectedPackId);
     }).finally(() => setCreatingPayment(null));
   };
