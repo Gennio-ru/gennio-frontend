@@ -291,10 +291,10 @@ export default function AdminPromptEditModal() {
               render={({ field }) => (
                 <ImageUploadWithCrop
                   value={
-                    field.value && prompt?.beforeImageUrl
+                    field.value && prompt?.beforePreviewImageUrl
                       ? ({
                           id: field.value,
-                          url: prompt.beforeImageUrl,
+                          url: prompt.beforePreviewImageUrl,
                         } as FileDto)
                       : null
                   }
@@ -317,7 +317,7 @@ export default function AdminPromptEditModal() {
                     }
 
                     field.onChange(res.id);
-                    setPrompt({ ...prompt, beforeImageUrl: res.url });
+                    setPrompt({ ...prompt, beforePreviewImageUrl: res.url });
                     return res;
                   }}
                 />
@@ -342,10 +342,10 @@ export default function AdminPromptEditModal() {
               render={({ field }) => (
                 <ImageUploadWithCrop
                   value={
-                    field.value && prompt?.afterImageUrl
+                    field.value && prompt?.afterPreviewImageUrl
                       ? ({
                           id: field.value,
-                          url: prompt.afterImageUrl,
+                          url: prompt.afterPreviewImageUrl,
                         } as FileDto)
                       : null
                   }
@@ -368,7 +368,7 @@ export default function AdminPromptEditModal() {
                     }
 
                     field.onChange(res.id);
-                    setPrompt({ ...prompt, afterImageUrl: res.url });
+                    setPrompt({ ...prompt, afterPreviewImageUrl: res.url });
                     return res;
                   }}
                 />

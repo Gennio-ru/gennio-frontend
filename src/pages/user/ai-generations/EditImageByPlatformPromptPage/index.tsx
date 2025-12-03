@@ -112,10 +112,11 @@ export default function EditImageByPlatformPromptPage() {
               render={({ field }) => (
                 <ImageUploadWithCrop
                   fromToImagesUrls={
-                    currentPrompt.beforeImageUrl && currentPrompt.afterImageUrl
+                    currentPrompt.beforePreviewImageUrl &&
+                    currentPrompt.afterPreviewImageUrl
                       ? [
-                          currentPrompt.beforeImageUrl,
-                          currentPrompt.afterImageUrl,
+                          currentPrompt.beforePreviewImageUrl,
+                          currentPrompt.afterPreviewImageUrl,
                         ]
                       : undefined
                   }

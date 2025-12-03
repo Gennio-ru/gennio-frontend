@@ -23,7 +23,7 @@ export default function PromptCard({ prompt }: Props) {
     >
       <div className="relative aspect-[1/1] overflow-hidden">
         <img
-          src={prompt.afterImageUrl}
+          src={prompt.afterPreviewImageUrl}
           alt={prompt.title}
           className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
           loading="lazy"

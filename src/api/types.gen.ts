@@ -944,8 +944,12 @@ export interface components {
             description: string;
             beforeImageId: string;
             beforeImage: components["schemas"]["FileDto"];
+            beforePreviewImageId: string;
+            beforePreviewImage: components["schemas"]["FileDto"];
             afterImageId: string;
             afterImage: components["schemas"]["FileDto"];
+            afterPreviewImageId: string;
+            afterPreviewImage: components["schemas"]["FileDto"];
             type: components["schemas"]["PromptType"];
             /** @description Текст промпта */
             text: string;
@@ -958,9 +962,9 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
             /** Format: uri */
-            beforeImageUrl: string | null;
+            beforePreviewImageUrl: string | null;
             /** Format: uri */
-            afterImageUrl: string | null;
+            afterPreviewImageUrl: string | null;
         };
         PromptDto: {
             /** @example Аниме-портрет */
@@ -969,8 +973,12 @@ export interface components {
             description: string;
             beforeImageId: string;
             beforeImage: components["schemas"]["FileDto"];
+            beforePreviewImageId: string;
+            beforePreviewImage: components["schemas"]["FileDto"];
             afterImageId: string;
             afterImage: components["schemas"]["FileDto"];
+            afterPreviewImageId: string;
+            afterPreviewImage: components["schemas"]["FileDto"];
             type: components["schemas"]["PromptType"];
             /** @description Текст промпта */
             text: string;
@@ -1226,7 +1234,7 @@ export interface components {
             inputFileId: string;
         };
         /** @enum {string} */
-        ErrorCode: "TOKENS_NOT_ENOUGH" | "MODEJ_JOB_TYPE_NOT_FOUND" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "JOB_STALLED" | "PROCESSING_TIMEOUT" | "MODERATION_BLOCKED" | "UNAUTHORIZED" | "EMAIL_NOT_CONFIRMED" | "ACCOUNT_IS_BLOCKED" | "FORBIDDEN" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
+        ErrorCode: "TOKENS_NOT_ENOUGH" | "PAYMENT_FAILED" | "PAYMENT_PROVIDER_ERROR" | "MODEJ_JOB_TYPE_NOT_FOUND" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "JOB_STALLED" | "PROCESSING_TIMEOUT" | "MODERATION_BLOCKED" | "UNAUTHORIZED" | "EMAIL_NOT_CONFIRMED" | "ACCOUNT_IS_BLOCKED" | "FORBIDDEN" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
         ErrorInfoDto: {
             code: components["schemas"]["ErrorCode"];
             /**

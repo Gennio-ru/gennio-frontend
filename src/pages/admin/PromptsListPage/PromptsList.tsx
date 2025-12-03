@@ -83,7 +83,7 @@ export default function PromptsAdminList() {
       items.map((prompt, index) => (
         <tr key={prompt.id} className={cn(index % 2 === 0 && "bg-base-200/40")}>
           <td className="p-3">
-            <ImageThumb url={prompt.afterImageUrl} />
+            <ImageThumb url={prompt.afterPreviewImageUrl} />
           </td>
           <td className="p-3">{prompt.title}</td>
           <td className="p-3 table-cell">{prompt.category?.name || "-"}</td>
