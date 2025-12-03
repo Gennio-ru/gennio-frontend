@@ -10,6 +10,7 @@ import { route } from "@/shared/config/routes";
 import { cn } from "@/lib/utils";
 import { CircleAlert } from "lucide-react";
 import { Tooltip } from "@/shared/ui/Tooltip";
+import { ymGoal } from "@/lib/metrics/yandexMetrika";
 
 type Props = {
   job: ModelJobFull;
@@ -63,6 +64,8 @@ export function ModelJobImageResult({ job }: Props) {
   // === DOWNLOAD ORIGINAL FILE ===
   //
   const handleDownloadOriginal = async () => {
+    ymGoal("on_click_download_original");
+
     if (!job?.outputFileUrl) return;
 
     try {
@@ -187,9 +190,10 @@ export function ModelJobImageResult({ job }: Props) {
           <div className="flex flex-col-reverse min-[500px]:flex-row justify-center items-center gap-4 mt-8">
             <Button
               color="secondary"
-              onClick={() =>
-                navigate(route.aiGenerate(job.type, job.promptId || undefined))
-              }
+              onClick={() => {
+                ymGoal("on_click_retry");
+                navigate(route.aiGenerate(job.type, job.promptId || undefined));
+              }}
               className="min-w-[230px] max-w-[300px] min-[500px]:max-w-auto"
             >
               Попробовать еще

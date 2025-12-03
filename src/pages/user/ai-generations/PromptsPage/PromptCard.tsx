@@ -1,6 +1,7 @@
 import type { Prompt } from "@/api/modules/prompts";
 import { useAppSelector } from "@/app/hooks";
 import { selectAppTheme } from "@/features/app/appSlice";
+import { ymGoal } from "@/lib/metrics/yandexMetrika";
 import { cn } from "@/lib/utils";
 import { route } from "@/shared/config/routes";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +16,10 @@ export default function PromptCard({ prompt }: Props) {
 
   return (
     <article
-      onClick={() => navigate(route.editImageByPlatformPrompt(prompt.id))}
+      onClick={() => {
+        ymGoal("select_prompt", { promptId: prompt.id, title: prompt.title });
+        navigate(route.editImageByPlatformPrompt(prompt.id));
+      }}
       className={cn(
         "group overflow-hidden rounded-2xl text-base-content cursor-pointer",
         theme === "dark" ? "glass-panel-dark" : "glass-panel-light"

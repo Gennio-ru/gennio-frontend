@@ -4,6 +4,7 @@ import { setAuthModalOpen, setUser } from "@/features/auth/authSlice";
 import { useAuth } from "@/features/auth/useAuth";
 import { customToast } from "@/lib/customToast";
 import { checkApiResponseErrorCode } from "@/lib/helpers";
+import { ymGoal } from "@/lib/metrics/yandexMetrika";
 import { cn } from "@/lib/utils";
 import { route } from "@/shared/config/routes";
 import { AIGenerationTitle } from "@/shared/ui/AIGenerationTitle";
@@ -49,6 +50,7 @@ export default function GenerateImagePage() {
         ...data,
         model: "OPENAI",
       });
+      ymGoal("generate_image");
       dispatch(setUser(res.user));
       navigate(route.jobWait(res));
     } catch (e) {

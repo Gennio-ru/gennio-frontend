@@ -10,6 +10,7 @@ import { useStartPayment } from "@/features/payments/useStartPayment";
 import GlassCard from "@/shared/ui/GlassCard";
 import { CircleCheck } from "lucide-react";
 import { customToast } from "@/lib/customToast";
+import { ymGoal } from "@/lib/metrics/yandexMetrika";
 
 export default function PricingPage() {
   const [packs, setPacks] = useState<TokenPack[] | null>(null);
@@ -47,6 +48,7 @@ export default function PricingPage() {
 
   const handleBuy = async (packId: TokenPackId) => {
     startPayment(packId, () => {
+      ymGoal("buy_tokens_on_pricing_page", { packId });
       setCreatingPayment(packId);
     })
       .catch((e) => customToast.error(e))
