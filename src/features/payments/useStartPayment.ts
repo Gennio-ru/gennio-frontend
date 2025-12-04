@@ -35,12 +35,10 @@ export function useStartPayment() {
 
         if (!final) return;
 
-        // При успехе → обновляем профиль
         if (payment.status === "SUCCEEDED") {
           await dispatch(meThunk()).unwrap();
         }
 
-        // Открыть модалку результата через URL
         const params = new URLSearchParams(location.search);
         params.set("paymentId", payment.id);
 
@@ -55,10 +53,15 @@ export function useStartPayment() {
 
       socket.on(PAYMENT_EVENTS.UPDATE, handleUpdate);
 
-      // Открываем YooKassa окно
       if (res.confirmationUrl) {
+        // чтобы после возврата понимать, какой платёж последний
         sessionStorage.setItem("lastPaymentId", res.id);
-        window.open(res.confirmationUrl, "_blank");
+
+        // ✅ всегда открываем YooKassa в текущей вкладке
+        window.location.href = res.confirmationUrl;
+        // или: window.location.assign(res.confirmationUrl);
+      } else {
+        throw new Error("Не удалось получить ссылку на оплату");
       }
     } catch (e) {
       customToast.error(e);
