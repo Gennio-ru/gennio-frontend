@@ -9,5 +9,7 @@
   "EMAIL_NOT_CONFIRMED": "Почта не подтверждена",
   "ACCOUNT_IS_BLOCKED": "Аккаунт заблокирован",
   "JOB_STALLED": "Превышено время ожидания генерации",
-  "PROCESSING_TIMEOUT": "Превышено время генерации изображения"
+  "PROCESSING_TIMEOUT": "Превышено время генерации изображения",
+  "PAYMENT_FAILED": "Ошибка платежа",
+  "PAYMENT_PROVIDER_ERROR": "Ошибка платежа"
 }

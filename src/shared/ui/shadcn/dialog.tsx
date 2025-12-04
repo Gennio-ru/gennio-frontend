@@ -62,7 +62,8 @@ function DialogContent({
         data-slot="dialog-content"
         className={cn(
           // позиционирование + базовый layout
-          "fixed left-1/2 top-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-box px-8 py-6",
+          "fixed left-1/2 top-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-box px-5 sm:px-8 py-4 sm:py-6",
+          "max-h-[94%] overflow-y-auto",
           // стеклянная панель по теме
           theme === "dark" ? "bg-base-100" : "bg-[#f0f0f0]",
           // анимации открытия/закрытия
@@ -127,7 +128,10 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("text-lg font-semibold leading-none", className)}
+      className={cn(
+        "text-lg font-semibold leading-none max-w-[80%] mx-auto",
+        className
+      )}
       {...props}
     />
   );

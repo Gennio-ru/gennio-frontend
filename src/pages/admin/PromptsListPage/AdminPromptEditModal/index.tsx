@@ -153,7 +153,7 @@ export default function AdminPromptEditModal() {
       }}
     >
       <DialogContent
-        className={cn("sm:max-w-xl flex flex-col max-h-[94%] overflow-y-auto")}
+        className={cn("sm:max-w-xl flex flex-col")}
         showCloseButton={false}
       >
         <DialogHeader className="relative pb-3 shrink-0">

@@ -143,7 +143,7 @@ export default function PromptsAdminList() {
           <div className="mb-3 text-error">Failed to load</div>
         )}
 
-        <div className="overflow-hidden rounded-box bg-base-100">
+        <div className="overflow-y-scroll rounded-box bg-base-100">
           <table className="w-full text-sm">
             <thead className="bg-base-100 text-base-content/70 border-b border-base-300">
               <tr>

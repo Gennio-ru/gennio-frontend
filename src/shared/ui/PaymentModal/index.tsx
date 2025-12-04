@@ -76,15 +76,15 @@ export default function PaymentModal() {
         <DialogHeader className="relative">
           <DialogTitle
             className={cn(
-              "mx-auto mb-5 px-10 text-base font-thin text-warning",
+              "mx-auto mb-3 text-base font-thin text-warning",
               "text-center"
             )}
           >
             <CircleAlert
               size={18}
-              className="inline-block min-w-[18px] mr-1.5 relative top-[-1px]"
+              className="inline-block min-w-[18px] mr-0.5 relative top-[-1px]"
             />
-
+            &nbsp;
             <span className="align-middle">
               У&nbsp;вас&nbsp;не&nbsp;хватает токенов для&nbsp;генерации
             </span>
@@ -123,7 +123,7 @@ export default function PaymentModal() {
                   onClick={() => setSelectedPackId(pack.id)}
                 >
                   <div className="flex flex-col">
-                    <div className="font-bold">
+                    <div className="font-bold ">
                       <span>{pack.name} </span>&nbsp;{" "}
                       {giftTokens > 0 && (
                         <span className="text-nowrap">
@@ -132,13 +132,13 @@ export default function PaymentModal() {
                       )}
                     </div>
 
-                    <p className="text-sm mt-1">
+                    <p className="text-sm mt-2">
                       Входит {pack.tokens}{" "}
                       {declOfNum(pack.tokens, ["токен", "токена", "токенов"])}
                     </p>
                   </div>
 
-                  <div className="flex gap-6 items-center">
+                  <div className="flex gap-4 items-center">
                     <p className="font-medium text-xl text-nowrap">
                       {pack.priceRub} ₽
                     </p>
