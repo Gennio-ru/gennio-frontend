@@ -9,5 +9,7 @@
   "EMAIL_NOT_CONFIRMED": "Email not confirmed",
   "ACCOUNT_IS_BLOCKED": "Account is blocked",
   "JOB_STALLED": "job stalled",
-  "PROCESSING_TIMEOUT": "processing timeout"
+  "PROCESSING_TIMEOUT": "processing timeout",
+  "PAYMENT_FAILED": "payment failed",
+  "PAYMENT_PROVIDER_ERROR": "payment failed"
 }
