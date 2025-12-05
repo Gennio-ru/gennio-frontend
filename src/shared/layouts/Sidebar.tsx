@@ -10,7 +10,6 @@ import {
 } from "@/features/app/appSlice";
 import { Menu, XIcon } from "lucide-react";
 import { useAuth } from "@/features/auth/useAuth";
-import ThemeSwitch from "../ui/ThemeSwitch";
 
 type NavItem = { label: string; href: string; external?: boolean };
 
@@ -131,11 +130,7 @@ export function SidebarMobile({ items }: SidebarProps) {
         aria-label="Мобильное меню"
       >
         {/* header */}
-        <div className="flex justify-between">
-          <div className="relative top-1">
-            <ThemeSwitch />
-          </div>
-
+        <div className="flex justify-end">
           <button
             type="button"
             aria-label="Закрыть меню"

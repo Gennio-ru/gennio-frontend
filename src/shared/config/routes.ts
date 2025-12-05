@@ -6,6 +6,7 @@ export enum AppRoute {
   GENERATE_IMAGE = "/ai-generation/generate-image",
   EDIT_IMAGE = "/ai-generation/edit-image",
 
+  MAIN = "/",
   PRICING = "/pricing",
   ABOUT = "/about",
   MY_GENERATIONS = "/my-generations",

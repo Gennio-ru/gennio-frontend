@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { selectAppTheme } from "@/features/app/appSlice";
 import { useNavigate } from "react-router-dom";
 import { AppRoute } from "../config/routes";
+import ThemeSwitch from "./ThemeSwitch";
 
 export function UserMenu() {
   const { user } = useAuth();
@@ -75,6 +76,10 @@ export function UserMenu() {
             >
               Мои генерации
             </Button>
+
+            <div className="mt-1">
+              <ThemeSwitch />
+            </div>
 
             <div className="divider my-0.5" />
           </>
