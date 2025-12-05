@@ -1,9 +1,10 @@
 import { lazy, Suspense } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import AdminRoute from "@/shared/routes/AdminRoute";
 import AIGenerationsLayout from "@/shared/layouts/AIGenerationsLayout";
 import Loader from "@/shared/ui/Loader";
 
+const MainPage = lazy(() => import("@/pages/user/MainPage"));
 const AboutProjectPage = lazy(() => import("@/pages/user/AboutProjectPage"));
 const PricingPage = lazy(() => import("@/pages/user/PricingPage"));
 const LegalOfferPage = lazy(() => import("@/pages/user/LegalOfferPage"));
@@ -49,6 +50,14 @@ export function AppRoutes() {
     <Routes>
       {/* Публичные */}
       <Route
+        path="/"
+        element={
+          <Suspense fallback={<Loader />}>
+            <MainPage />
+          </Suspense>
+        }
+      />
+      <Route
         path="/about"
         element={
           <Suspense fallback={<Loader />}>
@@ -91,11 +100,6 @@ export function AppRoutes() {
 
       {/* --- AI GENERATION ROOT --- */}
       <Route element={<AIGenerationsLayout />}>
-        <Route
-          path="/"
-          element={<Navigate to="/ai-generation/prompts" replace />}
-        />
-
         {/* Готовые шаблоны */}
         <Route
           path="/ai-generation/prompts"

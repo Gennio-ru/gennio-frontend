@@ -14,6 +14,7 @@ import Button from "../ui/Button";
 import { setAuthModalOpen } from "@/features/auth/authSlice";
 import { getUrlRootSegment } from "@/lib/helpers";
 import { AppRoute } from "../config/routes";
+import { PlusIcon } from "lucide-react";
 
 export default function HeaderNav() {
   const dispatch = useAppDispatch();
@@ -44,7 +45,7 @@ export default function HeaderNav() {
         <SidebarToggleButton />
 
         <Link
-          to={AppRoute.PROMPTS}
+          to={AppRoute.MAIN}
           className="text-xl font-bold text-base-content"
         >
           <img
@@ -100,12 +101,10 @@ export default function HeaderNav() {
         )}
       >
         {!showAdminMenu && isAuth && (
-          <span className="text-nowrap text-base">Токены: {user.tokens}</span>
+          <span className="text-nowrap text-base">токены: {user.tokens}</span>
         )}
 
-        <div className={cn("hidden", showAdminMenu ? "lg:block" : "md:block")}>
-          <ThemeSwitch />
-        </div>
+        {!isAuth && <ThemeSwitch />}
 
         {isAuth ? (
           <div className="flex items-center gap-3">
