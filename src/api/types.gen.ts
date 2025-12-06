@@ -752,6 +752,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/internal/yookassa/webhook": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Внутренний вебхук от платежного шлюза (проксирующего YooKassa)
+         * @description Используется только нашим RU-шлюзом. Защищён секретным заголовком.
+         */
+        post: operations["InternalYookassaController_handleInternalWebhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1234,7 +1254,7 @@ export interface components {
             inputFileId: string;
         };
         /** @enum {string} */
-        ErrorCode: "TOKENS_NOT_ENOUGH" | "PAYMENT_FAILED" | "PAYMENT_PROVIDER_ERROR" | "MODEJ_JOB_TYPE_NOT_FOUND" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "JOB_STALLED" | "PROCESSING_TIMEOUT" | "MODERATION_BLOCKED" | "UNAUTHORIZED" | "EMAIL_NOT_CONFIRMED" | "ACCOUNT_IS_BLOCKED" | "FORBIDDEN" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
+        ErrorCode: "TOKENS_NOT_ENOUGH" | "PAYMENT_FAILED" | "PAYMENT_PROVIDER_ERROR" | "MODEJ_JOB_TYPE_NOT_FOUND" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "JOB_STALLED" | "PROCESSING_TIMEOUT" | "MODERATION_BLOCKED" | "INVALID_CREDENTIALS" | "UNAUTHORIZED" | "EMAIL_NOT_CONFIRMED" | "ACCOUNT_IS_BLOCKED" | "FORBIDDEN" | "EMAIL_ALREADY_EXISTS" | "PHONE_ALREADY_EXISTS" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
         ErrorInfoDto: {
             code: components["schemas"]["ErrorCode"];
             /**
@@ -2900,6 +2920,23 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PaymentFullDto"];
                 };
+            };
+        };
+    };
+    InternalYookassaController_handleInternalWebhook: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

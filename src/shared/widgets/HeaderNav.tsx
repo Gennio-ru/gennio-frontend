@@ -2,9 +2,11 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useAuth } from "@/features/auth/useAuth";
 import { SidebarToggleButton } from "../layouts/Sidebar";
-import { selectAppTheme } from "@/features/app/appSlice";
+import { selectAppTheme, setPaymentModalOpen } from "@/features/app/appSlice";
 import darkLogo from "/gennio-logo-dark.webp";
 import lightLogo from "/gennio-logo-light.webp";
+import tokenDarkLogo from "@/assets/token-dark-logo.webp";
+import tokenLightLogo from "@/assets/token-light-logo.webp";
 import { UserMenu } from "../ui/UserMenu";
 import { useMemo } from "react";
 import { adminHeaderMenu, primaryHeaderMenu } from "../config/menu";
@@ -15,6 +17,7 @@ import { setAuthModalOpen } from "@/features/auth/authSlice";
 import { getUrlRootSegment } from "@/lib/helpers";
 import { AppRoute } from "../config/routes";
 import { PlusIcon } from "lucide-react";
+import { Tooltip } from "../ui/Tooltip";
 
 export default function HeaderNav() {
   const dispatch = useAppDispatch();
@@ -96,12 +99,40 @@ export default function HeaderNav() {
       {/* 🔹 Правая часть (UserMenu / Войти) — 6 колонок на мобилках, 2 на md+ */}
       <div
         className={cn(
-          "col-span-6 flex justify-end items-center gap-4 text-sm text-base-content/80",
+          "col-span-6 flex justify-end items-center gap-6 text-sm text-base-content/80",
           showAdminMenu ? "lg:col-span-4" : "md:col-span-4"
         )}
       >
         {!showAdminMenu && isAuth && (
-          <span className="text-nowrap text-base">токены: {user.tokens}</span>
+          <Tooltip content="Пополнить токены">
+            <Button
+              size="sm"
+              className={cn(
+                "relative rounded-full h-5.5 max-h-5.5 pl-6.5 pr-[5px] text-base-content",
+                theme === "dark"
+                  ? "bg-base-content/10"
+                  : "bg-white/70 hover:text-white"
+              )}
+              contentClassName="gap-1.5"
+              onClick={() => dispatch(setPaymentModalOpen(true))}
+            >
+              <img
+                src={theme === "dark" ? tokenDarkLogo : tokenLightLogo}
+                className="absolute h-[26px] w-[26px] left-[-6px] top-[-2px]"
+                alt="token-logo"
+              />
+
+              <span className="font-regular text-base relative top-[-0.5px]">
+                {user.tokens}
+              </span>
+
+              <PlusIcon
+                size={15}
+                strokeWidth={2}
+                className="relative top-[-1px]"
+              />
+            </Button>
+          </Tooltip>
         )}
 
         {!isAuth && <ThemeSwitch />}

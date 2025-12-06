@@ -18,7 +18,7 @@ type AxiosLikeError = {
   message?: string;
 };
 
-function extractErrorInfo(err: unknown): {
+export function extractErrorInfo(err: unknown): {
   code?: string;
   message?: string;
   handled: boolean;

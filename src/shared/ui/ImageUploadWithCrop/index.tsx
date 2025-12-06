@@ -3,7 +3,7 @@ import Cropper, { Area } from "react-easy-crop";
 import { CloudUpload, Undo } from "lucide-react";
 
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
-import { selectAppTheme } from "@/features/app/appSlice";
+import { selectAppTheme, setPaymentModalOpen } from "@/features/app/appSlice";
 import { cn } from "@/lib/utils";
 
 import { SegmentedControl } from "../SegmentedControl";
@@ -72,7 +72,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 }) => {
   const theme = useAppSelector(selectAppTheme);
   const dispatch = useAppDispatch();
-  const { isAuth } = useAuth();
+  const { isAuth, user } = useAuth();
 
   const [step, setStep] = useState<ImageUploadWithCropSteps>("idle");
   const [banner, setBanner] = useState<LocalBanner | null>(null);
@@ -153,6 +153,16 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     return false;
   };
 
+  // --- Проверка баланса ---
+
+  const requireTokens = () => {
+    if (isAuth && user.tokens === 0) {
+      dispatch(setPaymentModalOpen(true));
+      return true;
+    }
+    return false;
+  };
+
   // --- Общая обработка файла ---
 
   const processFile = async (file: File) => {
@@ -181,6 +191,11 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     if (!file) return;
 
     if (requireAuth()) {
+      e.target.value = "";
+      return;
+    }
+
+    if (requireTokens()) {
       e.target.value = "";
       return;
     }
@@ -214,6 +229,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     setIsDragging(false);
 
     if (requireAuth()) return;
+    if (requireTokens()) return;
 
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
@@ -228,6 +244,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 
   const handleUploadAreaClick = () => {
     if (requireAuth()) return;
+    if (requireTokens()) return;
     inputRef.current?.click();
   };
 
@@ -381,11 +398,11 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
                 </div>
               )}
 
-              {isAuth && (
+              {isAuth && user.tokens > 0 && (
                 <CloudUpload size={26} stroke="var(--color-primary)" />
               )}
 
-              {isAuth && (
+              {isAuth && user.tokens > 0 && (
                 <div className="text-base mt-6">
                   Перетащите сюда изображение или{" "}
                   <span className="underline">выберите</span>
@@ -396,6 +413,12 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
                 <div className={cn("text-[18px] sm:px-30 text-warning")}>
                   Войдите в аккаунт, чтобы загрузить фото и&nbsp;начать
                   редактирование
+                </div>
+              )}
+
+              {isAuth && user.tokens === 0 && (
+                <div className={cn("text-[18px] sm:px-30 text-warning")}>
+                  Пополните баланс токенов
                 </div>
               )}
 

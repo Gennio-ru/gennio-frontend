@@ -12,6 +12,7 @@ import { useLocation } from "react-router-dom";
 import { isErrorResponseDto } from "@/lib/helpers";
 import { cn } from "@/lib/utils";
 import { selectAppTheme } from "@/features/app/appSlice";
+import i18n from "@/shared/config/i18n";
 
 // схема валидации
 const schema = z.object({
@@ -66,6 +67,11 @@ export function AuthLoginForm({
         return;
       }
 
+      if (isErrorResponseDto(e) && e?.error?.code) {
+        setServerError(i18n.t(`errors:${e.error.code}`));
+        return;
+      }
+
       if (e instanceof Error) {
         setServerError(e.message);
         return;
@@ -96,7 +102,7 @@ export function AuthLoginForm({
             <Input
               {...field}
               type="email"
-              placeholder="you@example.com"
+              placeholder="Почта"
               autoComplete="no"
               onChange={(e) => {
                 field.onChange(e);

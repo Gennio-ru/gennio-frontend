@@ -8,8 +8,11 @@
   "INTERNAL_SERVER_ERROR": "Internal server error",
   "EMAIL_NOT_CONFIRMED": "Email not confirmed",
   "ACCOUNT_IS_BLOCKED": "Account is blocked",
-  "JOB_STALLED": "job stalled",
-  "PROCESSING_TIMEOUT": "processing timeout",
-  "PAYMENT_FAILED": "payment failed",
-  "PAYMENT_PROVIDER_ERROR": "payment failed"
+  "JOB_STALLED": "Job stalled",
+  "PROCESSING_TIMEOUT": "Processing timeout",
+  "PAYMENT_FAILED": "Payment failed",
+  "PAYMENT_PROVIDER_ERROR": "Payment failed",
+  "INVALID_CREDENTIALS": "Invalid credentials",
+  "EMAIL_ALREADY_EXISTS": "Email already exists",
+  "PHONE_ALREADY_EXISTS": "Phone already exists"
 }

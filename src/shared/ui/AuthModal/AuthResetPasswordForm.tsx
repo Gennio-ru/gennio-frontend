@@ -94,7 +94,7 @@ export function AuthResetPasswordForm({ onBackToLogin }: Props) {
               <Input
                 {...field}
                 type="email"
-                placeholder="you@example.com"
+                placeholder="Почта"
                 onChange={(e) => {
                   field.onChange(e);
                   clearErrors("email");
