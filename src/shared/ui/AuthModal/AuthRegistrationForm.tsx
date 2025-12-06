@@ -6,6 +6,8 @@ import Input from "@/shared/ui/Input";
 import Button from "@/shared/ui/Button";
 import { EyeIcon, EyeClosedIcon } from "lucide-react";
 import { apiRegister } from "@/api/modules/auth";
+import { isErrorResponseDto } from "@/lib/helpers";
+import i18n from "@/shared/config/i18n";
 
 const passwordSchema = z
   .string()
@@ -104,19 +106,27 @@ export function AuthRegistrationForm({
 
       onRequireEmailConfirm?.(data.email);
       onSuccess?.();
-    } catch (e: unknown) {
+    } catch (e) {
+      const err = e?.response?.data;
+
+      if (isErrorResponseDto(err) && err.error?.code) {
+        setServerError(i18n.t(`errors:${err.error.code}`));
+        return;
+      }
+
       if (e instanceof Error) {
         setServerError(e.message);
-      } else {
-        setServerError("Регистрация не удалась");
+        return;
       }
+
+      setServerError("Регистрация не удалась");
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-8">
       {serverError && (
-        <div className="rounded-lg bg-error/10 p-2 text-sm text-error">
+        <div className="rounded-lg bg-error p-2 text-sm text-error-content">
           {serverError}
         </div>
       )}
@@ -130,7 +140,7 @@ export function AuthRegistrationForm({
             <Input
               {...field}
               type="email"
-              placeholder="you@example.com"
+              placeholder="Почта"
               onChange={(e) => {
                 field.onChange(e);
                 clearErrors("email");

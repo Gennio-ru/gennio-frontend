@@ -11,5 +11,8 @@
   "JOB_STALLED": "Превышено время ожидания генерации",
   "PROCESSING_TIMEOUT": "Превышено время генерации изображения",
   "PAYMENT_FAILED": "Ошибка платежа",
-  "PAYMENT_PROVIDER_ERROR": "Ошибка платежа"
+  "PAYMENT_PROVIDER_ERROR": "Ошибка платежа",
+  "INVALID_CREDENTIALS": "Неправильные почта или пароль",
+  "EMAIL_ALREADY_EXISTS": "Аккаунт с такой почтой уже существует",
+  "PHONE_ALREADY_EXISTS": "Аккаунт с таким номером уже существует"
 }
