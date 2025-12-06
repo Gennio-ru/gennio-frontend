@@ -173,7 +173,7 @@ export default function EditImageByPlatformPromptPage() {
                 render={({ field }) => (
                   <Textarea
                     {...field}
-                    rows={2}
+                    rows={3}
                     placeholder="Например: Добавь красный колпак на голову"
                     className="w-full rounded-field bg-base-100/60"
                     onChange={(e) => {
