@@ -29,7 +29,7 @@ export default function GenerateImagePage() {
   const navigate = useNavigate();
   const [isFetching, setIsFetching] = useState(false);
 
-  const { isAuth } = useAuth();
+  const { isAuth, user } = useAuth();
 
   const {
     control,
@@ -85,6 +85,12 @@ export default function GenerateImagePage() {
             </div>
           )}
 
+          {isAuth && user.tokens === 0 && (
+            <div className={cn("text-[18px] text-warning text-center")}>
+              Пополните баланс токенов
+            </div>
+          )}
+
           {/* Промпт */}
           <div className="relative mb-6">
             <div className="mb-3 text-xl">Введите текст промпта</div>
@@ -112,7 +118,7 @@ export default function GenerateImagePage() {
 
           {/* Кнопка */}
           <div className="pt-4 flex justify-center">
-            {isAuth && (
+            {isAuth && user.tokens > 0 && (
               <Button
                 type="submit"
                 disabled={isBusy}
@@ -133,6 +139,16 @@ export default function GenerateImagePage() {
                 onClick={() => dispatch(setAuthModalOpen(true))}
               >
                 Войти в аккаунт
+              </Button>
+            )}
+
+            {isAuth && user.tokens === 0 && (
+              <Button
+                type="button"
+                className="px-6 w-[200px]"
+                onClick={() => dispatch(setPaymentModalOpen(true))}
+              >
+                Пополнить токены
               </Button>
             )}
           </div>

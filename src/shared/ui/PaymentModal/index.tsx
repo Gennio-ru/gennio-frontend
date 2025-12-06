@@ -6,7 +6,7 @@ import {
 } from "@/shared/ui/shadcn/dialog";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { cn } from "@/lib/utils";
-import { CircleAlert, XIcon } from "lucide-react";
+import { XIcon } from "lucide-react";
 import { DialogClose } from "@radix-ui/react-dialog";
 import {
   selectAppTheme,
@@ -74,20 +74,8 @@ export default function PaymentModal() {
     >
       <DialogContent className="sm:w-[500px]" showCloseButton={false}>
         <DialogHeader className="relative">
-          <DialogTitle
-            className={cn(
-              "mx-auto mb-3 text-base font-thin text-warning",
-              "text-center"
-            )}
-          >
-            <CircleAlert
-              size={18}
-              className="inline-block min-w-[18px] mr-0.5 relative top-[-1px]"
-            />
-            &nbsp;
-            <span className="align-middle">
-              У&nbsp;вас&nbsp;не&nbsp;хватает токенов для&nbsp;генерации
-            </span>
+          <DialogTitle className="mx-auto text-xl mb-3 text-center">
+            Пополнение токенов
           </DialogTitle>
 
           <DialogClose
@@ -101,7 +89,7 @@ export default function PaymentModal() {
         {/* Loading */}
         {loadingPacks && <Loader />}
         <div>
-          <p className="text-xl font-bold">Выберите количество генераций</p>
+          <p className="text-lg font-bold">Выберите количество генераций</p>
 
           <p>Одна генерация = 7 токенов</p>
         </div>

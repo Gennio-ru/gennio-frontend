@@ -31,7 +31,7 @@ export default function EditImageByCustomPromptPage() {
   const navigate = useNavigate();
   const [isFetching, setIsFetching] = useState(false);
 
-  const { isAuth } = useAuth();
+  const { isAuth, user } = useAuth();
 
   const {
     control,
@@ -156,7 +156,7 @@ export default function EditImageByCustomPromptPage() {
 
           {/* Кнопка */}
           <div className="flex justify-center">
-            {isAuth && inputFileId && (
+            {isAuth && user.tokens > 0 && inputFileId && (
               <Button
                 type="submit"
                 disabled={isBusy}
@@ -173,6 +173,16 @@ export default function EditImageByCustomPromptPage() {
                 onClick={() => dispatch(setAuthModalOpen(true))}
               >
                 Войти в аккаунт
+              </Button>
+            )}
+
+            {isAuth && user.tokens === 0 && (
+              <Button
+                type="button"
+                className="mt-8 px-6 w-[200px]"
+                onClick={() => dispatch(setPaymentModalOpen(true))}
+              >
+                Пополнить токены
               </Button>
             )}
           </div>

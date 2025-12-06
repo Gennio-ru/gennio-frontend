@@ -32,7 +32,7 @@ export default function EditImageByPlatformPromptPage() {
   const dispatch = useDispatch();
   const { promptId } = useParams<{ promptId: string }>();
   const navigate = useNavigate();
-  const { isAuth } = useAuth();
+  const { isAuth, user } = useAuth();
 
   const [currentPrompt, setCurrentPrompt] = useState<Prompt | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -191,7 +191,7 @@ export default function EditImageByPlatformPromptPage() {
 
           {/* Кнопка */}
           <div className="flex justify-center">
-            {isAuth && inputFileId && (
+            {isAuth && user.tokens > 0 && inputFileId && (
               <Button
                 type="submit"
                 disabled={isBusy}
@@ -212,6 +212,16 @@ export default function EditImageByPlatformPromptPage() {
                 onClick={() => dispatch(setAuthModalOpen(true))}
               >
                 Войти в аккаунт
+              </Button>
+            )}
+
+            {isAuth && user.tokens === 0 && (
+              <Button
+                type="button"
+                className="mt-8 px-6 w-[200px]"
+                onClick={() => dispatch(setPaymentModalOpen(true))}
+              >
+                Пополнить токены
               </Button>
             )}
           </div>
