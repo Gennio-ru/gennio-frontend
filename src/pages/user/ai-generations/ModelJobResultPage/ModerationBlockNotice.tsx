@@ -11,22 +11,22 @@ export default function ModerationBlockedNotice({
   const theme = useAppSelector(selectAppTheme);
 
   return (
-    <div className="mx-auto max-w-xl text-left space-y-4">
+    <div className="mx-auto max-w-xl text-left mt-6 space-y-4">
       <div
         className={cn(
-          "rounded-lg p-3",
+          "rounded-selector p-3",
           theme === "dark"
             ? "bg-warning/20 text-warning"
-            : "text-base-content/70 bg-warning/60"
+            : "text-base-content/70 bg-warning/40"
         )}
       >
         Запрос отклонён модерацией нейросети.
       </div>
 
       {prompt ? (
-        <GlassCard>
-          <div className="flex gap-2 items-start">
-            <b className="shrink-0 w-24">Промпт:</b>
+        <GlassCard className="rounded-selector">
+          <div className="flex flex-col gap-2 items-start text-sm">
+            <p className="shrink-0 w-24">Промпт:</p>
             <p className="break-words whitespace-pre-wrap text-base-content/80">
               {prompt}
             </p>
@@ -34,7 +34,7 @@ export default function ModerationBlockedNotice({
         </GlassCard>
       ) : null}
 
-      <GlassCard>
+      <GlassCard className="rounded-selector">
         <div className="text-sm text-base-content/80 leading-relaxed">
           Это обычно случается, если промпт содержит запрещённый или пограничный
           контент (насилие, откровенная эротика, персональные данные, политика,

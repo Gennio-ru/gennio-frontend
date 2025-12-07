@@ -31,12 +31,15 @@ import { ImageUploadWithCrop } from "@/shared/ui/ImageUploadWithCrop";
 import { fetchAdminPrompts } from "@/features/admin-prompts/adminPromptSlice";
 import { AppRoute, route } from "@/shared/config/routes";
 import { selectCategoriesLoading } from "@/features/app/appSlice";
+import { ModelType } from "@/api/modules/model-job";
+import PromptModelSelect from "@/shared/ui/PromptModelSelect";
 
 const schema = z.object({
   title: z.string().min(1, "Укажите заголовок"),
   description: z.string().min(1, "Укажите описание"),
   categoryId: z.string().min(1, "Выберите категорию"),
   text: z.string().min(1, "Добавьте текст промпта"),
+  model: z.enum(ModelType),
   beforeImageId: z.string().min(1, "Загрузите изображение"),
   afterImageId: z.string().min(1, "Загрузите изображение"),
 });
@@ -68,6 +71,7 @@ export default function AdminPromptEditModal() {
       description: "",
       categoryId: "",
       text: "",
+      model: null,
       beforeImageId: "",
       afterImageId: "",
     },
@@ -84,6 +88,7 @@ export default function AdminPromptEditModal() {
         description: "",
         categoryId: "",
         text: "",
+        model: null,
         beforeImageId: "",
         afterImageId: "",
       }),
@@ -107,6 +112,7 @@ export default function AdminPromptEditModal() {
           description: data.description ?? "",
           categoryId: data.categoryId,
           text: data.text ?? "",
+          model: (data.model as ModelType) ?? null,
           beforeImageId: data.beforeImageId ?? "",
           afterImageId: data.afterImageId ?? "",
         });
@@ -247,6 +253,33 @@ export default function AdminPromptEditModal() {
             {errors.categoryId && (
               <p className="absolute top-full mt-1 text-xs text-error">
                 {errors.categoryId.message}
+              </p>
+            )}
+          </div>
+
+          {/* Модель */}
+          <div className="relative mb-6">
+            <label className="mb-1 block text-sm text-base-content/70">
+              Модель
+            </label>
+
+            <Controller
+              name="model"
+              control={control}
+              render={({ field }) => (
+                <PromptModelSelect
+                  value={field.value}
+                  onChange={(v) => {
+                    field.onChange(v);
+                    clearErrors("model");
+                  }}
+                  color="secondary"
+                />
+              )}
+            />
+            {errors.model && (
+              <p className="absolute top-full mt-1 text-xs text-error">
+                {errors.model.message}
               </p>
             )}
           </div>

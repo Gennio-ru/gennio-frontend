@@ -69,7 +69,6 @@ export default function EditImageByPlatformPromptPage() {
         ...data,
         promptId,
         text: data.text || null,
-        model: "OPENAI",
       });
       ymGoal("generate_by_platform_prompt");
       dispatch(setUser(res.user));

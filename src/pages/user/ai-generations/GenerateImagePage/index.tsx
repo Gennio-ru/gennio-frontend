@@ -48,7 +48,6 @@ export default function GenerateImagePage() {
       setIsFetching(true);
       const res = await apiStartImageGenerateByPromptText({
         ...data,
-        model: "OPENAI",
       });
       ymGoal("generate_image");
       dispatch(setUser(res.user));

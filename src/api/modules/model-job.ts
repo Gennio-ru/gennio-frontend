@@ -11,6 +11,10 @@ export type ModelJobWithPreviewFile =
   components["schemas"]["ModelJobWithPreviewFileDto"];
 export type ModelJobStatus = components["schemas"]["ModelJobStatusType"];
 export type ModelJobType = components["schemas"]["ModelJobType"];
+export enum ModelType {
+  OPENAI = "OPENAI",
+  GEMINI = "GEMINI",
+}
 
 // Генерация, который возвращается в списке
 export type ModelJobsListResponse =

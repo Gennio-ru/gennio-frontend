@@ -945,6 +945,8 @@ export interface components {
         };
         /** @enum {string} */
         PromptType: "image-to-image" | "text-to-image" | "text-to-text";
+        /** @enum {string} */
+        ModelType: "OPENAI" | "GEMINI";
         CategoryDto: {
             /** @example Мультипликация */
             name: string;
@@ -971,6 +973,7 @@ export interface components {
             afterPreviewImageId: string;
             afterPreviewImage: components["schemas"]["FileDto"];
             type: components["schemas"]["PromptType"];
+            model: components["schemas"]["ModelType"];
             /** @description Текст промпта */
             text: string;
             categoryId: string;
@@ -1000,6 +1003,7 @@ export interface components {
             afterPreviewImageId: string;
             afterPreviewImage: components["schemas"]["FileDto"];
             type: components["schemas"]["PromptType"];
+            model: components["schemas"]["ModelType"];
             /** @description Текст промпта */
             text: string;
             categoryId: string;
@@ -1022,6 +1026,7 @@ export interface components {
             afterImageId: string;
             /** @description Промпт шаблона */
             text: string;
+            model: components["schemas"]["ModelType"];
             /** @description Категория */
             categoryId: string;
         };
@@ -1036,6 +1041,7 @@ export interface components {
             afterImageId?: string;
             /** @description Промпт шаблона */
             text?: string;
+            model?: components["schemas"]["ModelType"];
             /** @description Категория */
             categoryId?: string;
         };
@@ -1052,8 +1058,6 @@ export interface components {
              */
             id: string;
         };
-        /** @enum {string} */
-        ModelType: "OPENAI";
         /** @enum {string} */
         ModelJobType: "image-edit-by-prompt-id" | "image-edit-by-prompt-text" | "image-generate-by-prompt-text";
         /** @enum {string} */
@@ -1244,7 +1248,6 @@ export interface components {
             outputPreviewFileUrl: string | null;
         };
         StartImageEditByPromptIdDto: {
-            model: components["schemas"]["ModelType"];
             promptId: string;
             /**
              * @description Не более 300 символов
@@ -1277,7 +1280,6 @@ export interface components {
             timestamp: string;
         };
         StartImageEditByPromptTextDto: {
-            model: components["schemas"]["ModelType"];
             /**
              * @description Не более 700 символов
              * @example Мягкое освещение, крупный план
@@ -1286,7 +1288,6 @@ export interface components {
             inputFileId: string;
         };
         StartImageGenerateByPromptTextDto: {
-            model: components["schemas"]["ModelType"];
             /**
              * @description Не более 700 символов
              * @example Мягкое освещение, крупный план

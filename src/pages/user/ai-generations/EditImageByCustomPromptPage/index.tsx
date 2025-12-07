@@ -50,10 +50,7 @@ export default function EditImageByCustomPromptPage() {
   const onSubmit = async (data: ModelJobFormValues) => {
     try {
       setIsFetching(true);
-      const res = await apiStartImageEditByPromptText({
-        ...data,
-        model: "OPENAI",
-      });
+      const res = await apiStartImageEditByPromptText(data);
       ymGoal("generate_by_custom_prompt");
       dispatch(setUser(res.user));
       navigate(route.jobWait(res));
