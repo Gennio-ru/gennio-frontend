@@ -18,7 +18,7 @@ import { ImageUploadWithCrop } from "@/shared/ui/ImageUploadWithCrop";
 import Textarea from "@/shared/ui/Textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { Controller, useForm, useWatch } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import z from "zod";
@@ -49,8 +49,6 @@ export default function EditImageByCustomPromptPage() {
     mode: "onSubmit",
     reValidateMode: "onSubmit",
   });
-
-  const inputFileId = useWatch({ control, name: "inputFileId" });
 
   const onSubmit = async (data: ModelJobFormValues) => {
     try {
@@ -179,11 +177,11 @@ export default function EditImageByCustomPromptPage() {
 
           {/* Кнопка */}
           <div className="flex justify-center">
-            {isAuth && user.tokens > 0 && inputFileId && (
+            {isAuth && user.tokens > 0 && (
               <Button
                 type="submit"
                 disabled={isBusy}
-                className="mt-8 px-6 w-[200px]"
+                className="mt-12 px-6 w-[200px]"
               >
                 {isSubmitting ? "Загрузка..." : "Сгенерировать"}
               </Button>
@@ -192,7 +190,7 @@ export default function EditImageByCustomPromptPage() {
             {!isAuth && (
               <Button
                 type="button"
-                className="mt-8 px-6 w-[200px]"
+                className="mt-12 px-6 w-[200px]"
                 onClick={() => dispatch(setAuthModalOpen(true))}
               >
                 Войти в аккаунт
@@ -202,7 +200,7 @@ export default function EditImageByCustomPromptPage() {
             {isAuth && user.tokens === 0 && (
               <Button
                 type="button"
-                className="mt-8 px-6 w-[200px]"
+                className="mt-12 px-6 w-[200px]"
                 onClick={() => dispatch(setPaymentModalOpen(true))}
               >
                 Пополнить токены

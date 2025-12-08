@@ -140,12 +140,12 @@ export default function GenerateImagePage() {
           </div>
 
           {/* Кнопка */}
-          <div className="pt-4 flex justify-center">
+          <div className="flex justify-center">
             {isAuth && user.tokens > 0 && (
               <Button
                 type="submit"
                 disabled={isBusy}
-                className="mt-8 px-6 w-[200px]"
+                className="mt-12 px-6 w-[200px]"
               >
                 {isSubmitting
                   ? "Загрузка…"
@@ -158,7 +158,7 @@ export default function GenerateImagePage() {
             {!isAuth && (
               <Button
                 type="button"
-                className="mt-8 px-6 w-[200px]"
+                className="mt-12 px-6 w-[200px]"
                 onClick={() => dispatch(setAuthModalOpen(true))}
               >
                 Войти в аккаунт
@@ -168,7 +168,7 @@ export default function GenerateImagePage() {
             {isAuth && user.tokens === 0 && (
               <Button
                 type="button"
-                className="mt-8 px-6 w-[200px]"
+                className="mt-12 px-6 w-[200px]"
                 onClick={() => dispatch(setPaymentModalOpen(true))}
               >
                 Пополнить токены

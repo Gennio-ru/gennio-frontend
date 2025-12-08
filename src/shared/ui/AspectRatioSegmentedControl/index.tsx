@@ -39,7 +39,7 @@ export function AspectRatioSegmentedControl({
       onChange={onChange}
       size={size}
       variant={variant}
-      className={cn("gap-2 sm:gap-2", className)}
+      className={cn("gap-1.5 sm:gap-1.5", className)}
     />
   );
 }

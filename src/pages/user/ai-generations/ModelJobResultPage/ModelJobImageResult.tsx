@@ -116,13 +116,6 @@ export function ModelJobImageResult({ job }: Props) {
             className="rounded-selector h-full w-full object-cover"
           >
             {hasInput && (
-              // <ImageWithLoaderFixed
-              //   src={inputFileUrl ?? undefined}
-              //   alt="Исходное изображение"
-              //   containerClassName="absolute hidden lg:block top-0 left-[-149px] max-w-[125px] aspect-[1/1]"
-              //   className="rounded-selector w-full h-full object-cover"
-              // />
-
               <ModelJobResultInputPreview
                 url={inputFileUrl}
                 aspectRatio={inputAspectRatio}
@@ -151,18 +144,6 @@ export function ModelJobImageResult({ job }: Props) {
               className="rounded-selector h-full w-full object-cover"
             >
               {hasInput && (
-                // <ImageWithLoaderFixed
-                //   src={inputFileUrl ?? undefined}
-                //   alt="Исходное изображение"
-                //   containerClassName={cn(
-                //     "absolute hidden lg:block top-0 left-[-124px] max-w-[100px]",
-                //     aspectRatio === "2:3" && "aspect-[2/3]",
-                //     aspectRatio === "3:4" && "aspect-[3/4]",
-                //     aspectRatio === "9:16" && "aspect-[9/16]"
-                //   )}
-                //   className="rounded-selector w-full h-full object-cover"
-                // />
-
                 <ModelJobResultInputPreview
                   url={inputFileUrl}
                   aspectRatio={inputAspectRatio}
@@ -191,18 +172,6 @@ export function ModelJobImageResult({ job }: Props) {
               className="rounded-selector h-full w-full object-cover"
             >
               {hasInput && (
-                // <ImageWithLoaderFixed
-                //   src={inputFileUrl ?? undefined}
-                //   alt="Исходное изображение"
-                //   containerClassName={cn(
-                //     "absolute hidden lg:block top-0 left-[-174px] max-w-[150px]",
-                //     aspectRatio === "3:2" && "aspect-[3/2]",
-                //     aspectRatio === "4:3" && "aspect-[4/3]",
-                //     aspectRatio === "16:9" && "aspect-[16/9]"
-                //   )}
-                //   className="rounded-selector w-full h-full object-cover"
-                // />
-
                 <ModelJobResultInputPreview
                   url={inputFileUrl}
                   aspectRatio={inputAspectRatio}
