@@ -1,8 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
 import { aiGenerationsMenu } from "../config/menu";
-import { useAppSelector } from "@/app/hooks";
-import { selectAppTheme } from "@/features/app/appSlice";
+import { PillSegmentedControl } from "./PillSegmentedControl";
+import { cn } from "@/lib/utils";
 
 export type NavItem = { label: string; href: string };
 
@@ -11,44 +10,30 @@ export interface Props {
 }
 
 export function AIGenerationsMenu({ className }: Props) {
-  const theme = useAppSelector(selectAppTheme);
   const navigate = useNavigate();
   const location = useLocation();
 
   const currentPath = location.pathname;
 
-  return (
-    <nav
-      className={cn(
-        "flex justify-center flex-wrap gap-3 sm:gap-4 pt-2 sm:pt-5 pb-7 sm:pb-10",
-        className
-      )}
-    >
-      {aiGenerationsMenu.map((item) => {
-        const isActive =
-          currentPath === item.href || currentPath.startsWith(item.href + "/");
+  const activeItem =
+    aiGenerationsMenu.find(
+      (item) =>
+        currentPath === item.href || currentPath.startsWith(item.href + "/")
+    ) ?? aiGenerationsMenu[0];
 
-        return (
-          <button
-            key={item.href}
-            onClick={() => navigate(item.href)}
-            className={cn(
-              "px-4 sm:px-6 py-2 sm:py-2 rounded-full text-base sm:text-base transition-all duration-200",
-              "text-base-content/90 cursor-pointer text-nowrap",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
-              isActive && "text-base-content",
-              // Активный пункт (разные фоны для тем)
-              isActive &&
-                (theme === "light" ? "bg-base-100/70" : "bg-base-content/35"),
-              theme === "dark"
-                ? "glass-panel-dark glass-interactive-dark"
-                : "glass-panel-light glass-interactive-light"
-            )}
-          >
-            {item.label}
-          </button>
-        );
-      })}
-    </nav>
+  const items = aiGenerationsMenu.map((item) => ({
+    id: item.href,
+    content: item.label,
+  }));
+
+  return (
+    <PillSegmentedControl
+      items={items}
+      value={activeItem.href}
+      onChange={(href) => navigate(href)}
+      size="md"
+      wrapperClassName={cn("pt-2 sm:pt-5 pb-7 sm:pb-10", className)}
+      className="justify-center"
+    />
   );
 }

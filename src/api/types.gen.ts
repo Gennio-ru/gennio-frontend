@@ -1073,6 +1073,8 @@ export interface components {
             status: components["schemas"]["ModelJobStatusType"];
             /** @example Мягкое освещение, крупный план */
             text: string | null;
+            /** @example 2:3 */
+            aspectRatio: string | null;
             /** @example Мягкое освещение, крупный план */
             promptId: string | null;
             prompt: components["schemas"]["PromptDto"] | null;
@@ -1129,6 +1131,8 @@ export interface components {
             status: components["schemas"]["ModelJobStatusType"];
             /** @example Мягкое освещение, крупный план */
             text: string | null;
+            /** @example 2:3 */
+            aspectRatio: string | null;
             /** @example Мягкое освещение, крупный план */
             promptId: string | null;
             prompt: components["schemas"]["PromptDto"] | null;
@@ -1188,6 +1192,8 @@ export interface components {
             status: components["schemas"]["ModelJobStatusType"];
             /** @example Мягкое освещение, крупный план */
             text: string | null;
+            /** @example 2:3 */
+            aspectRatio: string | null;
             /** @example Мягкое освещение, крупный план */
             promptId: string | null;
             prompt: components["schemas"]["PromptDto"] | null;
@@ -1286,6 +1292,11 @@ export interface components {
              */
             text: string;
             inputFileId: string;
+            /**
+             * @description Формат
+             * @example 2:3
+             */
+            aspectRatio: string;
         };
         StartImageGenerateByPromptTextDto: {
             /**
@@ -1293,6 +1304,11 @@ export interface components {
              * @example Мягкое освещение, крупный план
              */
             text: string;
+            /**
+             * @description Формат
+             * @example 2:3
+             */
+            aspectRatio: string;
         };
         /**
          * @description Причина изменения токенов

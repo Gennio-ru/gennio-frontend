@@ -1,5 +1,8 @@
 import { apiAIUploadFile } from "@/api/modules/files";
-import { apiStartImageEditByPromptText } from "@/api/modules/model-job";
+import {
+  apiStartImageEditByPromptText,
+  ModelType,
+} from "@/api/modules/model-job";
 import { setPaymentModalOpen } from "@/features/app/appSlice";
 import { setAuthModalOpen, setUser } from "@/features/auth/authSlice";
 import { useAuth } from "@/features/auth/useAuth";
@@ -8,6 +11,7 @@ import { checkApiResponseErrorCode } from "@/lib/helpers";
 import { ymGoal } from "@/lib/metrics/yandexMetrika";
 import { route } from "@/shared/config/routes";
 import { AIGenerationTitle } from "@/shared/ui/AIGenerationTitle";
+import { AspectRatioSegmentedControl } from "@/shared/ui/AspectRatioSegmentedControl";
 import Button from "@/shared/ui/Button";
 import GlassCard from "@/shared/ui/GlassCard";
 import { ImageUploadWithCrop } from "@/shared/ui/ImageUploadWithCrop";
@@ -22,6 +26,7 @@ import z from "zod";
 const modelJobSchema = z.object({
   text: z.string().min(1, "Добавьте текст промпта"),
   inputFileId: z.string().min(1, "Загрузите изображение"),
+  aspectRatio: z.string().nullable(),
 });
 
 type ModelJobFormValues = z.infer<typeof modelJobSchema>;
@@ -40,7 +45,7 @@ export default function EditImageByCustomPromptPage() {
     clearErrors,
   } = useForm<ModelJobFormValues>({
     resolver: zodResolver(modelJobSchema),
-    defaultValues: { text: "", inputFileId: "" },
+    defaultValues: { text: "", inputFileId: "", aspectRatio: null },
     mode: "onSubmit",
     reValidateMode: "onSubmit",
   });
@@ -50,7 +55,10 @@ export default function EditImageByCustomPromptPage() {
   const onSubmit = async (data: ModelJobFormValues) => {
     try {
       setIsFetching(true);
-      const res = await apiStartImageEditByPromptText(data);
+      const res = await apiStartImageEditByPromptText({
+        ...data,
+        aspectRatio: data.aspectRatio || undefined,
+      });
       ymGoal("generate_by_custom_prompt");
       dispatch(setUser(res.user));
       navigate(route.jobWait(res));
@@ -80,7 +88,7 @@ export default function EditImageByCustomPromptPage() {
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-7 text-base-content"
         >
-          <h2 className="text-xl font-bold">Загрузка фото</h2>
+          <h2 className="text-lg font-medium">Загрузка фото</h2>
           {/* Референс */}
           <div className="relative mb-0">
             <Controller
@@ -128,7 +136,7 @@ export default function EditImageByCustomPromptPage() {
 
           {/* Промпт */}
           <div className="relative mb-0 mt-8">
-            <div className="mb-3 text-base">Введите текст промпта</div>
+            <div className="mb-3 text-lg font-medium">Описание изображения</div>
 
             <Controller
               name="text"
@@ -146,6 +154,24 @@ export default function EditImageByCustomPromptPage() {
                   errored={!!errors.text}
                   errorMessage={errors.text?.message}
                   maxLength={700}
+                />
+              )}
+            />
+          </div>
+
+          {/* Формат */}
+          <div className="relative mb-0 mt-4 flex flex-col items-start gap-2">
+            <div className="text-lg font-medium">Формат изображения</div>
+
+            <Controller
+              name="aspectRatio"
+              control={control}
+              render={({ field }) => (
+                <AspectRatioSegmentedControl
+                  {...field}
+                  model={ModelType.GEMINI}
+                  size="xs"
+                  variant="surface"
                 />
               )}
             />

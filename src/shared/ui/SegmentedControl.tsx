@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useAppSelector } from "@/app/hooks";
 import { selectAppTheme } from "@/features/app/appSlice";
+import { useId } from "react";
 
 export interface SegmentedControlItem<T extends string> {
   id: T;
@@ -15,8 +16,14 @@ export interface SegmentedControlProps<T extends string> {
 
   size?: "xs" | "md";
   variant?: "glass" | "surface";
+  /** Классы именно для контейнера с кнопками (layout: flex/grid, media и т.п.) */
   className?: string;
+  /** Обёртка снаружи (выравнивание всего блока) */
+  wrapperClassName?: string;
 }
+
+// Пример расположения в 2 строки
+// className="rounded-[18px] grid grid-rows-2 grid-flow-col"
 
 export function SegmentedControl<T extends string>({
   items,
@@ -25,8 +32,10 @@ export function SegmentedControl<T extends string>({
   size = "md",
   variant = "glass",
   className,
+  wrapperClassName,
 }: SegmentedControlProps<T>) {
   const theme = useAppSelector(selectAppTheme);
+  const controlId = useId();
 
   const height = size === "xs" ? "h-7 text-sm" : "h-10 text-base";
   const padding = size === "xs" ? "px-3 py-1" : "px-4 py-2";
@@ -41,11 +50,15 @@ export function SegmentedControl<T extends string>({
       : "bg-base-100/60";
 
   return (
-    <div className={cn("inline-flex justify-center", className)}>
+    <div className={cn("inline-flex justify-center", wrapperClassName)}>
       <div
         className={cn(
-          "relative inline-flex items-center rounded-full p-1 gap-1",
-          containerStyle
+          "relative p-1 rounded-full gap-1", // базовая геометрия и фон
+          containerStyle,
+          // layout по умолчанию — одна строка
+          "inline-flex items-center",
+          // а тут ты можешь переопределить на grid + rows с медиазапросами
+          className
         )}
       >
         {items.map((item) => {
@@ -68,7 +81,7 @@ export function SegmentedControl<T extends string>({
             >
               {isActive && (
                 <motion.div
-                  layoutId="segmented-control-slide"
+                  layoutId={`segmented-control-slide-${controlId}`}
                   className={cn(
                     "absolute inset-0 rounded-full",
                     theme === "light" ? "bg-base-100/70" : "bg-base-content/30"
