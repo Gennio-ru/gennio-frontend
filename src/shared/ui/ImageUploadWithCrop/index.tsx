@@ -156,7 +156,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
   // --- Проверка баланса ---
 
   const requireTokens = () => {
-    if (isAuth && user.tokens === 0) {
+    if (isAuth && user.role !== "admin" && user.tokens === 0) {
       dispatch(setPaymentModalOpen(true));
       return true;
     }
