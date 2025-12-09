@@ -135,7 +135,7 @@ export default function HeaderNav() {
           </Tooltip>
         )}
 
-        {!isAuth && <ThemeSwitch />}
+        {!isAuth && user?.role === "admin" && <ThemeSwitch />}
 
         {isAuth ? (
           <div className="flex items-center gap-3">

@@ -43,8 +43,8 @@ type ImageUploadWithCropProps = {
 const ASPECT_PRESETS = [
   {
     id: "portrait" as const,
-    label: "1 : 1.5",
-    value: 1 / 1.5, // width:height → ~0.666...
+    label: "2 : 3",
+    value: 2 / 3, // width:height → ~0.666...
   },
   {
     id: "square" as const,
@@ -53,7 +53,7 @@ const ASPECT_PRESETS = [
   },
   {
     id: "landscape" as const,
-    label: "1.5 : 1",
+    label: "3 : 2",
     value: 1.5,
   },
 ];

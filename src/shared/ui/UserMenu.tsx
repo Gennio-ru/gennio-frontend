@@ -77,9 +77,11 @@ export function UserMenu() {
               Мои генерации
             </Button>
 
-            <div className="mt-1">
-              <ThemeSwitch />
-            </div>
+            {user.role === "admin" && (
+              <div className="mt-1">
+                <ThemeSwitch />
+              </div>
+            )}
 
             <div className="divider my-0.5" />
           </>

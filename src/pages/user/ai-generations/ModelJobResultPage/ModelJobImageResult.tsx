@@ -5,34 +5,18 @@ import ResultImageWithPreview from "./ResultImageWithPreview";
 import { formatFileSize } from "@/lib/helpers";
 import Button from "@/shared/ui/Button";
 import JpegLogo from "@/assets/jpeg-icon.svg?react";
+import PngLogo from "@/assets/png-icon.svg?react";
 import { useNavigate } from "react-router-dom";
 import { route } from "@/shared/config/routes";
 import { cn } from "@/lib/utils";
 import { CircleAlert } from "lucide-react";
 import { Tooltip } from "@/shared/ui/Tooltip";
 import { ymGoal } from "@/lib/metrics/yandexMetrika";
+import { AspectRatio, getAspectRatio, ImageMeta } from "./helpers";
 
 type Props = {
   job: ModelJobFull;
 };
-
-type Orientation = "horizontal" | "vertical" | "square";
-
-type ImageMeta = {
-  widthPx?: number | null;
-  heightPx?: number | null;
-};
-
-function getOrientation(meta?: ImageMeta | null): Orientation {
-  const w = meta?.widthPx ?? 0;
-  const h = meta?.heightPx ?? 0;
-
-  if (!w || !h) return "horizontal";
-
-  if (w === h) return "square";
-  if (w > h) return "horizontal";
-  return "vertical"; // 1 / 1.5
-}
 
 export function ModelJobImageResult({ job }: Props) {
   const [downloadingOriginal, setDownloadingOriginal] = useState(false);
@@ -50,11 +34,13 @@ export function ModelJobImageResult({ job }: Props) {
   const showPrompt = !!text;
 
   // Ориентация — по результату (preview), если есть, иначе по input
-  const mainMeta: ImageMeta | undefined =
-    (outputPreviewFile as ImageMeta | undefined) ??
-    (inputFile as ImageMeta | undefined);
+  const mainMeta: ImageMeta | undefined = outputPreviewFile as
+    | ImageMeta
+    | undefined;
+  const inputMeta: ImageMeta | undefined = inputFile as ImageMeta | undefined;
 
-  const orientation = getOrientation(mainMeta);
+  const aspectRatio = getAspectRatio(mainMeta);
+  const inputAspectRatio = getAspectRatio(inputMeta);
 
   const hasInput = !!inputFileUrl;
   const hasOutput = !!outputPreviewFileUrl;
@@ -75,9 +61,13 @@ export function ModelJobImageResult({ job }: Props) {
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
 
+      let ext = blob.type.split("/")[1] || "jpg";
+
+      if (ext === "jpeg") ext = "jpg";
+
       const a = document.createElement("a");
       a.href = url;
-      a.download = "gennio_original.jpeg";
+      a.download = `gennio_original.${ext}`;
       a.click();
 
       URL.revokeObjectURL(url);
@@ -92,6 +82,7 @@ export function ModelJobImageResult({ job }: Props) {
       ? `${outputFile.widthPx} x ${outputFile.heightPx} px`
       : null;
   const metaText = [sizeLabel, dimsLabel].filter(Boolean).join(", ");
+  console.log(aspectRatio);
 
   return (
     <>
@@ -116,50 +107,7 @@ export function ModelJobImageResult({ job }: Props) {
         </Tooltip>
       )}
 
-      {/* HORIZONTAL: 1.5 / 1 — две полосы одна под другой */}
-      {orientation === "horizontal" && hasOutput && (
-        <div className="w-full flex justify-center">
-          <ResultImageWithPreview
-            src={outputPreviewFileUrl ?? undefined}
-            alt="Результат"
-            containerClassName="relative rounded-selector w-full max-w-[600px] aspect-[3/2]"
-            className="rounded-selector h-full w-full object-cover"
-          >
-            {hasInput && (
-              <ImageWithLoaderFixed
-                src={inputFileUrl ?? undefined}
-                alt="Исходное изображение"
-                containerClassName="absolute hidden lg:block top-0 left-[-174px] max-w-[150px] aspect-[3/2]"
-                className="rounded-selector w-full h-full object-cover"
-              />
-            )}
-          </ResultImageWithPreview>
-        </div>
-      )}
-
-      {/* VERTICAL: 1 / 1.5 — отдельный кейс */}
-      {orientation === "vertical" && hasOutput && (
-        <div className="w-full flex justify-center">
-          <ResultImageWithPreview
-            src={outputPreviewFileUrl ?? undefined}
-            alt="Результат"
-            containerClassName="relative rounded-selector w-full max-w-[350px] aspect-[2/3]"
-            className="rounded-selector h-full w-full object-cover"
-          >
-            {hasInput && (
-              <ImageWithLoaderFixed
-                src={inputFileUrl ?? undefined}
-                alt="Исходное изображение"
-                containerClassName="absolute hidden lg:block top-0 left-[-124px] max-w-[100px] aspect-[2/3]"
-                className="rounded-selector w-full h-full object-cover"
-              />
-            )}
-          </ResultImageWithPreview>
-        </div>
-      )}
-
-      {/* SQUARE: 1 / 1 — свой кейс, более симметричный */}
-      {orientation === "square" && hasOutput && (
+      {aspectRatio === "1:1" && hasOutput && (
         <div className="w-full flex justify-center">
           <ResultImageWithPreview
             src={outputPreviewFileUrl ?? undefined}
@@ -168,16 +116,72 @@ export function ModelJobImageResult({ job }: Props) {
             className="rounded-selector h-full w-full object-cover"
           >
             {hasInput && (
-              <ImageWithLoaderFixed
-                src={inputFileUrl ?? undefined}
-                alt="Исходное изображение"
-                containerClassName="absolute hidden lg:block top-0 left-[-149px] max-w-[125px] aspect-[1/1]"
+              <ModelJobResultInputPreview
+                url={inputFileUrl}
+                aspectRatio={inputAspectRatio}
+                containerClassName="absolute hidden lg:block top-0 left-0 -translate-x-[calc(100%+24px)]"
                 className="rounded-selector w-full h-full object-cover"
               />
             )}
           </ResultImageWithPreview>
         </div>
       )}
+
+      {(aspectRatio === "2:3" ||
+        aspectRatio === "3:4" ||
+        aspectRatio === "9:16") &&
+        hasOutput && (
+          <div className="w-full flex justify-center">
+            <ResultImageWithPreview
+              src={outputPreviewFileUrl ?? undefined}
+              alt="Результат"
+              containerClassName={cn(
+                "relative rounded-selector w-full max-w-[350px]",
+                aspectRatio === "2:3" && "aspect-[2/3]",
+                aspectRatio === "3:4" && "aspect-[3/4]",
+                aspectRatio === "9:16" && "aspect-[9/16]"
+              )}
+              className="rounded-selector h-full w-full object-cover"
+            >
+              {hasInput && (
+                <ModelJobResultInputPreview
+                  url={inputFileUrl}
+                  aspectRatio={inputAspectRatio}
+                  containerClassName="absolute hidden lg:block top-0 left-0 -translate-x-[calc(100%+24px)]"
+                  className="rounded-selector w-full h-full object-cover"
+                />
+              )}
+            </ResultImageWithPreview>
+          </div>
+        )}
+
+      {(aspectRatio === "3:2" ||
+        aspectRatio === "4:3" ||
+        aspectRatio === "16:9") &&
+        hasOutput && (
+          <div className="w-full flex justify-center">
+            <ResultImageWithPreview
+              src={outputPreviewFileUrl ?? undefined}
+              alt="Результат"
+              containerClassName={cn(
+                "relative rounded-selector w-full max-w-[600px]",
+                aspectRatio === "3:2" && "aspect-[3/2]",
+                aspectRatio === "4:3" && "aspect-[4/3]",
+                aspectRatio === "16:9" && "aspect-[16/9]"
+              )}
+              className="rounded-selector h-full w-full object-cover"
+            >
+              {hasInput && (
+                <ModelJobResultInputPreview
+                  url={inputFileUrl}
+                  aspectRatio={inputAspectRatio}
+                  containerClassName="absolute hidden lg:block top-0 left-0 -translate-x-[calc(100%+24px)]"
+                  className="rounded-selector w-full h-full object-cover"
+                />
+              )}
+            </ResultImageWithPreview>
+          </div>
+        )}
 
       {hasOutputOriginal && (
         <div className="w-full flex flex-col fustify-center mt-2">
@@ -206,7 +210,12 @@ export function ModelJobImageResult({ job }: Props) {
               loading={downloadingOriginal}
             >
               <div className="flex gap-1 items-center justify-center">
-                <JpegLogo fontSize={24} className="mr-1.5" />
+                {job?.outputFile?.contentType === "image/jpeg" && (
+                  <JpegLogo fontSize={28} className="mr-1.5" />
+                )}
+                {job?.outputFile?.contentType === "image/png" && (
+                  <PngLogo fontSize={28} className="mr-1.5" />
+                )}
                 Скачать генерацию
               </div>
             </Button>
@@ -226,17 +235,42 @@ export function ModelJobImageResult({ job }: Props) {
       )}
 
       {hasInput && (
-        <ImageWithLoaderFixed
-          src={inputFileUrl ?? undefined}
-          alt="Исходное изображение"
-          containerClassName={cn(
-            "block lg:hidden mt-4 mx-auto",
-            orientation === "horizontal" && "max-w-[150px] aspect-[3/2]",
-            orientation === "vertical" && "max-w-[100px] aspect-[2/3]",
-            orientation === "square" && "max-w-[125px] aspect-[1/1]"
-          )}
+        <ModelJobResultInputPreview
+          url={inputFileUrl}
+          aspectRatio={inputAspectRatio}
+          containerClassName="block lg:hidden mt-4 mx-auto"
         />
       )}
     </>
   );
 }
+
+const ModelJobResultInputPreview = ({
+  url,
+  aspectRatio,
+  containerClassName,
+  className,
+}: {
+  url: string;
+  aspectRatio: AspectRatio;
+  containerClassName?: string;
+  className?: string;
+}) => {
+  return (
+    <ImageWithLoaderFixed
+      src={url ?? undefined}
+      alt="Исходное изображение"
+      containerClassName={cn(
+        containerClassName,
+        aspectRatio === "1:1" && "max-w-[125px] aspect-[1/1]",
+        aspectRatio === "2:3" && "max-w-[100px] aspect-[2/3]",
+        aspectRatio === "3:2" && "max-w-[150px] aspect-[3/2]",
+        aspectRatio === "3:4" && "max-w-[100px] aspect-[3/4]",
+        aspectRatio === "4:3" && "max-w-[150px] aspect-[4/3]",
+        aspectRatio === "9:16" && "max-w-[100px] aspect-[9/16]",
+        aspectRatio === "16:9" && "max-w-[150px] aspect-[16/9]"
+      )}
+      className={className}
+    />
+  );
+};

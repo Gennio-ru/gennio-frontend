@@ -111,7 +111,7 @@ export default function PricingPage() {
                       size={18}
                       className="min-w-[18px] relative top-[2px]"
                     />{" "}
-                    <p>1&nbsp;генерация&nbsp;= 7&nbsp;токенов</p>
+                    <p>1&nbsp;генерация&nbsp;= 10&nbsp;токенов</p>
                   </div>
                 </div>
 
@@ -145,7 +145,7 @@ export default function PricingPage() {
                       size={18}
                       className="min-w-[18px] relative top-[2px]"
                     />{" "}
-                    <p>+1 генерация в&nbsp;подарок</p>
+                    <p>+2 генерации в&nbsp;подарок</p>
                   </div>
 
                   <div className="mt-2.5 text-base flex gap-1.5 items-start">
@@ -161,7 +161,7 @@ export default function PricingPage() {
                       size={18}
                       className="min-w-[18px] relative top-[2px]"
                     />{" "}
-                    <p>1&nbsp;генерация&nbsp;= 7&nbsp;токенов</p>
+                    <p>1&nbsp;генерация&nbsp;= 10&nbsp;токенов</p>
                   </div>
                 </div>
 
@@ -197,7 +197,7 @@ export default function PricingPage() {
                       size={18}
                       className="min-w-[18px] relative top-[2px]"
                     />{" "}
-                    <p>+3 генерации в&nbsp;подарок&nbsp;🔥</p>
+                    <p>+5 генераций в&nbsp;подарок&nbsp;🔥</p>
                   </div>
 
                   <div className="mt-2.5 text-base flex gap-1.5 items-start">
@@ -213,7 +213,7 @@ export default function PricingPage() {
                       size={18}
                       className="min-w-[18px] relative top-[2px]"
                     />{" "}
-                    <p>1&nbsp;генерация&nbsp;= 7&nbsp;токенов</p>
+                    <p>1&nbsp;генерация&nbsp;= 10&nbsp;токенов</p>
                   </div>
                 </div>
 
@@ -240,8 +240,8 @@ export default function PricingPage() {
               </p>
 
               <p className="mt-2">
-                В Gennio применяется система токенов. Один токен равен одному
-                рублю, а одна генерация изображения стоит ровно 7 токенов. Вы
+                В Gennio применяется система токенов. Один токен примерно равен
+                одному рублю, а одна генерация изображения стоит 10 токенов. Вы
                 пополняете баланс токенов, а платформа автоматически списывает
                 их при генерации
               </p>

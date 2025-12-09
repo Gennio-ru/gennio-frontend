@@ -91,13 +91,13 @@ export default function PaymentModal() {
         <div>
           <p className="text-lg font-bold">Выберите количество генераций</p>
 
-          <p>Одна генерация = 7 токенов</p>
+          <p>Одна генерация = 10 токенов</p>
         </div>
         {/* PACKS */}
         {!loadingPacks && packs && (
           <div className="grid gap-3 mt-2">
             {packs.map((pack) => {
-              const giftTokens = (pack.tokens - pack.priceRub) / 7;
+              const giftTokens = (pack.tokens - pack.priceRub) / 10;
 
               return (
                 <div
@@ -112,7 +112,7 @@ export default function PaymentModal() {
                 >
                   <div className="flex flex-col">
                     <div className="font-bold ">
-                      <span>{pack.name} </span>&nbsp;{" "}
+                      <span>{pack.name} </span>{" "}
                       {giftTokens > 0 && (
                         <span className="text-nowrap">
                           + {giftTokens} в подарок

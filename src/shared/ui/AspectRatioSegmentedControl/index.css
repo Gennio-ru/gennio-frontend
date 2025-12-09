@@ -1,0 +1,9 @@
+.diagonal-bg {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--color-base-content) 0,
+    var(--color-base-content) 0.5px,
+    transparent 2px,
+    transparent 4px
+  );
+}
