@@ -9,7 +9,7 @@ const getInitialTheme = (): "dark" | "light" => {
   const htmlTheme = document.documentElement.getAttribute("data-theme");
   if (htmlTheme) return htmlTheme as "dark" | "light";
 
-  return "light";
+  return "dark";
 };
 
 type State = {
