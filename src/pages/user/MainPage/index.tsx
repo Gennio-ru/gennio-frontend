@@ -15,7 +15,7 @@ export default function MainPage() {
         description="Используйте готовые шаблоны, создавайте изображения с нуля или обрабатывайте фото по&nbsp;собственным промптам. Gennio превращает ваши слова и идеи в визуальные результаты с&nbsp;помощью&nbsp;ИИ"
       />
 
-      <Button className="px-7" onClick={() => navigate(AppRoute.PROMPTS)}>
+      <Button className="px-7" onClick={() => navigate(AppRoute.EDIT_IMAGE)}>
         Начать создавать
       </Button>
 

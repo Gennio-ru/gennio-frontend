@@ -7,7 +7,7 @@ export type NavItem = {
 };
 
 export const primaryHeaderMenu: NavItem[] = [
-  { label: "AI Генерация", href: AppRoute.PROMPTS },
+  { label: "AI Генерация", href: AppRoute.EDIT_IMAGE },
   { label: "Тарифы", href: AppRoute.PRICING },
   { label: "О проекте", href: AppRoute.ABOUT },
 ];
