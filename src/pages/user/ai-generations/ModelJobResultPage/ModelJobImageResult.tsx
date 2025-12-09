@@ -82,7 +82,6 @@ export function ModelJobImageResult({ job }: Props) {
       ? `${outputFile.widthPx} x ${outputFile.heightPx} px`
       : null;
   const metaText = [sizeLabel, dimsLabel].filter(Boolean).join(", ");
-  console.log(aspectRatio);
 
   return (
     <>

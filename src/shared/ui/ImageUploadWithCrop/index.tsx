@@ -398,11 +398,11 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
                 </div>
               )}
 
-              {isAuth && user.tokens > 0 && (
+              {isAuth && (user.tokens > 0 || user.role === "admin") && (
                 <CloudUpload size={26} stroke="var(--color-primary)" />
               )}
 
-              {isAuth && user.tokens > 0 && (
+              {isAuth && (user.tokens > 0 || user.role === "admin") && (
                 <div className="text-base mt-6">
                   Перетащите сюда изображение или{" "}
                   <span className="underline">выберите</span>
@@ -416,7 +416,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
                 </div>
               )}
 
-              {isAuth && user.tokens === 0 && (
+              {isAuth && user.role !== "admin" && user.tokens === 0 && (
                 <div className={cn("text-[18px] sm:px-30 text-warning")}>
                   Пополните баланс токенов
                 </div>

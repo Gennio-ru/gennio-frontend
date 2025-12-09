@@ -29,6 +29,8 @@ export type StartImageEditByPromptTextPayload =
   operations["ModelJobController_startImageEditByPromptText"]["requestBody"]["content"]["application/json"];
 export type StartImageGenerateByPromptTextPayload =
   operations["ModelJobController_startImageGenerateByPromptText"]["requestBody"]["content"]["application/json"];
+export type StartAdminGeneratePayload =
+  operations["ModelJobController_startAdminGenerate"]["requestBody"]["content"]["application/json"];
 
 //
 // ==== API ====
@@ -75,6 +77,16 @@ export async function apiStartImageGenerateByPromptText(
 ): Promise<ModelJob> {
   const { data } = await api.post<ModelJob>(
     "/model-job/start-image-generate",
+    payload
+  );
+  return data;
+}
+
+export async function apiStartAdminGenerate(
+  payload: StartAdminGeneratePayload
+): Promise<ModelJob> {
+  const { data } = await api.post<ModelJob>(
+    "/model-job/start-admin-generate",
     payload
   );
   return data;

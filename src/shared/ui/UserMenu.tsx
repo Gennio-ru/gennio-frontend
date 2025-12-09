@@ -78,6 +78,21 @@ export function UserMenu() {
             </Button>
 
             {user.role === "admin" && (
+              <Button
+                className="p-0 text-base font-thin"
+                contentClassName="p-0 justify-start text-base font-thin"
+                size="sm"
+                color="ghost"
+                onClick={() => {
+                  navigate(AppRoute.ADMIN_AI_GENERATION);
+                  setOpen(false);
+                }}
+              >
+                Admin generation
+              </Button>
+            )}
+
+            {user.role === "admin" && (
               <div className="mt-1">
                 <ThemeSwitch />
               </div>

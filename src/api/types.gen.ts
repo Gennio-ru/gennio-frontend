@@ -522,6 +522,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/model-job/start-admin-generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ModelJobController_startAdminGenerate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/transactions": {
         parameters: {
             query?: never;
@@ -1066,7 +1082,7 @@ export interface components {
          * @description Тариф, по которому считали стоимость задачи
          * @enum {string}
          */
-        ModelTariffCode: "TEXT_BASIC" | "TEXT_PRO" | "IMAGE_BASIC_GENERATE" | "IMAGE_BASIC_EDIT" | "IMAGE_PRO_GENERATE" | "IMAGE_PRO_EDIT";
+        ModelTariffCode: "TEXT_BASIC" | "TEXT_PRO" | "IMAGE_BASIC_GENERATE" | "IMAGE_BASIC_EDIT" | "IMAGE_PRO_GENERATE" | "IMAGE_PRO_EDIT" | "ADMIN_GENERATE";
         ModelJobDto: {
             model: components["schemas"]["ModelType"];
             type: components["schemas"]["ModelJobType"];
@@ -1309,6 +1325,21 @@ export interface components {
              * @example 2:3
              */
             aspectRatio: string;
+        };
+        StartAdminGenerateDto: {
+            /**
+             * @description Не более 700 символов
+             * @example Мягкое освещение, крупный план
+             */
+            text: string;
+            /**
+             * @description Формат
+             * @example 2:3
+             */
+            aspectRatio: string;
+            inputFileId?: string;
+            model: components["schemas"]["ModelType"];
+            type: components["schemas"]["ModelJobType"];
         };
         /**
          * @description Причина изменения токенов
@@ -2500,6 +2531,39 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["StartImageGenerateByPromptTextDto"];
+            };
+        };
+        responses: {
+            /** @description Генерация запущена */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelJobDto"];
+                };
+            };
+            /** @description Бизнес-ошибка (например, не хватает токенов) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    ModelJobController_startAdminGenerate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartAdminGenerateDto"];
             };
         };
         responses: {

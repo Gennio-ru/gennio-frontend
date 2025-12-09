@@ -44,6 +44,9 @@ const CategoriesAdminPage = lazy(
 const TransactionsAdminPage = lazy(
   () => import("@/pages/admin/TransactionsListPage")
 );
+const AdminAIGeneratePage = lazy(
+  () => import("@/pages/admin/AdminAIGeneratePage")
+);
 
 export function AppRoutes() {
   return (
@@ -244,6 +247,14 @@ export function AppRoutes() {
           element={
             <Suspense fallback={<Loader />}>
               <TransactionsAdminPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="ai-generation"
+          element={
+            <Suspense fallback={<Loader />}>
+              <AdminAIGeneratePage />
             </Suspense>
           }
         />
