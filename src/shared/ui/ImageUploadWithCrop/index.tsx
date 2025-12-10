@@ -418,7 +418,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 
               {isAuth && user.role !== "admin" && user.tokens === 0 && (
                 <div className={cn("text-[18px] sm:px-30 text-warning")}>
-                  Пополните баланс токенов
+                  Пополните баланс токенов, чтобы начать редактирование
                 </div>
               )}
 
