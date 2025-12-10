@@ -18,6 +18,7 @@ export enum AppRoute {
   ADMIN_USERS = "/admin/users",
   ADMIN_JOBS = "/admin/model-jobs",
   ADMIN_TRANSACTIONS = "/admin/transactions",
+  ADMIN_AI_GENERATION = "/admin/ai-generation",
 }
 
 //

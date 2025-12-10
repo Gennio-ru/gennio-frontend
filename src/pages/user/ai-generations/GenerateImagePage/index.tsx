@@ -92,7 +92,7 @@ export default function GenerateImagePage() {
 
           {isAuth && user.tokens === 0 && (
             <div className={cn("text-[18px] text-warning text-center")}>
-              Пополните баланс токенов
+              Пополните баланс токенов, чтобы начать редактирование
             </div>
           )}
 
