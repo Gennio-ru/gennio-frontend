@@ -17,6 +17,14 @@ import { apiGetPayment, Payment } from "@/api/modules/payments";
 import Button from "../Button";
 import { useLocation } from "react-router-dom";
 
+const POLL_INTERVAL_MS = 3000;
+const MAX_POLLS = 15; // ~45 секунд ожидания
+
+const isPendingStatus = (status?: Payment["status"]) =>
+  status === "PENDING" || status === "WAITING_FOR_CAPTURE";
+const isFailedStatus = (status?: Payment["status"]) =>
+  status === "CANCELED" || status === "REFUNDED" || status === "ERROR";
+
 export default function PaymentResultModal() {
   const location = useLocation();
   const open = useAppSelector(selectResultPaymentModalOpen);
@@ -24,12 +32,16 @@ export default function PaymentResultModal() {
 
   const [payment, setPayment] = useState<Payment | null>(null);
   const [loading, setLoading] = useState(false);
+  const [paymentId, setPaymentId] = useState<string | null>(null);
+  const [pollCount, setPollCount] = useState(0);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const paymentId = params.get("paymentId");
 
     if (paymentId) {
+      setPaymentId(paymentId);
+      setPollCount(0);
       dispatch(setPaymentResultModalOpen(true));
       dispatch(setPaymentModalOpen(false));
       setLoading(true);
@@ -39,6 +51,21 @@ export default function PaymentResultModal() {
         .finally(() => setLoading(false));
     }
   }, [location.search, dispatch]);
+
+  // Повторные проверки, если платёж ещё в процессе
+  useEffect(() => {
+    if (!paymentId) return;
+    if (!isPendingStatus(payment?.status)) return;
+    if (pollCount >= MAX_POLLS) return;
+
+    const timer = window.setTimeout(() => {
+      apiGetPayment(paymentId)
+        .then((data) => setPayment(data))
+        .finally(() => setPollCount((c) => c + 1));
+    }, POLL_INTERVAL_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [paymentId, payment?.status, pollCount]);
 
   //
   // закрытие: удаляем ?paymentId из URL
@@ -52,7 +79,8 @@ export default function PaymentResultModal() {
   };
 
   const isSuccess = payment?.status === "SUCCEEDED";
-  const isFailed = payment && payment.status !== "SUCCEEDED";
+  const isPending = isPendingStatus(payment?.status);
+  const isFailed = payment ? isFailedStatus(payment.status) : false;
 
   return (
     <Dialog
@@ -78,14 +106,16 @@ export default function PaymentResultModal() {
         </DialogHeader>
 
         {/* Loading */}
-        {loading && (
+        {(loading || isPending) && (
           <div className="py-10 text-center text-base-content/70">
-            Проверяем оплату…
+            {isPending
+              ? "Платёж обрабатывается, проверяем статус…"
+              : "Проверяем оплату…"}
           </div>
         )}
 
         {/* УСПЕХ */}
-        {!loading && isSuccess && (
+        {!loading && !isPending && isSuccess && (
           <div className="flex flex-col items-center gap-4 py-6">
             <CheckCircle className="text-green-500" size={56} />
 
@@ -108,7 +138,7 @@ export default function PaymentResultModal() {
         )}
 
         {/* ОШИБКА */}
-        {!loading && isFailed && (
+        {!loading && !isPending && isFailed && (
           <div className="flex flex-col items-center gap-4 py-6">
             <XCircle className="text-red-500" size={56} />
 
