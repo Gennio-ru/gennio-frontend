@@ -15,6 +15,7 @@ import { ImageUploadWithCrop } from "@/shared/ui/ImageUploadWithCrop";
 import Loader from "@/shared/ui/Loader";
 import Textarea from "@/shared/ui/Textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CircleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useDispatch } from "react-redux";
@@ -97,6 +98,22 @@ export default function EditImageByPlatformPromptPage() {
         title={currentPrompt.title}
         description={currentPrompt.description}
       />
+
+      <div className="max-w-2xl mx-auto w-full">
+        {currentPrompt.model === "OPENAI" && (
+          <div className="text-xs text-base-content/60 mb-3 -mt-5 flex gap-1.5">
+            <CircleAlert
+              size={16}
+              className="min-w-[18px] relative top-[-1px] rotate-180"
+            />
+
+            <div className="">
+              <p>В этом шаблоне портретное сходство не&nbsp;гарантировано</p>
+              {/* <p>сходство не гарантировано</p> */}
+            </div>
+          </div>
+        )}
+      </div>
 
       <GlassCard className="w-full mx-auto max-w-2xl">
         <form
