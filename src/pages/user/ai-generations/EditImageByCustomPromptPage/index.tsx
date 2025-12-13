@@ -143,7 +143,7 @@ export default function EditImageByCustomPromptPage() {
                 <Textarea
                   {...field}
                   rows={3}
-                  placeholder="Например: “сделай в стиле акварели, но сохрани композицию”"
+                  placeholder="Например: “Замени фон на лес, сохрани человека без изменений”"
                   className="w-full rounded-field bg-base-100/60"
                   onChange={(e) => {
                     field.onChange(e);

@@ -190,7 +190,7 @@ export default function EditImageByPlatformPromptPage() {
                   <Textarea
                     {...field}
                     rows={3}
-                    placeholder="Например: Добавь красный колпак на голову"
+                    placeholder="Например: В руке — стакан кофе"
                     className="w-full rounded-field bg-base-100/60"
                     onChange={(e) => {
                       field.onChange(e);
