@@ -107,7 +107,7 @@ export default function GenerateImagePage() {
                 <Textarea
                   {...field}
                   rows={4}
-                  placeholder="Например: “рыжий котик на подоконнике, мягкий свет, реалистичный стиль"
+                  placeholder="Например: “Минималистичная иллюстрация: кот на подоконнике, пастельные цвета, чистые формы."
                   className="w-full rounded-field bg-base-100/60"
                   onChange={(e) => {
                     field.onChange(e);
