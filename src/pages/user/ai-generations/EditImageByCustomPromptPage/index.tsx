@@ -99,6 +99,9 @@ export default function EditImageByCustomPromptPage() {
                       field.onChange("");
                     }
                   }}
+                  multiple
+                  maxFiles={10}
+                  enableCrop={false}
                   onUpload={async (file) => {
                     clearErrors("inputFileId");
 

@@ -18,44 +18,41 @@ import { validateFile, fileToDataURL, getCroppedBlob } from "./utils";
 import { ImageUploadBanner, LocalBanner } from "./ImageUploadBanner";
 import { ImageUploadPreview } from "./ImageUploadPreview";
 import { setAuthModalOpen } from "@/features/auth/authSlice";
+import { declOfNum } from "@/lib/helpers";
 
 type ImageUploadWithCropProps = {
-  /** Уже загруженная картинка (например, из бэка) */
-  value?: FileDto | null;
-  /** Сообщаем наружу, что превью поменялось (или null, если удалили) */
-  onChange?: (file: FileDto | null) => void;
-  /** Колбек, который получит уже обрезанный файл и вернёт данные сохранённого изображения */
+  /** single: FileDto | null, multiple: FileDto[] | null */
+  value?: FileDto | FileDto[] | null;
+
+  /** single: FileDto | null, multiple: FileDto[] | null */
+  onChange?: (value: FileDto | FileDto[] | null) => void;
+
+  /** Колбек, который получит файл (кропнутый или оригинал) и вернёт сохранённый FileDto */
   onUpload: (file: File) => Promise<FileDto> | FileDto;
-  /** Разрешённые mime-типы, по умолчанию только картинки */
+
   accept?: string;
-  /** Макс. размер файла (МБ) */
   maxFileSizeMb?: number;
-  /** Начальный пресет (portrait/square/landscape) */
   initialAspectPreset?: "portrait" | "square" | "landscape";
-  /** Название файла по умолчанию при сохранении */
   outputFileName?: string;
-  /** Опционально: колбек для удаления файла на бэке (DB/S3) */
+
   onRemove?: (file: FileDto) => Promise<void> | void;
-  /** URL изображений от - до */
+
   fromToImagesUrls?: [string, string];
+
+  /** разрешить несколько файлов */
+  multiple?: boolean;
+
+  /** максимум файлов в multiple-режиме */
+  maxFiles?: number;
+
+  /** выключить кроп (грузить как есть) */
+  enableCrop?: boolean;
 };
 
 const ASPECT_PRESETS = [
-  {
-    id: "portrait" as const,
-    label: "2 : 3",
-    value: 2 / 3, // width:height → ~0.666...
-  },
-  {
-    id: "square" as const,
-    label: "1 : 1",
-    value: 1,
-  },
-  {
-    id: "landscape" as const,
-    label: "3 : 2",
-    value: 1.5,
-  },
+  { id: "portrait" as const, label: "2 : 3", value: 2 / 3 },
+  { id: "square" as const, label: "1 : 1", value: 1 },
+  { id: "landscape" as const, label: "3 : 2", value: 1.5 },
 ];
 
 export type ImageUploadWithCropSteps = "idle" | "cropping" | "uploading";
@@ -69,6 +66,10 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
   initialAspectPreset = "square",
   outputFileName = "cropped-image.jpg",
   fromToImagesUrls,
+  multiple = false,
+  maxFiles = 10,
+  enableCrop = true,
+  onRemove,
 }) => {
   const theme = useAppSelector(selectAppTheme);
   const dispatch = useAppDispatch();
@@ -78,9 +79,15 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
   const [banner, setBanner] = useState<LocalBanner | null>(null);
   const [showBanner, setShowBanner] = useState(false);
 
+  // Список загруженных файлов (single = максимум 1)
+  const [previewImages, setPreviewImages] = useState<FileDto[]>([]);
+
+  // id временной плитки, на которой надо показывать Loader
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
+
+  // Для кропа
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [originalFile, setOriginalFile] = useState<File | null>(null);
-
   const [crop, setCrop] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
@@ -91,19 +98,39 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     "portrait" | "square" | "landscape"
   >(initialAspectPreset);
 
-  const [previewImage, setPreviewImage] = useState<FileDto | null>(null);
-
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const effectiveMaxFiles = Math.max(1, multiple ? maxFiles : 1);
+  const canAddMore = previewImages.length < effectiveMaxFiles;
+
+  // value -> state
   useEffect(() => {
-    setPreviewImage(value ?? null);
-  }, [value]);
+    if (!value) {
+      setPreviewImages([]);
+      return;
+    }
+    if (Array.isArray(value)) {
+      setPreviewImages(value.slice(0, effectiveMaxFiles));
+      return;
+    }
+    setPreviewImages([value]);
+  }, [value, effectiveMaxFiles]);
+
+  const emitChange = (nextRealOnly: FileDto[]) => {
+    if (multiple) {
+      onChange?.(nextRealOnly.length ? nextRealOnly : null);
+    } else {
+      onChange?.(nextRealOnly[0] ?? null);
+    }
+  };
+
+  const getRealOnly = (arr: FileDto[]) =>
+    arr.filter((x) => !!x?.id && !String(x.id).startsWith("temp-"));
 
   const currentAspect =
     ASPECT_PRESETS.find((p) => p.id === aspectPresetId)?.value ?? 1;
 
   // --- Баннеры успех/ошибка ---
-
   const showError = (message: string) => {
     setBanner({ id: Date.now(), message, type: "error" });
   };
@@ -112,39 +139,25 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     setBanner({ id: Date.now(), message, type: "success" });
   };
 
-  const hideBanner = () => {
-    setShowBanner(false);
-  };
+  const hideBanner = () => setShowBanner(false);
 
   useEffect(() => {
     if (!banner) return;
-
     setShowBanner(true);
-
-    const timer = setTimeout(() => {
-      setShowBanner(false);
-    }, 4000);
-
+    const timer = setTimeout(() => setShowBanner(false), 4000);
     return () => clearTimeout(timer);
   }, [banner, banner?.id]);
 
   useEffect(() => {
     if (showBanner) return;
     if (!banner) return;
-
-    const timer = setTimeout(() => {
-      setBanner(null);
-    }, 250); // чуть больше duration-200
-
+    const timer = setTimeout(() => setBanner(null), 250);
     return () => clearTimeout(timer);
   }, [showBanner, banner]);
 
-  const handleCloseBanner = () => {
-    hideBanner();
-  };
+  const handleCloseBanner = () => hideBanner();
 
   // --- Проверка авторизации ---
-
   const requireAuth = () => {
     if (!isAuth) {
       dispatch(setAuthModalOpen(true));
@@ -154,7 +167,6 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
   };
 
   // --- Проверка баланса ---
-
   const requireTokens = () => {
     if (isAuth && user.role !== "admin" && user.tokens === 0) {
       dispatch(setPaymentModalOpen(true));
@@ -163,8 +175,61 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     return false;
   };
 
-  // --- Общая обработка файла ---
+  const ensureCanAcceptNewFile = () => {
+    if (!multiple && previewImages.length === 1) return true; // replace is ok
+    if (multiple && !canAddMore) {
+      showError(`Можно загрузить максимум ${effectiveMaxFiles} файл(ов)`);
+      return false;
+    }
+    return true;
+  };
 
+  // --- Temp preview helpers (чтобы не схлопывалось и был Loader на плитке) ---
+  const addTempTile = (file: File) => {
+    const objectUrl = URL.createObjectURL(file);
+    const tempId = `temp-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const tempTile = { id: tempId, url: objectUrl } as FileDto;
+
+    setPreviewImages((prev) => {
+      const next = multiple ? [...prev, tempTile] : [tempTile];
+      return next.slice(0, effectiveMaxFiles);
+    });
+
+    setUploadingId(tempId);
+
+    return { tempId, objectUrl };
+  };
+
+  const cleanupTempTile = (tempId: string, objectUrl: string) => {
+    setPreviewImages((prev) => prev.filter((x) => x.id !== tempId));
+    URL.revokeObjectURL(objectUrl);
+    setUploadingId(null);
+  };
+
+  const replaceTempTile = (
+    tempId: string,
+    objectUrl: string,
+    uploaded: FileDto
+  ) => {
+    setPreviewImages((prev) => {
+      const next = prev.map((x) => (x.id === tempId ? uploaded : x));
+      return next.slice(0, effectiveMaxFiles);
+    });
+
+    URL.revokeObjectURL(objectUrl);
+    setUploadingId(null);
+
+    // наружу — только реальные
+    const nextReal = getRealOnly(
+      (multiple ? [...previewImages, uploaded] : [uploaded]).map((x) =>
+        x.id === tempId ? uploaded : x
+      )
+    ).slice(0, effectiveMaxFiles);
+
+    emitChange(nextReal);
+  };
+
+  // --- Общая обработка файла ---
   const processFile = async (file: File) => {
     try {
       validateFile(file, maxFileSizeMb ?? 10, accept);
@@ -174,6 +239,33 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
       return;
     }
 
+    if (!enableCrop) {
+      // ✅ без кропа: сразу показываем превью + лоадер на временной плитке
+      hideBanner();
+      setStep("uploading");
+
+      const { tempId, objectUrl } = addTempTile(file);
+
+      try {
+        const uploaded = await Promise.resolve(onUpload(file));
+        if (!uploaded || !uploaded.id)
+          throw new Error("Не удалось загрузить файл");
+
+        replaceTempTile(tempId, objectUrl, uploaded);
+        showSuccess();
+        setStep("idle");
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Ошибка при загрузке файла";
+        showError(message);
+        cleanupTempTile(tempId, objectUrl);
+        setStep("idle");
+      }
+
+      return;
+    }
+
+    // ✅ с кропом: открываем кроппер
     try {
       const dataUrl = await fileToDataURL(file);
       setOriginalFile(file);
@@ -186,31 +278,31 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     }
   };
 
+  const clearForSingleReplace = () => {
+    if (!multiple && previewImages.length) {
+      setPreviewImages([]);
+      emitChange([]);
+    }
+  };
+
+  const handleIncomingFile = async (file: File) => {
+    if (step === "uploading") return; // защита от повторных
+    if (requireAuth()) return;
+    if (requireTokens()) return;
+    if (!ensureCanAcceptNewFile()) return;
+
+    if (!multiple) clearForSingleReplace();
+    await processFile(file);
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    if (requireAuth()) {
-      e.target.value = "";
-      return;
-    }
-
-    if (requireTokens()) {
-      e.target.value = "";
-      return;
-    }
-
-    if (previewImage) {
-      setPreviewImage(null);
-      onChange?.(null);
-    }
-
-    await processFile(file);
+    await handleIncomingFile(file);
     e.target.value = "";
   };
 
-  // --- Drag & Drop ---
-
+  // --- Drag & Drop (общие) ---
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -228,23 +320,22 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     e.stopPropagation();
     setIsDragging(false);
 
-    if (requireAuth()) return;
-    if (requireTokens()) return;
-
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
 
-    if (previewImage) {
-      setPreviewImage(null);
-      onChange?.(null);
-    }
-
-    await processFile(file);
+    await handleIncomingFile(file);
   };
 
   const handleUploadAreaClick = () => {
+    if (step === "uploading") return;
     if (requireAuth()) return;
     if (requireTokens()) return;
+
+    if (multiple && !canAddMore) {
+      showError(`Можно загрузить максимум ${effectiveMaxFiles} файл(ов)`);
+      return;
+    }
+
     inputRef.current?.click();
   };
 
@@ -256,7 +347,6 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
   };
 
   // --- Cropper ---
-
   const onCropComplete = useCallback(
     (_croppedArea: Area, croppedPixels: Area) => {
       setCroppedAreaPixels(croppedPixels);
@@ -272,12 +362,16 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
   };
 
   const handleConfirm = async () => {
+    if (!enableCrop) return;
     if (step === "uploading") return;
     if (!imageSrc || !croppedAreaPixels || !originalFile) return;
 
     hideBanner();
+
+    // готовим файл
     setStep("uploading");
 
+    let file: File;
     try {
       const blob = await getCroppedBlob(
         imageSrc,
@@ -285,30 +379,45 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
         "image/jpeg",
         0.9
       );
-      const file = new File([blob], outputFileName, { type: blob.type });
+      file = new File([blob], outputFileName, { type: blob.type });
+    } catch {
+      showError("Ошибка при обработке изображения");
+      setStep("cropping");
+      return;
+    }
 
+    // ✅ сразу уходим с кропа на превью
+    setImageSrc(null);
+    setOriginalFile(null);
+
+    // ✅ сразу добавляем временную плитку с локальным objectURL
+    const { tempId, objectUrl } = addTempTile(file);
+
+    try {
       const uploaded = await Promise.resolve(onUpload(file));
-
-      if (!uploaded || !uploaded.id) {
+      if (!uploaded || !uploaded.id)
         throw new Error("Не удалось загрузить файл");
-      }
 
-      setPreviewImage(uploaded);
-      onChange?.(uploaded);
-
+      replaceTempTile(tempId, objectUrl, uploaded);
       showSuccess();
-
       setStep("idle");
-      setImageSrc(null);
-      setOriginalFile(null);
     } catch (err) {
       const message =
-        err instanceof Error
-          ? err.message
-          : "Ошибка при обработке или загрузке файла";
-
+        err instanceof Error ? err.message : "Ошибка при загрузке файла";
       showError(message);
-      setStep("cropping");
+
+      // ❗️ если аплоад упал — вернём пользователя обратно в кроп
+      cleanupTempTile(tempId, objectUrl);
+
+      // восстановим кроп-экран (пересоздадим imageSrc из исходника)
+      try {
+        const dataUrl = await fileToDataURL(originalFile ?? file);
+        setOriginalFile(originalFile ?? file);
+        setImageSrc(dataUrl);
+        setStep("cropping");
+      } catch {
+        setStep("idle");
+      }
     }
   };
 
@@ -318,7 +427,41 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     setZoom(1);
   };
 
+  const handleRemoveAt = async (index: number) => {
+    const file = previewImages[index];
+    if (!file) return;
+
+    // нельзя удалять временную, пока грузится
+    if (uploadingId && file.id === uploadingId) return;
+
+    const prev = previewImages;
+    const next = prev.filter((_, i) => i !== index);
+
+    setPreviewImages(next);
+
+    // наружу — только реальные
+    emitChange(getRealOnly(next));
+
+    if (!onRemove) return;
+
+    try {
+      await Promise.resolve(onRemove(file));
+    } catch (err) {
+      // rollback
+      setPreviewImages(prev);
+      emitChange(getRealOnly(prev));
+      const message =
+        err instanceof Error ? err.message : "Не удалось удалить файл";
+      showError(message);
+    }
+  };
+
   const stroke = theme === "dark" ? "%23CBD0DC" : "%237d7f84";
+  const hasPreview = previewImages.length > 0;
+
+  const showEmptyUploader = !hasPreview && !imageSrc;
+  const showUploader =
+    showEmptyUploader && (step === "idle" || step === "uploading");
 
   return (
     <div className="relative overflow-hidden">
@@ -337,22 +480,34 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
         onClose={handleCloseBanner}
       />
 
-      {/* Превью загруженного изображения */}
-      {previewImage && (
+      {/* Превью (single/multiple) */}
+      {hasPreview && !imageSrc && (
         <ImageUploadPreview
-          previewImage={previewImage}
+          images={previewImages}
           theme={theme}
-          onClickReplace={handleUploadAreaClick}
+          multiple={multiple}
+          canAddMore={multiple ? canAddMore : true}
+          maxFiles={effectiveMaxFiles}
+          maxFileSizeMb={maxFileSizeMb}
+          isDragging={isDragging}
+          isUploading={step === "uploading"}
+          uploadingId={uploadingId}
+          stroke={stroke}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onClickAdd={handleUploadAreaClick}
+          onRemoveAt={handleRemoveAt}
         />
       )}
 
-      {/* Шаг выбора файла + Drag & Drop — показываем ТОЛЬКО если превью ещё нет */}
-      {!previewImage && step === "idle" && (
+      {/* Пустой аплоадер (когда превью ещё нет) */}
+      {showUploader && (
         <div className="flex flex-col gap-2 h-[340px]">
           <div
             className={cn(
-              "h-full flex items-center justify-center rounded-field px-4 text-center cursor-pointer transition-colors",
-              isDragging ? "" : ""
+              "h-full flex items-center justify-center rounded-field px-4 text-center cursor-pointer transition-colors relative",
+              step === "uploading" && "pointer-events-none opacity-70"
             )}
             style={{
               backgroundImage: `url("data:image/svg+xml;utf8, \
@@ -386,14 +541,12 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
                     containerClassName="w-[100px] h-[100px]"
                     className="rounded-field"
                   />
-
                   <ImageWithLoaderFixed
                     src={fromToImagesUrls[1]}
                     alt="preview"
                     containerClassName="w-[100px] h-[100px]"
                     className="rounded-field"
                   />
-
                   <Undo className="absolute top-[-20px] left-1/2 -translate-x-1/2 -scale-x-100 rotate-14" />
                 </div>
               )}
@@ -422,16 +575,33 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
                 </div>
               )}
 
-              <div className="mt-4 text-sm text-base-content/60">
+              {multiple && (
+                <div className="mt-4 text-sm text-base-content/60">
+                  До {maxFiles}{" "}
+                  {declOfNum(maxFiles, [
+                    "изображения",
+                    "изображений",
+                    "изображений",
+                  ])}
+                </div>
+              )}
+
+              <div className="mt-1 text-sm text-base-content/60">
                 Форматы JPEG, PNG, WEBP не более {maxFileSizeMb} МБ
               </div>
             </div>
+
+            {step === "uploading" && (
+              <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px] flex items-center justify-center">
+                <Loader />
+              </div>
+            )}
           </div>
         </div>
       )}
 
       {/* Шаг кропа */}
-      {step !== "idle" && imageSrc && (
+      {enableCrop && step !== "idle" && imageSrc && (
         <div className="w-full h-[360px] flex flex-col gap-3 mt-2">
           <div className="flex gap-2 flex-wrap">
             <SegmentedControl
@@ -473,7 +643,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
       )}
 
       {/* Кнопки управления при кропе */}
-      {imageSrc && (
+      {enableCrop && imageSrc && (
         <div className="flex flex-col min-[440px]:flex-row items-center justify-between gap-3 mt-3">
           <div className="flex items-center gap-2">
             <span className="text-md">Масштаб</span>
