@@ -1,16 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import Cropper, { Area } from "react-easy-crop";
-import { CloudUpload, Undo } from "lucide-react";
+import { Area } from "react-easy-crop";
 
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import { selectAppTheme, setPaymentModalOpen } from "@/features/app/appSlice";
-import { cn } from "@/lib/utils";
 
-import { SegmentedControl } from "../SegmentedControl";
-import Button from "../Button";
-import { CustomRange } from "../CustomRange";
-import Loader from "../Loader";
-import ImageWithLoaderFixed from "../ImageWithLoaderFixed";
 import { useAuth } from "@/features/auth/useAuth";
 
 import { FileDto } from "@/api/modules/files";
@@ -18,7 +11,9 @@ import { validateFile, fileToDataURL, getCroppedBlob } from "./utils";
 import { ImageUploadBanner, LocalBanner } from "./ImageUploadBanner";
 import { ImageUploadPreview } from "./ImageUploadPreview";
 import { setAuthModalOpen } from "@/features/auth/authSlice";
-import { declOfNum } from "@/lib/helpers";
+import { EmptyUploader } from "./components/EmptyUploader";
+import { CropperStep, AspectPreset } from "./components/CropperStep";
+import { CropControls } from "./components/CropControls";
 
 type ImageUploadWithCropProps = {
   /** single: FileDto | null, multiple: FileDto[] | null */
@@ -49,7 +44,7 @@ type ImageUploadWithCropProps = {
   enableCrop?: boolean;
 };
 
-const ASPECT_PRESETS = [
+const ASPECT_PRESETS: AspectPreset[] = [
   { id: "portrait" as const, label: "2 : 3", value: 2 / 3 },
   { id: "square" as const, label: "1 : 1", value: 1 },
   { id: "landscape" as const, label: "3 : 2", value: 1.5 },
@@ -503,186 +498,49 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 
       {/* Пустой аплоадер (когда превью ещё нет) */}
       {showUploader && (
-        <div className="flex flex-col gap-2 h-[340px]">
-          <div
-            className={cn(
-              "h-full flex items-center justify-center rounded-field px-4 text-center cursor-pointer transition-colors relative",
-              step === "uploading" && "pointer-events-none opacity-70"
-            )}
-            style={{
-              backgroundImage: `url("data:image/svg+xml;utf8, \
-                <svg xmlns='http://www.w3.org/2000/svg' width='100%' height='100%'> \
-                <rect x='2' y='2' width='calc(100% - 4px)' height='calc(100% - 4px)' \
-                rx='8' ry='8' fill='none' stroke='${stroke}' stroke-width='2' \
-                stroke-dasharray='6.5 6' stroke-dashoffset='0' /> \
-                </svg>")`,
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "100% 100%",
-            }}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            onClick={handleUploadAreaClick}
-            role="button"
-            tabIndex={0}
-            onKeyDown={handleUploadAreaKeyDown}
-          >
-            <div
-              className={cn(
-                "flex w-full flex-col items-center h-full pb-4",
-                fromToImagesUrls ? "justify-start pt-10" : "justify-center"
-              )}
-            >
-              {fromToImagesUrls && (
-                <div className="flex gap-2 mb-9 relative">
-                  <ImageWithLoaderFixed
-                    src={fromToImagesUrls[0]}
-                    alt="preview"
-                    containerClassName="w-[100px] h-[100px]"
-                    className="rounded-field"
-                  />
-                  <ImageWithLoaderFixed
-                    src={fromToImagesUrls[1]}
-                    alt="preview"
-                    containerClassName="w-[100px] h-[100px]"
-                    className="rounded-field"
-                  />
-                  <Undo className="absolute top-[-20px] left-1/2 -translate-x-1/2 -scale-x-100 rotate-14" />
-                </div>
-              )}
-
-              {isAuth && (user.tokens > 0 || user.role === "admin") && (
-                <CloudUpload size={26} stroke="var(--color-primary)" />
-              )}
-
-              {isAuth && (user.tokens > 0 || user.role === "admin") && (
-                <div className="text-base mt-6">
-                  Перетащите сюда изображение или{" "}
-                  <span className="underline">выберите</span>
-                </div>
-              )}
-
-              {!isAuth && (
-                <div className={cn("text-[18px] sm:px-30 text-warning")}>
-                  Войдите в аккаунт, чтобы загрузить фото и&nbsp;начать
-                  редактирование
-                </div>
-              )}
-
-              {isAuth && user.role !== "admin" && user.tokens === 0 && (
-                <div className={cn("text-[18px] sm:px-30 text-warning")}>
-                  Пополните баланс токенов, чтобы начать редактирование
-                </div>
-              )}
-
-              {multiple && (
-                <div className="mt-4 text-sm text-base-content/60">
-                  До {maxFiles}{" "}
-                  {declOfNum(maxFiles, [
-                    "изображения",
-                    "изображений",
-                    "изображений",
-                  ])}
-                </div>
-              )}
-
-              <div className="mt-1 text-sm text-base-content/60">
-                Форматы JPEG, PNG, WEBP не более {maxFileSizeMb} МБ
-              </div>
-            </div>
-
-            {step === "uploading" && (
-              <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px] flex items-center justify-center">
-                <Loader />
-              </div>
-            )}
-          </div>
-        </div>
+        <EmptyUploader
+          stroke={stroke}
+          fromToImagesUrls={fromToImagesUrls}
+          multiple={multiple}
+          maxFiles={maxFiles}
+          maxFileSizeMb={maxFileSizeMb}
+          isUploading={step === "uploading"}
+          isAuth={isAuth}
+          user={user}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onClick={handleUploadAreaClick}
+          onKeyDown={handleUploadAreaKeyDown}
+        />
       )}
 
       {/* Шаг кропа */}
       {enableCrop && step !== "idle" && imageSrc && (
-        <div className="w-full h-[360px] flex flex-col gap-3 mt-2">
-          <div className="flex gap-2 flex-wrap">
-            <SegmentedControl
-              size="xs"
-              variant="surface"
-              items={ASPECT_PRESETS.map((preset) => ({
-                id: preset.id,
-                label: preset.label,
-              }))}
-              value={aspectPresetId}
-              onChange={(id) => handleAspectChange(id)}
-            />
-          </div>
-
-          <div className="relative h-full rounded-field overflow-hidden bg-black/80">
-            <div
-              className={cn(
-                step === "uploading" && "pointer-events-none opacity-40"
-              )}
-            >
-              <Cropper
-                image={imageSrc}
-                crop={crop}
-                zoom={zoom}
-                aspect={currentAspect}
-                onCropChange={setCrop}
-                onZoomChange={setZoom}
-                onCropComplete={onCropComplete}
-              />
-            </div>
-
-            {step === "uploading" && (
-              <div className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-                <Loader />
-              </div>
-            )}
-          </div>
-        </div>
+        <CropperStep
+          step={step}
+          imageSrc={imageSrc}
+          crop={crop}
+          zoom={zoom}
+          currentAspect={currentAspect}
+          aspectPresetId={aspectPresetId}
+          aspectPresets={ASPECT_PRESETS}
+          onAspectChange={handleAspectChange}
+          onCropChange={setCrop}
+          onZoomChange={setZoom}
+          onCropComplete={onCropComplete}
+        />
       )}
 
       {/* Кнопки управления при кропе */}
       {enableCrop && imageSrc && (
-        <div className="flex flex-col min-[440px]:flex-row items-center justify-between gap-3 mt-3">
-          <div className="flex items-center gap-2">
-            <span className="text-md">Масштаб</span>
-
-            <CustomRange
-              value={zoom}
-              min={1}
-              max={3}
-              step={0.1}
-              onChange={setZoom}
-              disabled={step === "uploading"}
-              className={
-                step === "uploading" ? "opacity-50 pointer-events-none" : ""
-              }
-            />
-          </div>
-
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              onClick={handleCancel}
-              size="sm"
-              color="ghost"
-              bordered
-              disabled={step === "uploading"}
-            >
-              Отмена
-            </Button>
-
-            <Button
-              type="button"
-              onClick={handleConfirm}
-              size="sm"
-              disabled={step === "uploading"}
-            >
-              Сохранить
-            </Button>
-          </div>
-        </div>
+        <CropControls
+          step={step}
+          zoom={zoom}
+          onZoomChange={setZoom}
+          onCancel={handleCancel}
+          onConfirm={handleConfirm}
+        />
       )}
     </div>
   );

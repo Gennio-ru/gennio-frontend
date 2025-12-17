@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { CircleAlert, CircleCheck, XIcon } from "lucide-react";
 import IconButton from "../IconButton";
 import { cn } from "@/lib/utils";
-import { ImageUploadWithCropSteps } from ".";
+import type { ImageUploadWithCropSteps } from ".";
 
 export type BannerType = "error" | "success";
 
