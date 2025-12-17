@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ModelJobFull } from "@/api/modules/model-job";
 import ImageWithLoaderFixed from "@/shared/ui/ImageWithLoaderFixed";
 import ResultImageWithPreview from "./ResultImageWithPreview";
@@ -18,20 +18,28 @@ type Props = {
   job: ModelJobFull;
 };
 
+function firstOf<T>(v: T | T[] | null | undefined): T | null {
+  if (!v) return null;
+  return Array.isArray(v) ? v[0] ?? null : v;
+}
+
 export function ModelJobImageResult({ job }: Props) {
   const [downloadingOriginal, setDownloadingOriginal] = useState(false);
   const navigate = useNavigate();
 
-  const {
-    text,
-    inputFileUrl,
-    inputFile,
-    outputPreviewFileUrl,
-    outputPreviewFile,
-    outputFile,
-  } = job;
-
+  const { text } = job;
   const showPrompt = !!text;
+
+  const inputFileUrl = firstOf(job.inputFileUrls);
+  const inputFile = firstOf(job.inputFiles);
+
+  const outputPreviewFileUrl = firstOf(job.outputPreviewFileUrls);
+
+  const outputPreviewFile = firstOf(job.outputPreviewFiles);
+  const outputFileUrl = firstOf(job.outputFileUrls);
+  const outputFile = firstOf(job.outputFiles);
+
+  console.log(job);
 
   // Ориентация — по результату (preview), если есть, иначе по input
   const mainMeta: ImageMeta | undefined = outputPreviewFile as
@@ -52,17 +60,16 @@ export function ModelJobImageResult({ job }: Props) {
   const handleDownloadOriginal = async () => {
     ymGoal("on_click_download_original");
 
-    if (!job?.outputFileUrl) return;
+    if (!outputFileUrl) return;
 
     try {
       setDownloadingOriginal(true);
 
-      const res = await fetch(job.outputFileUrl);
+      const res = await fetch(outputFileUrl);
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
 
       let ext = blob.type.split("/")[1] || "jpg";
-
       if (ext === "jpeg") ext = "jpg";
 
       const a = document.createElement("a");
@@ -76,12 +83,14 @@ export function ModelJobImageResult({ job }: Props) {
     }
   };
 
-  const sizeLabel = outputFile?.size ? formatFileSize(outputFile.size) : null;
-  const dimsLabel =
-    outputFile?.widthPx && outputFile?.heightPx
-      ? `${outputFile.widthPx} x ${outputFile.heightPx} px`
-      : null;
-  const metaText = [sizeLabel, dimsLabel].filter(Boolean).join(", ");
+  const metaText = useMemo(() => {
+    const sizeLabel = outputFile?.size ? formatFileSize(outputFile.size) : null;
+    const dimsLabel =
+      outputFile?.widthPx && outputFile?.heightPx
+        ? `${outputFile.widthPx} x ${outputFile.heightPx} px`
+        : null;
+    return [sizeLabel, dimsLabel].filter(Boolean).join(", ");
+  }, [outputFile?.size, outputFile?.widthPx, outputFile?.heightPx]);
 
   return (
     <>
@@ -116,7 +125,7 @@ export function ModelJobImageResult({ job }: Props) {
           >
             {hasInput && (
               <ModelJobResultInputPreview
-                url={inputFileUrl}
+                url={inputFileUrl!}
                 aspectRatio={inputAspectRatio}
                 containerClassName="absolute hidden lg:block top-0 left-0 -translate-x-[calc(100%+24px)]"
                 className="rounded-selector w-full h-full object-cover"
@@ -144,7 +153,7 @@ export function ModelJobImageResult({ job }: Props) {
             >
               {hasInput && (
                 <ModelJobResultInputPreview
-                  url={inputFileUrl}
+                  url={inputFileUrl!}
                   aspectRatio={inputAspectRatio}
                   containerClassName="absolute hidden lg:block top-0 left-0 -translate-x-[calc(100%+24px)]"
                   className="rounded-selector w-full h-full object-cover"
@@ -172,7 +181,7 @@ export function ModelJobImageResult({ job }: Props) {
             >
               {hasInput && (
                 <ModelJobResultInputPreview
-                  url={inputFileUrl}
+                  url={inputFileUrl!}
                   aspectRatio={inputAspectRatio}
                   containerClassName="absolute hidden lg:block top-0 left-0 -translate-x-[calc(100%+24px)]"
                   className="rounded-selector w-full h-full object-cover"
@@ -209,10 +218,10 @@ export function ModelJobImageResult({ job }: Props) {
               loading={downloadingOriginal}
             >
               <div className="flex gap-1 items-center justify-center">
-                {job?.outputFile?.contentType === "image/jpeg" && (
+                {outputFile?.contentType === "image/jpeg" && (
                   <JpegLogo fontSize={28} className="mr-1.5" />
                 )}
-                {job?.outputFile?.contentType === "image/png" && (
+                {outputFile?.contentType === "image/png" && (
                   <PngLogo fontSize={28} className="mr-1.5" />
                 )}
                 Скачать генерацию
@@ -235,7 +244,7 @@ export function ModelJobImageResult({ job }: Props) {
 
       {hasInput && (
         <ModelJobResultInputPreview
-          url={inputFileUrl}
+          url={inputFileUrl!}
           aspectRatio={inputAspectRatio}
           containerClassName="block lg:hidden mt-4 mx-auto"
         />

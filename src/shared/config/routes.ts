@@ -5,6 +5,7 @@ export enum AppRoute {
   PROMPTS = "/ai-generation/prompts",
   GENERATE_IMAGE = "/ai-generation/generate-image",
   EDIT_IMAGE = "/ai-generation/edit-image",
+  EDIT_IMAGE_BY_STYLE_REFERENCE = "/ai-generation/edit-image-by-style-reference",
 
   MAIN = "/",
   PRICING = "/pricing",
@@ -27,6 +28,7 @@ export enum AppRoute {
 export const jobTypeBasePath: Record<ModelJobType, string> = {
   "image-edit-by-prompt-id": AppRoute.PROMPTS,
   "image-edit-by-prompt-text": AppRoute.EDIT_IMAGE,
+  "image-edit-by-style-reference": AppRoute.EDIT_IMAGE_BY_STYLE_REFERENCE,
   "image-generate-by-prompt-text": AppRoute.GENERATE_IMAGE,
 };
 

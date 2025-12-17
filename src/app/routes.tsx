@@ -20,6 +20,9 @@ const EditImageByPlatformPromptPage = lazy(
 const EditImageByCustomPromptPage = lazy(
   () => import("@/pages/user/ai-generations/EditImageByCustomPromptPage")
 );
+const EditImageByStyleReferencePage = lazy(
+  () => import("@/pages/user/ai-generations/EditImageByStyleReferencePage")
+);
 const GenerateImagePage = lazy(
   () => import("@/pages/user/ai-generations/GenerateImagePage")
 );
@@ -139,6 +142,16 @@ export function AppRoutes() {
           element={
             <Suspense fallback={<Loader />}>
               <EditImageByCustomPromptPage />
+            </Suspense>
+          }
+        />
+
+        {/* Копирование стиля фото */}
+        <Route
+          path="/ai-generation/edit-image-by-style-reference"
+          element={
+            <Suspense fallback={<Loader />}>
+              <EditImageByStyleReferencePage />
             </Suspense>
           }
         />

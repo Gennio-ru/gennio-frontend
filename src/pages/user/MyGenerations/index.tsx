@@ -63,11 +63,11 @@ export default function MyGenerations() {
         {items.map((item) => (
           <div key={item.id} className="break-inside-avoid mb-4">
             <ImageWithLoader
-              src={item.outputPreviewFileUrl}
+              src={item.outputPreviewFileUrls[0]}
               alt=""
               size="md"
-              widthPx={item.outputPreviewFile?.widthPx}
-              heightPx={item.outputPreviewFile?.heightPx}
+              widthPx={item.outputPreviewFiles[0]?.widthPx}
+              heightPx={item.outputPreviewFiles[0]?.heightPx}
               className="rounded-xl shadow-sm bg-base-200 w-full cursor-pointer
               hover:scale-105 transition-transform duration-300"
               onClick={() => navigate(route.jobResult(item))}

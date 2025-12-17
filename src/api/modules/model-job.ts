@@ -29,6 +29,8 @@ export type StartImageEditByPromptTextPayload =
   operations["ModelJobController_startImageEditByPromptText"]["requestBody"]["content"]["application/json"];
 export type StartImageGenerateByPromptTextPayload =
   operations["ModelJobController_startImageGenerateByPromptText"]["requestBody"]["content"]["application/json"];
+export type StartImageEditByStyleReferencePayload =
+  operations["ModelJobController_startImageEditByStyleReference"]["requestBody"]["content"]["application/json"];
 export type StartAdminGeneratePayload =
   operations["ModelJobController_startAdminGenerate"]["requestBody"]["content"]["application/json"];
 
@@ -67,6 +69,16 @@ export async function apiStartImageEditByPromptText(
 ): Promise<ModelJob> {
   const { data } = await api.post<ModelJob>(
     "/model-job/start-image-edit-by-prompt-text",
+    payload
+  );
+  return data;
+}
+
+export async function apiStartImageEditByStyleReference(
+  payload: StartImageEditByStyleReferencePayload
+): Promise<ModelJob> {
+  const { data } = await api.post<ModelJob>(
+    "/model-job/start-image-edit-by-style-reference",
     payload
   );
   return data;

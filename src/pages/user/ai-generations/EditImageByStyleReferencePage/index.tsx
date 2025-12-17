@@ -1,6 +1,6 @@
 import { apiAIUploadFile } from "@/api/modules/files";
 import {
-  apiStartImageEditByPromptText,
+  apiStartImageEditByStyleReference,
   ModelType,
 } from "@/api/modules/model-job";
 import { setPaymentModalOpen } from "@/features/app/appSlice";
@@ -16,7 +16,6 @@ import Button from "@/shared/ui/Button";
 import GlassCard from "@/shared/ui/GlassCard";
 import { ImageSizeSegmentedControl } from "@/shared/ui/ImageSizeSegmentedControl";
 import { ImageUploadWithCrop } from "@/shared/ui/ImageUploadWithCrop";
-import Textarea from "@/shared/ui/Textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -25,7 +24,6 @@ import { useNavigate } from "react-router-dom";
 import z from "zod";
 
 const modelJobSchema = z.object({
-  text: z.string().min(1, "Добавьте текст промпта"),
   inputFileIds: z.array(z.string()).min(1, "Загрузите изображение"),
   aspectRatio: z.string().nullable(),
   imageSize: z.string().nullable(),
@@ -33,7 +31,7 @@ const modelJobSchema = z.object({
 
 type ModelJobFormValues = z.infer<typeof modelJobSchema>;
 
-export default function EditImageByCustomPromptPage() {
+export default function EditImageByStyleReferencePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isFetching, setIsFetching] = useState(false);
@@ -48,7 +46,6 @@ export default function EditImageByCustomPromptPage() {
   } = useForm<ModelJobFormValues>({
     resolver: zodResolver(modelJobSchema),
     defaultValues: {
-      text: "",
       inputFileIds: [],
       aspectRatio: null,
       imageSize: "1K",
@@ -60,7 +57,7 @@ export default function EditImageByCustomPromptPage() {
   const onSubmit = async (data: ModelJobFormValues) => {
     try {
       setIsFetching(true);
-      const res = await apiStartImageEditByPromptText({
+      const res = await apiStartImageEditByStyleReference({
         ...data,
         aspectRatio: data.aspectRatio || undefined,
         imageSize: data.imageSize || undefined,
@@ -85,8 +82,8 @@ export default function EditImageByCustomPromptPage() {
   return (
     <>
       <AIGenerationTitle
-        title="Редактируйте по&#8209;своему"
-        description="Загружайте фото и изменяйте их с помощью своих индивидуальных промптов"
+        title="Поймай атмосферу кадра"
+        description="Загрузи своё фото и референс — мы перенесём композицию, стиль и настроение, а&nbsp;ты&nbsp;останешься&nbsp;собой."
       />
 
       <GlassCard className="w-full max-w-2xl mx-auto">
@@ -143,31 +140,6 @@ export default function EditImageByCustomPromptPage() {
                 {errors.inputFileIds.message}
               </p>
             )}
-          </div>
-
-          {/* Промпт */}
-          <div className="relative mb-0 mt-8">
-            <div className="mb-3 text-lg font-medium">Описание изображения</div>
-
-            <Controller
-              name="text"
-              control={control}
-              render={({ field }) => (
-                <Textarea
-                  {...field}
-                  rows={3}
-                  placeholder="Например: “Замени фон на лес, сохрани человека без изменений”"
-                  className="w-full rounded-field bg-base-100/60"
-                  onChange={(e) => {
-                    field.onChange(e);
-                    clearErrors("text");
-                  }}
-                  errored={!!errors.text}
-                  errorMessage={errors.text?.message}
-                  maxLength={700}
-                />
-              )}
-            />
           </div>
 
           {/* Формат */}

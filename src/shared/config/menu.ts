@@ -24,5 +24,6 @@ export const adminHeaderMenu: NavItem[] = [
 export const aiGenerationsMenu: NavItem[] = [
   { label: "Обработка фото", href: AppRoute.EDIT_IMAGE },
   { label: "Создание с нуля", href: AppRoute.GENERATE_IMAGE },
+  { label: "Стиль из фото", href: AppRoute.EDIT_IMAGE_BY_STYLE_REFERENCE },
   { label: "Готовые шаблоны", href: AppRoute.PROMPTS },
 ];
