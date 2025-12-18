@@ -14,6 +14,7 @@ import { setAuthModalOpen } from "@/features/auth/authSlice";
 import { EmptyUploader } from "./components/EmptyUploader";
 import { CropperStep, AspectPreset } from "./components/CropperStep";
 import { CropControls } from "./components/CropControls";
+import { DoubleUploader } from "./components/DoubleUploader";
 
 type ImageUploadWithCropProps = {
   /** single: FileDto | null, multiple: FileDto[] | null */
@@ -21,6 +22,8 @@ type ImageUploadWithCropProps = {
 
   /** single: FileDto | null, multiple: FileDto[] | null */
   onChange?: (value: FileDto | FileDto[] | null) => void;
+
+  mode?: "default" | "double";
 
   /** Колбек, который получит файл (кропнутый или оригинал) и вернёт сохранённый FileDto */
   onUpload: (file: File) => Promise<FileDto> | FileDto;
@@ -55,6 +58,7 @@ export type ImageUploadWithCropSteps = "idle" | "cropping" | "uploading";
 export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
   value,
   onChange,
+  mode = "default",
   onUpload,
   accept = "image/png,image/jpg,image/jpeg,image/webp",
   maxFileSizeMb = 10,
@@ -74,11 +78,24 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
   const [banner, setBanner] = useState<LocalBanner | null>(null);
   const [showBanner, setShowBanner] = useState(false);
 
+  const isDoubleMode = mode === "double";
+
   // Список загруженных файлов (single = максимум 1)
   const [previewImages, setPreviewImages] = useState<FileDto[]>([]);
 
   // id временной плитки, на которой надо показывать Loader
   const [uploadingId, setUploadingId] = useState<string | null>(null);
+
+  // DOUBLE mode slots
+  const [doubleSlots, setDoubleSlots] = useState<
+    [FileDto | null, FileDto | null]
+  >([null, null]);
+  const [doubleDraggingSlotIndex, setDoubleDraggingSlotIndex] = useState<
+    number | null
+  >(null);
+  const [doubleUploadingSlotIndex, setDoubleUploadingSlotIndex] = useState<
+    number | null
+  >(null);
 
   // Для кропа
   const [imageSrc, setImageSrc] = useState<string | null>(null);
@@ -94,12 +111,37 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
   >(initialAspectPreset);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const inputRefDouble = useRef<HTMLInputElement>(null);
+  const [doubleActiveSlotIndex, setDoubleActiveSlotIndex] = useState<0 | 1>(0);
 
-  const effectiveMaxFiles = Math.max(1, multiple ? maxFiles : 1);
+  const effectiveMaxFiles = Math.max(
+    1,
+    isDoubleMode ? 2 : multiple ? maxFiles : 1
+  );
+  const effectiveEnableCrop = !isDoubleMode && enableCrop;
   const canAddMore = previewImages.length < effectiveMaxFiles;
 
   // value -> state
   useEffect(() => {
+    if (isDoubleMode) {
+      if (!value) {
+        setDoubleSlots([null, null]);
+        return;
+      }
+
+      if (Array.isArray(value)) {
+        const next: [FileDto | null, FileDto | null] = [
+          value[0] ?? null,
+          value[1] ?? null,
+        ];
+        setDoubleSlots(next);
+        return;
+      }
+
+      setDoubleSlots([value, null]);
+      return;
+    }
+
     if (!value) {
       setPreviewImages([]);
       return;
@@ -109,10 +151,10 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
       return;
     }
     setPreviewImages([value]);
-  }, [value, effectiveMaxFiles]);
+  }, [value, effectiveMaxFiles, isDoubleMode]);
 
   const emitChange = (nextRealOnly: FileDto[]) => {
-    if (multiple) {
+    if (isDoubleMode || multiple) {
       onChange?.(nextRealOnly.length ? nextRealOnly : null);
     } else {
       onChange?.(nextRealOnly[0] ?? null);
@@ -179,6 +221,19 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     return true;
   };
 
+  const ensureCanAcceptNewFileInDouble = (slotIndex: 0 | 1) => {
+    const slotFilled = !!doubleSlots[slotIndex];
+    if (slotFilled) return true; // replace is ok
+
+    const count = doubleSlots.filter(Boolean).length;
+    if (count >= 2) {
+      showError("Можно загрузить максимум 2 изображения");
+      return false;
+    }
+
+    return true;
+  };
+
   // --- Temp preview helpers (чтобы не схлопывалось и был Loader на плитке) ---
   const addTempTile = (file: File) => {
     const objectUrl = URL.createObjectURL(file);
@@ -234,7 +289,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
       return;
     }
 
-    if (!enableCrop) {
+    if (!effectiveEnableCrop) {
       // ✅ без кропа: сразу показываем превью + лоадер на временной плитке
       hideBanner();
       setStep("uploading");
@@ -290,10 +345,89 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     await processFile(file);
   };
 
+  const handleIncomingFileDouble = async (slotIndex: 0 | 1, file: File) => {
+    if (step === "uploading") return;
+    if (requireAuth()) return;
+    if (requireTokens()) return;
+    if (!ensureCanAcceptNewFileInDouble(slotIndex)) return;
+
+    try {
+      validateFile(file, maxFileSizeMb ?? 10, accept);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Неверный файл";
+      showError(message);
+      return;
+    }
+
+    hideBanner();
+    setStep("uploading");
+
+    const objectUrl = URL.createObjectURL(file);
+    const tempId = `temp-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+    setDoubleSlots((prev) => {
+      const next: [FileDto | null, FileDto | null] = [prev[0], prev[1]];
+      next[slotIndex] = { id: tempId, url: objectUrl } as FileDto;
+      return next;
+    });
+
+    setUploadingId(tempId);
+    setDoubleUploadingSlotIndex(slotIndex);
+
+    try {
+      const uploaded = await Promise.resolve(onUpload(file));
+      if (!uploaded || !uploaded.id) throw new Error("Не удалось загрузить файл");
+
+      setDoubleSlots((prev) => {
+        const next: [FileDto | null, FileDto | null] = [prev[0], prev[1]];
+        next[slotIndex] = uploaded;
+        return next;
+      });
+
+      URL.revokeObjectURL(objectUrl);
+      setUploadingId(null);
+      setDoubleUploadingSlotIndex(null);
+
+      const nextReal = getRealOnly(
+        ([doubleSlots[0], doubleSlots[1]]
+          .map((x, i) => (i === slotIndex ? uploaded : x))
+          .filter(Boolean) as FileDto[])
+      );
+      emitChange(nextReal);
+
+      showSuccess();
+      setStep("idle");
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Ошибка при загрузке файла";
+      showError(message);
+
+      setDoubleSlots((prev) => {
+        const next: [FileDto | null, FileDto | null] = [prev[0], prev[1]];
+        if (next[slotIndex]?.id === tempId) next[slotIndex] = null;
+        return next;
+      });
+
+      URL.revokeObjectURL(objectUrl);
+      setUploadingId(null);
+      setDoubleUploadingSlotIndex(null);
+      setStep("idle");
+    }
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     await handleIncomingFile(file);
+    e.target.value = "";
+  };
+
+  const handleFileChangeDouble = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await handleIncomingFileDouble(doubleActiveSlotIndex, file);
     e.target.value = "";
   };
 
@@ -321,6 +455,19 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     await handleIncomingFile(file);
   };
 
+  const handleDropDouble =
+    (slotIndex: 0 | 1) => async (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      setDoubleDraggingSlotIndex(null);
+
+      const file = e.dataTransfer.files?.[0];
+      if (!file) return;
+
+      await handleIncomingFileDouble(slotIndex, file);
+    };
+
   const handleUploadAreaClick = () => {
     if (step === "uploading") return;
     if (requireAuth()) return;
@@ -334,12 +481,29 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     inputRef.current?.click();
   };
 
+  const handleUploadAreaClickDouble = (slotIndex: 0 | 1) => {
+    if (step === "uploading") return;
+    if (requireAuth()) return;
+    if (requireTokens()) return;
+
+    setDoubleActiveSlotIndex(slotIndex);
+    inputRefDouble.current?.click();
+  };
+
   const handleUploadAreaKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       handleUploadAreaClick();
     }
   };
+
+  const handleUploadAreaKeyDownDouble =
+    (slotIndex: 0 | 1) => (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        handleUploadAreaClickDouble(slotIndex);
+      }
+    };
 
   // --- Cropper ---
   const onCropComplete = useCallback(
@@ -357,7 +521,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
   };
 
   const handleConfirm = async () => {
-    if (!enableCrop) return;
+    if (!effectiveEnableCrop) return;
     if (step === "uploading") return;
     if (!imageSrc || !croppedAreaPixels || !originalFile) return;
 
@@ -451,6 +615,32 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     }
   };
 
+  const handleRemoveAtDouble = async (slotIndex: 0 | 1) => {
+    const file = doubleSlots[slotIndex];
+    if (!file) return;
+
+    if (uploadingId && file.id === uploadingId) return;
+
+    const prev = doubleSlots;
+    const next: [FileDto | null, FileDto | null] = [prev[0], prev[1]];
+    next[slotIndex] = null;
+    setDoubleSlots(next);
+
+    emitChange(getRealOnly(next.filter(Boolean) as FileDto[]));
+
+    if (!onRemove) return;
+
+    try {
+      await Promise.resolve(onRemove(file));
+    } catch (err) {
+      setDoubleSlots(prev);
+      emitChange(getRealOnly(prev.filter(Boolean) as FileDto[]));
+      const message =
+        err instanceof Error ? err.message : "Не удалось удалить файл";
+      showError(message);
+    }
+  };
+
   const stroke = theme === "dark" ? "%23CBD0DC" : "%237d7f84";
   const hasPreview = previewImages.length > 0;
 
@@ -467,6 +657,13 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
         className="hidden"
         ref={inputRef}
       />
+      <input
+        type="file"
+        accept={accept}
+        onChange={handleFileChangeDouble}
+        className="hidden"
+        ref={inputRefDouble}
+      />
 
       <ImageUploadBanner
         banner={banner}
@@ -476,7 +673,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
       />
 
       {/* Превью (single/multiple) */}
-      {hasPreview && !imageSrc && (
+      {!isDoubleMode && hasPreview && !imageSrc && (
         <ImageUploadPreview
           images={previewImages}
           theme={theme}
@@ -497,7 +694,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
       )}
 
       {/* Пустой аплоадер (когда превью ещё нет) */}
-      {showUploader && (
+      {!isDoubleMode && showUploader && (
         <EmptyUploader
           stroke={stroke}
           fromToImagesUrls={fromToImagesUrls}
@@ -515,8 +712,35 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
         />
       )}
 
+      {isDoubleMode && !imageSrc && (
+        <DoubleUploader
+          stroke={stroke}
+          maxFileSizeMb={maxFileSizeMb}
+          isUploading={step === "uploading"}
+          uploadingSlotIndex={doubleUploadingSlotIndex}
+          isAuth={isAuth}
+          user={user}
+          slots={doubleSlots}
+          draggingSlotIndex={doubleDraggingSlotIndex}
+          onDragOverAt={(idx, e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setDoubleDraggingSlotIndex(idx);
+          }}
+          onDragLeaveAt={(idx, e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (doubleDraggingSlotIndex === idx) setDoubleDraggingSlotIndex(null);
+          }}
+          onDropAt={(idx, e) => handleDropDouble(idx)(e)}
+          onClickAt={(idx) => handleUploadAreaClickDouble(idx)}
+          onKeyDownAt={(idx, e) => handleUploadAreaKeyDownDouble(idx)(e)}
+          onRemoveAt={(idx) => handleRemoveAtDouble(idx)}
+        />
+      )}
+
       {/* Шаг кропа */}
-      {enableCrop && step !== "idle" && imageSrc && (
+      {effectiveEnableCrop && step !== "idle" && imageSrc && (
         <CropperStep
           step={step}
           imageSrc={imageSrc}
@@ -533,7 +757,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
       )}
 
       {/* Кнопки управления при кропе */}
-      {enableCrop && imageSrc && (
+      {effectiveEnableCrop && imageSrc && (
         <CropControls
           step={step}
           zoom={zoom}

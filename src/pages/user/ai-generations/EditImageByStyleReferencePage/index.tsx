@@ -24,7 +24,7 @@ import { useNavigate } from "react-router-dom";
 import z from "zod";
 
 const modelJobSchema = z.object({
-  inputFileIds: z.array(z.string()).min(1, "Загрузите изображение"),
+  inputFileIds: z.array(z.string()).length(2, "Загрузите два изображения"),
   aspectRatio: z.string().nullable(),
   imageSize: z.string().nullable(),
 });
@@ -108,9 +108,7 @@ export default function EditImageByStyleReferencePage() {
                     field.onChange(files.map((f) => f.id));
                     if (files.length) clearErrors("inputFileIds");
                   }}
-                  multiple
-                  maxFiles={10}
-                  enableCrop={false}
+                  mode="double"
                   onUpload={async (file) => {
                     clearErrors("inputFileIds");
 
@@ -143,7 +141,7 @@ export default function EditImageByStyleReferencePage() {
           </div>
 
           {/* Формат */}
-          <div className="relative mb-0 mt-4 flex flex-col items-start gap-2">
+          <div className="relative mb-0 mt-12 flex flex-col items-start gap-2">
             <div className="text-lg font-medium">Формат изображения</div>
 
             <Controller
