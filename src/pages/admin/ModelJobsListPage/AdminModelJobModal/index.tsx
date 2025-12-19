@@ -179,13 +179,30 @@ export default function AdminModelJobModal() {
                 <div className="text-xs text-base-content/60 uppercase tracking-wide">
                   Изображения
                 </div>
-                <div className="flex flex-wrap gap-4">
-                  <ImageThumb label="Вход" url={modelJob.inputFileUrl} />
-                  <ImageThumb label="Выход" url={modelJob.outputFileUrl} />
-                  <ImageThumb
-                    label="Превью"
-                    url={modelJob.outputPreviewFileUrl}
-                  />
+
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-2">
+                    <p>Вход</p>
+                    <div className="flex gap-2 flex-wrap">
+                      {modelJob.inputFileUrls.map((url) => (
+                        <ImageThumb url={url} imgClassName="rounded-field" />
+                      ))}
+                    </div>
+
+                    <p>Превью</p>
+                    <div className="flex gap-2 flex-wrap">
+                      {modelJob.outputPreviewFileUrls.map((url) => (
+                        <ImageThumb url={url} imgClassName="rounded-field" />
+                      ))}
+                    </div>
+
+                    <p>Выход</p>
+                    <div className="flex gap-2 flex-wrap">
+                      {modelJob.outputFileUrls.map((url) => (
+                        <ImageThumb url={url} imgClassName="rounded-field" />
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </section>
 

@@ -43,7 +43,6 @@ export const DoubleUploader: React.FC<Props> = ({
   isAuth,
   user,
   slots,
-  draggingSlotIndex,
   onDropAt,
   onDragOverAt,
   onDragLeaveAt,
@@ -145,7 +144,8 @@ export const DoubleUploader: React.FC<Props> = ({
         <div className="flex flex-col items-center text-center gap-2 mt-2">
           {!isAuth && (
             <div className={cn("text-[18px] sm:px-30 text-warning")}>
-              Войдите в аккаунт, чтобы загрузить фото и&nbsp;начать редактирование
+              Войдите в аккаунт, чтобы загрузить фото и&nbsp;начать
+              редактирование
             </div>
           )}
 
