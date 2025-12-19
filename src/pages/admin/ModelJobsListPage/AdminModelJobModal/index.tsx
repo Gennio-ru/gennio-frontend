@@ -62,10 +62,6 @@ export default function AdminModelJobModal() {
   const formatDate = (value: string | null) =>
     value ? new Date(value).toLocaleString() : "—";
 
-  const title =
-    modelJob?.text ||
-    (modelJobId ? `Задача модели ${modelJobId.slice(0, 8)}…` : "Задача модели");
-
   return (
     <Dialog
       open={open}
@@ -79,7 +75,7 @@ export default function AdminModelJobModal() {
       >
         <DialogHeader className="relative pb-3 shrink-0">
           <DialogTitle className="text-center text-lg line-clamp-2">
-            {title}
+            {modelJob?.id}
           </DialogTitle>
 
           <DialogClose
@@ -182,26 +178,47 @@ export default function AdminModelJobModal() {
 
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col gap-2">
-                    <p>Вход</p>
-                    <div className="flex gap-2 flex-wrap">
-                      {modelJob.inputFileUrls.map((url) => (
-                        <ImageThumb url={url} imgClassName="rounded-field" />
-                      ))}
-                    </div>
+                    {modelJob.inputFileUrls.length > 0 && (
+                      <div>
+                        <p>Вход</p>
+                        <div className="flex gap-2 flex-wrap">
+                          {modelJob.inputFileUrls.map((url) => (
+                            <ImageThumb
+                              url={url}
+                              imgClassName="rounded-field"
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
-                    <p>Превью</p>
-                    <div className="flex gap-2 flex-wrap">
-                      {modelJob.outputPreviewFileUrls.map((url) => (
-                        <ImageThumb url={url} imgClassName="rounded-field" />
-                      ))}
-                    </div>
+                    {modelJob.outputPreviewFileUrls.length > 0 && (
+                      <div>
+                        <p>Превью</p>
+                        <div className="flex gap-2 flex-wrap">
+                          {modelJob.outputPreviewFileUrls.map((url) => (
+                            <ImageThumb
+                              url={url}
+                              imgClassName="rounded-field"
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
-                    <p>Выход</p>
-                    <div className="flex gap-2 flex-wrap">
-                      {modelJob.outputFileUrls.map((url) => (
-                        <ImageThumb url={url} imgClassName="rounded-field" />
-                      ))}
-                    </div>
+                    {modelJob.outputFileUrls.length > 0 && (
+                      <div>
+                        <p>Выход</p>
+                        <div className="flex gap-2 flex-wrap">
+                          {modelJob.outputFileUrls.map((url) => (
+                            <ImageThumb
+                              url={url}
+                              imgClassName="rounded-field"
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </section>

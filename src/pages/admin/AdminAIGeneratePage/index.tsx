@@ -7,6 +7,7 @@ import { route } from "@/shared/config/routes";
 import { AspectRatioSegmentedControl } from "@/shared/ui/AspectRatioSegmentedControl";
 import Button from "@/shared/ui/Button";
 import GlassCard from "@/shared/ui/GlassCard";
+import { ImageSizeSegmentedControl } from "@/shared/ui/ImageSizeSegmentedControl";
 import { ImageUploadWithCrop } from "@/shared/ui/ImageUploadWithCrop";
 import { SegmentedControl } from "@/shared/ui/SegmentedControl";
 import Textarea from "@/shared/ui/Textarea";
@@ -19,7 +20,7 @@ import z from "zod";
 
 const modelJobSchema = z.object({
   text: z.string().min(1, "Добавьте текст промпта"),
-  inputFileIds: z.array(z.string()).min(1, "Загрузите изображение"),
+  inputFileIds: z.array(z.string()),
   aspectRatio: z.string().nullable(),
   imageSize: z.string().nullable(),
   model: z.enum(ModelType),
@@ -43,7 +44,7 @@ export default function AdminAIGeneratePage() {
       text: "",
       inputFileIds: [],
       aspectRatio: null,
-      imageSize: null,
+      imageSize: "1K",
       model: ModelType.OPENAI,
     },
     mode: "onSubmit",
@@ -55,6 +56,8 @@ export default function AdminAIGeneratePage() {
       setIsFetching(true);
       const res = await apiStartAdminGenerate({
         ...data,
+        inputFileIds:
+          data.inputFileIds.length > 0 ? data.inputFileIds : undefined,
         aspectRatio: data.aspectRatio || undefined,
         imageSize: data.aspectRatio || undefined,
         type:
@@ -109,6 +112,9 @@ export default function AdminAIGeneratePage() {
               control={control}
               render={({ field }) => (
                 <ImageUploadWithCrop
+                  multiple
+                  maxFiles={6}
+                  enableCrop={false}
                   onChange={(value) => {
                     if (value === null) {
                       field.onChange("");
@@ -183,6 +189,23 @@ export default function AdminAIGeneratePage() {
                 <AspectRatioSegmentedControl
                   {...field}
                   model={ModelType.GEMINI}
+                  size="xs"
+                  variant="surface"
+                />
+              )}
+            />
+          </div>
+
+          {/* Разрешение */}
+          <div className="relative mb-0 mt-4 flex flex-col items-start gap-2">
+            <div className="text-lg font-medium">Разрешение</div>
+
+            <Controller
+              name="imageSize"
+              control={control}
+              render={({ field }) => (
+                <ImageSizeSegmentedControl
+                  {...field}
                   size="xs"
                   variant="surface"
                 />
