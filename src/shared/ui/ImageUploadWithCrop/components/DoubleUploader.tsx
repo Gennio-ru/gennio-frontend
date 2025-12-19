@@ -62,14 +62,12 @@ export const DoubleUploader: React.FC<Props> = ({
         {([0, 1] as const).map((idx) => {
           const slot = slots[idx];
           const isSlotUploading = isUploading && uploadingSlotIndex === idx;
-          const isSlotDragging = draggingSlotIndex === idx;
 
           return (
             <div
               key={idx}
               className={cn(
                 "relative h-full flex items-center justify-center aspect-square rounded-field text-center cursor-pointer transition-colors overflow-hidden",
-                isSlotDragging && "ring-2 ring-primary/60",
                 isUploading && "pointer-events-none opacity-70"
               )}
               style={{
