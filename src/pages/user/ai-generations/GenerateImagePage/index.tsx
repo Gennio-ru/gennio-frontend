@@ -11,6 +11,7 @@ import { ymGoal } from "@/lib/metrics/yandexMetrika";
 import { cn } from "@/lib/utils";
 import { route } from "@/shared/config/routes";
 import { AIGenerationTitle } from "@/shared/ui/AIGenerationTitle";
+import { AIModelLabel } from "@/shared/ui/AIModelLabel";
 import { AspectRatioSegmentedControl } from "@/shared/ui/AspectRatioSegmentedControl";
 import Button from "@/shared/ui/Button";
 import GlassCard from "@/shared/ui/GlassCard";
@@ -80,6 +81,8 @@ export default function GenerateImagePage() {
       />
 
       <GlassCard className="w-full mx-auto max-w-2xl">
+        <AIModelLabel text="gpt-image-1 (OpenAI)" />
+
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-6 text-base-content"
@@ -113,7 +116,7 @@ export default function GenerateImagePage() {
                     field.onChange(e);
                     clearErrors("text");
                   }}
-                  maxLength={700}
+                  maxLength={1000}
                   errored={!!errors.text}
                   errorMessage={errors.text?.message}
                 />

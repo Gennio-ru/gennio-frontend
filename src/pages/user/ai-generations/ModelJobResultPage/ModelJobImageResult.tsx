@@ -13,6 +13,7 @@ import { CircleAlert } from "lucide-react";
 import { Tooltip } from "@/shared/ui/Tooltip";
 import { ymGoal } from "@/lib/metrics/yandexMetrika";
 import { AspectRatio, getAspectRatio, ImageMeta } from "./helpers";
+import GlassCard from "@/shared/ui/GlassCard";
 
 type Props = {
   job: ModelJobFull;
@@ -38,8 +39,6 @@ export function ModelJobImageResult({ job }: Props) {
   const outputPreviewFile = firstOf(job.outputPreviewFiles);
   const outputFileUrl = firstOf(job.outputFileUrls);
   const outputFile = firstOf(job.outputFiles);
-
-  console.log(job);
 
   // Ориентация — по результату (preview), если есть, иначе по input
   const mainMeta: ImageMeta | undefined = outputPreviewFile as
@@ -115,6 +114,17 @@ export function ModelJobImageResult({ job }: Props) {
         </Tooltip>
       )}
 
+      {job.type !== "image-edit-by-style-reference" &&
+        job.inputFileUrls?.length > 1 && (
+          <GlassCard className="p-2 sm:p-3 mb-4 w-fit mx-auto">
+            <div className="grid grid-cols-6 gap-2 sm:gap-3">
+              {job.inputFileUrls.map((url) => (
+                <ModelJobResultInputPreview url={url} aspectRatio="1:1" />
+              ))}
+            </div>
+          </GlassCard>
+        )}
+
       {aspectRatio === "1:1" && hasOutput && (
         <div className="w-full flex justify-center">
           <ResultImageWithPreview
@@ -123,14 +133,32 @@ export function ModelJobImageResult({ job }: Props) {
             containerClassName="relative rounded-selector w-full max-w-[500px] aspect-[1/1]"
             className="rounded-selector h-full w-full object-cover"
           >
-            {hasInput && (
-              <ModelJobResultInputPreview
-                url={inputFileUrl!}
-                aspectRatio={inputAspectRatio}
-                containerClassName="absolute hidden lg:block top-0 left-0 -translate-x-[calc(100%+24px)]"
-                className="rounded-selector w-full h-full object-cover"
-              />
-            )}
+            {hasInput &&
+              (job.type === "image-edit-by-style-reference" ? (
+                <>
+                  <ModelJobResultInputPreview
+                    url={job.inputFileUrls[0]}
+                    aspectRatio="1:1"
+                    containerClassName="absolute hidden lg:block top-0 left-0 -translate-x-[calc(100%+24px)]"
+                    className="rounded-selector w-full h-full object-cover"
+                  />
+                  <ModelJobResultInputPreview
+                    url={job.inputFileUrls[1]}
+                    aspectRatio="1:1"
+                    containerClassName="absolute hidden lg:block top-0 left-0 translate-y-[calc(100%+24px)] -translate-x-[calc(100%+24px)]"
+                    className="rounded-selector w-full h-full object-cover"
+                  />
+                </>
+              ) : (
+                job.inputFileUrls.length === 1 && (
+                  <ModelJobResultInputPreview
+                    url={inputFileUrl!}
+                    aspectRatio={inputAspectRatio}
+                    containerClassName="absolute hidden lg:block top-0 left-0 -translate-x-[calc(100%+24px)]"
+                    className="rounded-selector w-full h-full object-cover"
+                  />
+                )
+              ))}
           </ResultImageWithPreview>
         </div>
       )}
@@ -151,14 +179,32 @@ export function ModelJobImageResult({ job }: Props) {
               )}
               className="rounded-selector h-full w-full object-cover"
             >
-              {hasInput && (
-                <ModelJobResultInputPreview
-                  url={inputFileUrl!}
-                  aspectRatio={inputAspectRatio}
-                  containerClassName="absolute hidden lg:block top-0 left-0 -translate-x-[calc(100%+24px)]"
-                  className="rounded-selector w-full h-full object-cover"
-                />
-              )}
+              {hasInput &&
+                (job.type === "image-edit-by-style-reference" ? (
+                  <>
+                    <ModelJobResultInputPreview
+                      url={job.inputFileUrls[0]}
+                      aspectRatio="1:1"
+                      containerClassName="absolute hidden lg:block top-0 left-0 -translate-x-[calc(100%+24px)]"
+                      className="rounded-selector w-full h-full object-cover"
+                    />
+                    <ModelJobResultInputPreview
+                      url={job.inputFileUrls[1]}
+                      aspectRatio="1:1"
+                      containerClassName="absolute hidden lg:block top-0 left-0 translate-y-[calc(100%+24px)] -translate-x-[calc(100%+24px)]"
+                      className="rounded-selector w-full h-full object-cover"
+                    />
+                  </>
+                ) : (
+                  job.inputFileUrls.length === 1 && (
+                    <ModelJobResultInputPreview
+                      url={inputFileUrl!}
+                      aspectRatio={inputAspectRatio}
+                      containerClassName="absolute hidden lg:block top-0 left-0 -translate-x-[calc(100%+24px)]"
+                      className="rounded-selector w-full h-full object-cover"
+                    />
+                  )
+                ))}
             </ResultImageWithPreview>
           </div>
         )}
@@ -179,14 +225,32 @@ export function ModelJobImageResult({ job }: Props) {
               )}
               className="rounded-selector h-full w-full object-cover"
             >
-              {hasInput && (
-                <ModelJobResultInputPreview
-                  url={inputFileUrl!}
-                  aspectRatio={inputAspectRatio}
-                  containerClassName="absolute hidden lg:block top-0 left-0 -translate-x-[calc(100%+24px)]"
-                  className="rounded-selector w-full h-full object-cover"
-                />
-              )}
+              {hasInput &&
+                (job.type === "image-edit-by-style-reference" ? (
+                  <>
+                    <ModelJobResultInputPreview
+                      url={job.inputFileUrls[0]}
+                      aspectRatio="1:1"
+                      containerClassName="absolute hidden lg:block top-0 left-0 -translate-x-[calc(100%+24px)]"
+                      className="rounded-selector w-full h-full object-cover"
+                    />
+                    <ModelJobResultInputPreview
+                      url={job.inputFileUrls[1]}
+                      aspectRatio="1:1"
+                      containerClassName="absolute hidden lg:block top-0 left-0 translate-y-[calc(100%+24px)] -translate-x-[calc(100%+24px)]"
+                      className="rounded-selector w-full h-full object-cover"
+                    />
+                  </>
+                ) : (
+                  job.inputFileUrls.length === 1 && (
+                    <ModelJobResultInputPreview
+                      url={inputFileUrl!}
+                      aspectRatio={inputAspectRatio}
+                      containerClassName="absolute hidden lg:block top-0 left-0 -translate-x-[calc(100%+24px)]"
+                      className="rounded-selector w-full h-full object-cover"
+                    />
+                  )
+                ))}
             </ResultImageWithPreview>
           </div>
         )}
@@ -229,7 +293,7 @@ export function ModelJobImageResult({ job }: Props) {
             </Button>
           </div>
 
-          <div className="my-3 text-sm text-base-content/60">
+          <div className="my-4 text-sm text-base-content/60">
             <CircleAlert
               size={18}
               className="min-w-[18px] inline mr-1.5 relative top-[-2px] rotate-180"
@@ -242,13 +306,30 @@ export function ModelJobImageResult({ job }: Props) {
         </div>
       )}
 
-      {hasInput && (
-        <ModelJobResultInputPreview
-          url={inputFileUrl!}
-          aspectRatio={inputAspectRatio}
-          containerClassName="block lg:hidden mt-4 mx-auto"
-        />
-      )}
+      {hasInput &&
+        (job.type === "image-edit-by-style-reference" ? (
+          <div className="flex justify-center gap-4">
+            <ModelJobResultInputPreview
+              url={job.inputFileUrls[0]}
+              aspectRatio="1:1"
+              containerClassName="block lg:hidden mt-4"
+            />
+            <ModelJobResultInputPreview
+              url={job.inputFileUrls[1]}
+              aspectRatio="1:1"
+              containerClassName="block lg:hidden mt-4"
+            />
+          </div>
+        ) : (
+          job.inputFileUrls.length === 1 && (
+            <ModelJobResultInputPreview
+              url={inputFileUrl!}
+              aspectRatio={inputAspectRatio}
+              containerClassName="absolute hidden lg:block top-0 left-0 -translate-x-[calc(100%+24px)]"
+              className="rounded-selector w-full h-full object-cover"
+            />
+          )
+        ))}
     </>
   );
 }

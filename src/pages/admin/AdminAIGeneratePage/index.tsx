@@ -19,8 +19,9 @@ import z from "zod";
 
 const modelJobSchema = z.object({
   text: z.string().min(1, "Добавьте текст промпта"),
-  inputFileId: z.string(),
+  inputFileIds: z.array(z.string()).min(1, "Загрузите изображение"),
   aspectRatio: z.string().nullable(),
+  imageSize: z.string().nullable(),
   model: z.enum(ModelType),
 });
 
@@ -40,8 +41,9 @@ export default function AdminAIGeneratePage() {
     resolver: zodResolver(modelJobSchema),
     defaultValues: {
       text: "",
-      inputFileId: "",
+      inputFileIds: [],
       aspectRatio: null,
+      imageSize: null,
       model: ModelType.OPENAI,
     },
     mode: "onSubmit",
@@ -54,9 +56,11 @@ export default function AdminAIGeneratePage() {
       const res = await apiStartAdminGenerate({
         ...data,
         aspectRatio: data.aspectRatio || undefined,
-        type: data.inputFileId
-          ? "image-edit-by-prompt-text"
-          : "image-generate-by-prompt-text",
+        imageSize: data.aspectRatio || undefined,
+        type:
+          data.inputFileIds.length > 0
+            ? "image-edit-by-prompt-text"
+            : "image-generate-by-prompt-text",
       });
       dispatch(setUser(res.user));
       navigate(route.jobWait(res));
@@ -101,7 +105,7 @@ export default function AdminAIGeneratePage() {
           {/* Референс */}
           <div className="relative mb-0">
             <Controller
-              name="inputFileId"
+              name="inputFileIds"
               control={control}
               render={({ field }) => (
                 <ImageUploadWithCrop
@@ -111,7 +115,7 @@ export default function AdminAIGeneratePage() {
                     }
                   }}
                   onUpload={async (file) => {
-                    clearErrors("inputFileId");
+                    clearErrors("inputFileIds");
 
                     if (!file) {
                       throw new Error("Файл не передан");
@@ -136,9 +140,9 @@ export default function AdminAIGeneratePage() {
               )}
             />
 
-            {errors.inputFileId && (
+            {errors.inputFileIds && (
               <p className="absolute top-full mt-1 text-xs text-error">
-                {errors.inputFileId.message}
+                {errors.inputFileIds.message}
               </p>
             )}
           </div>
@@ -162,7 +166,7 @@ export default function AdminAIGeneratePage() {
                   }}
                   errored={!!errors.text}
                   errorMessage={errors.text?.message}
-                  maxLength={700}
+                  maxLength={2000}
                 />
               )}
             />

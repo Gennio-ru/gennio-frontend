@@ -3,6 +3,7 @@ import {
   apiStartImageEditByPromptText,
   ModelType,
 } from "@/api/modules/model-job";
+import { PROVIDER_COST_OBJECT } from "@/api/modules/pricing";
 import { setPaymentModalOpen } from "@/features/app/appSlice";
 import { setAuthModalOpen, setUser } from "@/features/auth/authSlice";
 import { useAuth } from "@/features/auth/useAuth";
@@ -11,6 +12,7 @@ import { checkApiResponseErrorCode } from "@/lib/helpers";
 import { ymGoal } from "@/lib/metrics/yandexMetrika";
 import { route } from "@/shared/config/routes";
 import { AIGenerationTitle } from "@/shared/ui/AIGenerationTitle";
+import { AIModelLabel } from "@/shared/ui/AIModelLabel";
 import { AspectRatioSegmentedControl } from "@/shared/ui/AspectRatioSegmentedControl";
 import Button from "@/shared/ui/Button";
 import GlassCard from "@/shared/ui/GlassCard";
@@ -19,13 +21,13 @@ import { ImageUploadWithCrop } from "@/shared/ui/ImageUploadWithCrop";
 import Textarea from "@/shared/ui/Textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import z from "zod";
 
 const modelJobSchema = z.object({
-  text: z.string().min(1, "Добавьте текст промпта"),
+  text: z.string().min(1, "Добавьте описание"),
   inputFileIds: z.array(z.string()).min(1, "Загрузите изображение"),
   aspectRatio: z.string().nullable(),
   imageSize: z.string().nullable(),
@@ -82,6 +84,11 @@ export default function EditImageByCustomPromptPage() {
 
   const isBusy = isFetching || isSubmitting;
 
+  const selectedImageSize = useWatch({ control, name: "imageSize" });
+
+  const { standard: standardPrice, high: highPrice } =
+    PROVIDER_COST_OBJECT["GEMINI"]["edit"];
+
   return (
     <>
       <AIGenerationTitle
@@ -90,6 +97,8 @@ export default function EditImageByCustomPromptPage() {
       />
 
       <GlassCard className="w-full max-w-2xl mx-auto">
+        <AIModelLabel text="Nano Banana PRO" />
+
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-7 text-base-content"
@@ -112,7 +121,7 @@ export default function EditImageByCustomPromptPage() {
                     if (files.length) clearErrors("inputFileIds");
                   }}
                   multiple
-                  maxFiles={10}
+                  maxFiles={6}
                   enableCrop={false}
                   onUpload={async (file) => {
                     clearErrors("inputFileIds");
@@ -164,7 +173,7 @@ export default function EditImageByCustomPromptPage() {
                   }}
                   errored={!!errors.text}
                   errorMessage={errors.text?.message}
-                  maxLength={700}
+                  maxLength={1000}
                 />
               )}
             />
@@ -211,9 +220,13 @@ export default function EditImageByCustomPromptPage() {
               <Button
                 type="submit"
                 disabled={isBusy}
-                className="mt-12 px-6 w-[200px]"
+                className="mt-12 px-6 min-w-[200px] text-nowrap"
               >
-                {isSubmitting ? "Загрузка..." : "Сгенерировать"}
+                {isSubmitting
+                  ? "Загрузка..."
+                  : `Сгенерировать за ${
+                      selectedImageSize === "4K" ? highPrice : standardPrice
+                    } токенов`}
               </Button>
             )}
 

@@ -1247,7 +1247,7 @@ export interface components {
         };
         StartImageEditByPromptTextDto: {
             /**
-             * @description Не более 700 символов
+             * @description Не более 1000 символов
              * @example Мягкое освещение, крупный план
              */
             text: string;
@@ -1278,7 +1278,7 @@ export interface components {
         };
         StartImageGenerateByPromptTextDto: {
             /**
-             * @description Не более 700 символов
+             * @description Не более 1000 символов
              * @example Мягкое освещение, крупный план
              */
             text: string;
@@ -1290,7 +1290,7 @@ export interface components {
         };
         StartAdminGenerateDto: {
             /**
-             * @description Не более 700 символов
+             * @description Не более 2000 символов
              * @example Мягкое освещение, крупный план
              */
             text: string;

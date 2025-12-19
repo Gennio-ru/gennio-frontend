@@ -211,6 +211,24 @@ export function AppRoutes() {
             </Suspense>
           }
         />
+
+        {/* Копирование стиля фото */}
+        <Route
+          path="/ai-generation/edit-image-by-style-reference/result/:modelJobId"
+          element={
+            <Suspense fallback={<Loader />}>
+              <ModelJobResultPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/ai-generation/edit-image-by-style-reference/result/:modelJobId/wait"
+          element={
+            <Suspense fallback={<Loader />}>
+              <ModelJobWaitingResultPage />
+            </Suspense>
+          }
+        />
       </Route>
 
       {/* --- ADMIN --- */}
