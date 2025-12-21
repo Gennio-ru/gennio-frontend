@@ -1345,33 +1345,23 @@ export interface components {
          * @description Уникальный идентификатор пакета
          * @enum {string}
          */
-        TokensPackId: "ONCE" | "STARTER" | "BASIC" | "PRO";
+        TokensPackId: "STARTER" | "BASIC" | "PRO";
         TokenPackDto: {
             /** @example STARTER */
             id: components["schemas"]["TokensPackId"];
             /**
              * @description Название пакета, отображаемое пользователю
-             * @example 5 генераций
+             * @example Старт
              */
             name: string;
             /**
-             * @description Количество токенов в пакете
-             * @example 25
+             * @description Количество токенов, которое будет начислено пользователю
+             * @example 100
              */
             tokens: number;
             /**
-             * @description Ориентировочное количество генераций, которое покрывает пакет
-             * @example 5
-             */
-            generations: number;
-            /**
-             * @description Скидка в процентах относительно базовой цены
-             * @example 10
-             */
-            discountPercent: number;
-            /**
-             * @description Стоимость в рублях
-             * @example 35
+             * @description Стоимость пакета в рублях
+             * @example 100
              */
             priceRub: number;
             /**
@@ -1379,6 +1369,21 @@ export interface components {
              * @example true
              */
             highlight?: boolean;
+            /**
+             * @description Короткая плашка на карточке пакета (например, “Выгодно”)
+             * @example +10% бонус
+             */
+            badge?: string;
+            /**
+             * @description Короткое пояснение под названием пакета
+             * @example Для регулярного использования
+             */
+            subtitle?: string;
+            /**
+             * @description Бонусные токены относительно оплаты (tokens - priceRub). Если бонусов нет — поле отсутствует.
+             * @example 10
+             */
+            bonusTokens?: number;
         };
         CreateCategoryDto: {
             /** @example Мультипликация */

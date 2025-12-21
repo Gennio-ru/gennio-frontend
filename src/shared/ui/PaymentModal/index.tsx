@@ -89,16 +89,12 @@ export default function PaymentModal() {
         {/* Loading */}
         {loadingPacks && <Loader />}
         <div>
-          <p className="text-lg font-bold">Выберите количество генераций</p>
-
-          <p>Одна генерация = 10 токенов</p>
+          <p className="text-lg font-bold">Выберите пакет токенов</p>
         </div>
         {/* PACKS */}
         {!loadingPacks && packs && (
           <div className="grid gap-3 mt-2">
             {packs.map((pack) => {
-              const giftTokens = (pack.tokens - pack.priceRub) / 10;
-
               return (
                 <div
                   className={cn(
@@ -111,18 +107,18 @@ export default function PaymentModal() {
                   onClick={() => setSelectedPackId(pack.id)}
                 >
                   <div className="flex flex-col">
-                    <div className="font-bold ">
-                      <span>{pack.name} </span>{" "}
-                      {giftTokens > 0 && (
-                        <span className="text-nowrap">
-                          + {giftTokens} в подарок
-                        </span>
-                      )}
+                    <div className="font-bold">
+                      <span>{pack.name} </span>
                     </div>
 
                     <p className="text-sm mt-2">
-                      Входит {pack.tokens}{" "}
-                      {declOfNum(pack.tokens, ["токен", "токена", "токенов"])}
+                      {pack.tokens}{" "}
+                      {declOfNum(pack.tokens, ["токен", "токена", "токенов"])}{" "}
+                      {pack.bonusTokens && (
+                        <span className="text-nowrap">
+                          + {pack.bonusTokens} в подарок
+                        </span>
+                      )}
                     </p>
                   </div>
 
