@@ -104,15 +104,7 @@ export default function PricingPage() {
 
                     <div className="text-nowrap mt-8 flex flex-col">
                       <span className="text-2xl">
-                        {/* <img
-                          src={
-                            theme === "dark" ? tokenDarkLogo : tokenLightLogo
-                          }
-                          className="h-[24px] w-[24px] inline relative top-[-1.5px]"
-                          alt="token-logo"
-                        />
-                        &nbsp; */}
-                        {pack.tokens}
+                        {pack.tokens - (pack.bonusTokens || 0)}
                       </span>
                       <span className="text-base text-base-content/60">
                         {declOfNum(pack.tokens, ["токен", "токена", "токенов"])}
@@ -136,10 +128,10 @@ export default function PricingPage() {
                   </div>
 
                   <Button
-                    onClick={() => handleBuy("PRO")}
+                    onClick={() => handleBuy(pack.id)}
                     className="w-full text-nowrap self-end"
-                    loading={creatingPayment === "PRO"}
-                    disabled={creatingPayment === "PRO"}
+                    loading={creatingPayment === pack.id}
+                    disabled={creatingPayment === pack.id}
                   >
                     Купить за {pack.priceRub} ₽
                   </Button>

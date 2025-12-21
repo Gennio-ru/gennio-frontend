@@ -97,6 +97,7 @@ export default function PaymentModal() {
             {packs.map((pack) => {
               return (
                 <div
+                  key={pack.id}
                   className={cn(
                     "rounded-selector p-4 flex justify-between items-center cursor-pointer gap-4 transition-shadow duration-200",
                     theme === "dark" ? "bg-white/15" : "bg-base-200",
@@ -112,7 +113,7 @@ export default function PaymentModal() {
                     </div>
 
                     <p className="text-sm mt-2">
-                      {pack.tokens}{" "}
+                      {pack.tokens - (pack.bonusTokens || 0)}{" "}
                       {declOfNum(pack.tokens, ["токен", "токена", "токенов"])}{" "}
                       {pack.bonusTokens && (
                         <span className="text-nowrap">

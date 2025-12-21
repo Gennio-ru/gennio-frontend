@@ -1345,7 +1345,7 @@ export interface components {
          * @description Уникальный идентификатор пакета
          * @enum {string}
          */
-        TokensPackId: "STARTER" | "BASIC" | "PRO";
+        TokensPackId: "STARTER" | "BASIC" | "ADVANCED" | "MAXIMUM";
         TokenPackDto: {
             /** @example STARTER */
             id: components["schemas"]["TokensPackId"];
