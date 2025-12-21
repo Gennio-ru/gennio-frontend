@@ -8,7 +8,7 @@ import { setPaymentModalOpen } from "@/features/app/appSlice";
 import { setAuthModalOpen, setUser } from "@/features/auth/authSlice";
 import { useAuth } from "@/features/auth/useAuth";
 import { customToast } from "@/lib/customToast";
-import { checkApiResponseErrorCode } from "@/lib/helpers";
+import { checkApiResponseErrorCode, declOfNum } from "@/lib/helpers";
 import { ymGoal } from "@/lib/metrics/yandexMetrika";
 import { route } from "@/shared/config/routes";
 import { AIGenerationTitle } from "@/shared/ui/AIGenerationTitle";
@@ -57,6 +57,16 @@ export default function EditImageByStyleReferencePage() {
   });
 
   const onSubmit = async (data: ModelJobFormValues) => {
+    if (!isAuth) {
+      dispatch(setAuthModalOpen(true));
+      return;
+    }
+
+    if (isAuth && user.tokens === 0) {
+      dispatch(setPaymentModalOpen(true));
+      return;
+    }
+
     try {
       setIsFetching(true);
       const res = await apiStartImageEditByStyleReference({
@@ -186,39 +196,21 @@ export default function EditImageByStyleReferencePage() {
 
           {/* Кнопка */}
           <div className="flex justify-center">
-            {isAuth && user.tokens > 0 && (
-              <Button
-                type="submit"
-                disabled={isBusy}
-                className="mt-12 px-6 min-w-[200px] text-nowrap"
-              >
-                {isSubmitting
-                  ? "Загрузка..."
-                  : `Сгенерировать за ${
-                      selectedImageSize === "4K" ? highPrice : standardPrice
-                    } токенов`}
-              </Button>
-            )}
-
-            {!isAuth && (
-              <Button
-                type="button"
-                className="mt-12 px-6 w-[200px]"
-                onClick={() => dispatch(setAuthModalOpen(true))}
-              >
-                Войти в аккаунт
-              </Button>
-            )}
-
-            {isAuth && user.tokens === 0 && (
-              <Button
-                type="button"
-                className="mt-12 px-6 w-[200px]"
-                onClick={() => dispatch(setPaymentModalOpen(true))}
-              >
-                Пополнить токены
-              </Button>
-            )}
+            <Button
+              type="submit"
+              disabled={isBusy}
+              className="mt-12 px-6 min-w-[200px] text-nowrap"
+            >
+              {isSubmitting
+                ? "Загрузка..."
+                : `Сгенерировать за ${
+                    selectedImageSize === "4K" ? highPrice : standardPrice
+                  } ${declOfNum(standardPrice, [
+                    "токен",
+                    "токена",
+                    "токенов",
+                  ])}`}
+            </Button>
           </div>
         </form>
       </GlassCard>

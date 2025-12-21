@@ -43,7 +43,8 @@ export const EmptyUploader: React.FC<Props> = ({
   onClick,
   onKeyDown,
 }) => {
-  const hasTokens = isAuth && (user?.role === "admin" || (user?.tokens ?? 0) > 0);
+  const hasTokens =
+    isAuth && (user?.role === "admin" || (user?.tokens ?? 0) > 0);
 
   return (
     <div className="flex flex-col gap-2 h-[340px]">
@@ -111,7 +112,7 @@ export const EmptyUploader: React.FC<Props> = ({
           )}
 
           {isAuth && user?.role !== "admin" && (user?.tokens ?? 0) === 0 && (
-            <div className={cn("text-[18px] sm:px-30 text-warning")}>
+            <div className={cn("text-[18px] sm:px-5 text-warning")}>
               Пополните баланс токенов, чтобы начать редактирование
             </div>
           )}
@@ -119,7 +120,11 @@ export const EmptyUploader: React.FC<Props> = ({
           {multiple && (
             <div className="mt-4 text-sm text-base-content/60">
               До {maxFiles}{" "}
-              {declOfNum(maxFiles, ["изображения", "изображений", "изображений"])}
+              {declOfNum(maxFiles, [
+                "изображения",
+                "изображений",
+                "изображений",
+              ])}
             </div>
           )}
 
@@ -137,4 +142,3 @@ export const EmptyUploader: React.FC<Props> = ({
     </div>
   );
 };
-

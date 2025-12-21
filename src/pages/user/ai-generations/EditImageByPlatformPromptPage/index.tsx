@@ -1,11 +1,12 @@
 import { apiAIUploadFile } from "@/api/modules/files";
 import { apiStartImageEditByPromptId } from "@/api/modules/model-job";
+import { PROVIDER_COST_OBJECT } from "@/api/modules/pricing";
 import { apiGetPrompt, type Prompt } from "@/api/modules/prompts";
 import { setPaymentModalOpen } from "@/features/app/appSlice";
 import { setAuthModalOpen, setUser } from "@/features/auth/authSlice";
 import { useAuth } from "@/features/auth/useAuth";
 import { customToast } from "@/lib/customToast";
-import { checkApiResponseErrorCode } from "@/lib/helpers";
+import { checkApiResponseErrorCode, declOfNum } from "@/lib/helpers";
 import { ymGoal } from "@/lib/metrics/yandexMetrika";
 import { route } from "@/shared/config/routes";
 import { AIGenerationTitle } from "@/shared/ui/AIGenerationTitle";
@@ -24,7 +25,7 @@ import z from "zod";
 
 const modelJobSchema = z.object({
   text: z.string().optional(),
-  inputFileId: z.string().min(1, "Загрузите изображение"),
+  inputFileIds: z.array(z.string()).length(1, "Загрузите изображениe"),
 });
 
 type ModelJobFormValues = z.infer<typeof modelJobSchema>;
@@ -46,12 +47,12 @@ export default function EditImageByPlatformPromptPage() {
     clearErrors,
   } = useForm<ModelJobFormValues>({
     resolver: zodResolver(modelJobSchema),
-    defaultValues: { text: "", inputFileId: "" },
+    defaultValues: { text: "", inputFileIds: [] },
     mode: "onSubmit",
     reValidateMode: "onSubmit",
   });
 
-  const inputFileId = useWatch({ control, name: "inputFileId" });
+  const inputFileId = useWatch({ control, name: "inputFileIds" });
 
   useEffect(() => {
     if (!promptId) return;
@@ -64,6 +65,16 @@ export default function EditImageByPlatformPromptPage() {
   }, [promptId]);
 
   const onSubmit = async (data: ModelJobFormValues) => {
+    if (!isAuth) {
+      dispatch(setAuthModalOpen(true));
+      return;
+    }
+
+    if (isAuth && user.tokens === 0) {
+      dispatch(setPaymentModalOpen(true));
+      return;
+    }
+
     try {
       setIsFetching(true);
       const res = await apiStartImageEditByPromptId({
@@ -87,6 +98,8 @@ export default function EditImageByPlatformPromptPage() {
   };
 
   const isBusy = isFetching || isSubmitting;
+
+  const { standard: standardPrice } = PROVIDER_COST_OBJECT["OPENAI"]["edit"];
 
   if (isLoading) {
     return <Loader />;
@@ -125,7 +138,7 @@ export default function EditImageByPlatformPromptPage() {
           {/* Референс */}
           <div className="relative mb-0">
             <Controller
-              name="inputFileId"
+              name="inputFileIds"
               control={control}
               render={({ field }) => (
                 <ImageUploadWithCrop
@@ -139,12 +152,16 @@ export default function EditImageByPlatformPromptPage() {
                       : undefined
                   }
                   onChange={(value) => {
-                    if (value === null) {
-                      field.onChange("");
-                    }
+                    const files = Array.isArray(value)
+                      ? value
+                      : value
+                      ? [value]
+                      : [];
+                    field.onChange(files.map((f) => f.id));
+                    if (files.length) clearErrors("inputFileIds");
                   }}
                   onUpload={async (file) => {
-                    clearErrors("inputFileId");
+                    clearErrors("inputFileIds");
 
                     if (!file) {
                       throw new Error("Файл не передан");
@@ -157,7 +174,6 @@ export default function EditImageByPlatformPromptPage() {
                         throw new Error("Не удалось загрузить файл");
                       }
 
-                      field.onChange(res.id);
                       return res;
                     } catch (e) {
                       if (checkApiResponseErrorCode(e, "UNAUTHORIZED")) {
@@ -169,9 +185,9 @@ export default function EditImageByPlatformPromptPage() {
               )}
             />
 
-            {errors.inputFileId && (
+            {errors.inputFileIds && (
               <p className="absolute top-full mt-1 text-xs text-error">
-                {errors.inputFileId.message}
+                {errors.inputFileIds.message}
               </p>
             )}
           </div>
@@ -207,39 +223,18 @@ export default function EditImageByPlatformPromptPage() {
 
           {/* Кнопка */}
           <div className="flex justify-center">
-            {isAuth && user.tokens > 0 && inputFileId && (
-              <Button
-                type="submit"
-                disabled={isBusy}
-                className="mt-8 px-6 w-[200px]"
-              >
-                {isSubmitting
-                  ? "Загрузка…"
-                  : isFetching
-                  ? "Загрузка…"
-                  : "Сгенерировать"}
-              </Button>
-            )}
-
-            {!isAuth && (
-              <Button
-                type="button"
-                className="mt-8 px-6 w-[200px]"
-                onClick={() => dispatch(setAuthModalOpen(true))}
-              >
-                Войти в аккаунт
-              </Button>
-            )}
-
-            {isAuth && user.tokens === 0 && (
-              <Button
-                type="button"
-                className="mt-8 px-6 w-[200px]"
-                onClick={() => dispatch(setPaymentModalOpen(true))}
-              >
-                Пополнить токены
-              </Button>
-            )}
+            <Button
+              type="submit"
+              disabled={isBusy}
+              className="mt-8 px-6 min-w-[200px] text-nowrap"
+            >
+              {isSubmitting || isFetching
+                ? "Загрузка…"
+                : `Сгенерировать за ${standardPrice} ${declOfNum(
+                    standardPrice,
+                    ["токен", "токена", "токенов"]
+                  )}`}
+            </Button>
           </div>
         </form>
       </GlassCard>

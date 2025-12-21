@@ -150,7 +150,7 @@ export const DoubleUploader: React.FC<Props> = ({
           )}
 
           {isAuth && user?.role !== "admin" && (user?.tokens ?? 0) === 0 && (
-            <div className={cn("text-[18px] sm:px-30 text-warning")}>
+            <div className={cn("text-[18px] text-warning")}>
               Пополните баланс токенов, чтобы начать редактирование
             </div>
           )}
