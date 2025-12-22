@@ -45,7 +45,7 @@ export default function GuideModal({ open, closeModal }: GuideModalProps) {
         <div className="space-y-4">
           <ul className="space-y-3 text-sm leading-6 text-base-content/90">
             <li className="flex items-start gap-3">
-              <ImageIcon className="mt-1 h-5 min-h-5 w-5 min-w-5 opacity-80" />
+              <ImageIcon className="h-5 min-h-5 w-5 min-w-5 opacity-80" />
               <p>
                 <span className="font-medium">Референс</span> лучше загружать в
                 хорошем качестве — так нейросеть лучше распознаёт стиль, и
@@ -54,7 +54,7 @@ export default function GuideModal({ open, closeModal }: GuideModalProps) {
             </li>
 
             <li className="flex items-start gap-3">
-              <UserRound className="mt-1 h-5 min-h-5 w-5 min-w-5 opacity-80" />
+              <UserRound className="h-5 min-h-5 w-5 min-w-5 opacity-80" />
               <p>
                 Для лучшего сходства постарайтесь выбрать{" "}
                 <span className="font-medium">
@@ -65,7 +65,7 @@ export default function GuideModal({ open, closeModal }: GuideModalProps) {
             </li>
 
             <li className="flex items-start gap-3">
-              <Sparkles className="mt-1 h-5 min-h-5 w-5 min-w-5 opacity-80" />
+              <Sparkles className="h-5 min-h-5 w-5 min-w-5 opacity-80" />
               <p>
                 Чем ближе{" "}
                 <span className="font-medium">поза и телосложение</span> на
@@ -74,7 +74,7 @@ export default function GuideModal({ open, closeModal }: GuideModalProps) {
             </li>
 
             <li className="flex items-start gap-3">
-              <CircleAlert className="mt-1 h-5 min-h-5 w-5 min-w-5 opacity-80" />
+              <CircleAlert className="h-5 min-h-5 w-5 min-w-5 opacity-80" />
               <p>
                 Если кажется, что стиль{" "}
                 <span className="font-medium">

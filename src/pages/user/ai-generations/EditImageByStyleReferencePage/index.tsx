@@ -111,9 +111,8 @@ export default function EditImageByStyleReferencePage() {
 
         <Button
           color="ghost"
-          bordered
           size="sm"
-          className="mb-4 font-thin hover:bg-base-content/10"
+          className="mb-3 font-thin hover:text-primary px-0 py-0 mt-[-4px]"
           onClick={() => setOpenGuideModal(true)}
         >
           <Info
