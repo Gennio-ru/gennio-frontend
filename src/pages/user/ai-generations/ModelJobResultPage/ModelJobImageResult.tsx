@@ -9,7 +9,7 @@ import PngLogo from "@/assets/png-icon.svg?react";
 import { useNavigate } from "react-router-dom";
 import { route } from "@/shared/config/routes";
 import { cn } from "@/lib/utils";
-import { CircleAlert } from "lucide-react";
+import { Info } from "lucide-react";
 import { Tooltip } from "@/shared/ui/Tooltip";
 import { ymGoal } from "@/lib/metrics/yandexMetrika";
 import { AspectRatio, getAspectRatio, ImageMeta } from "./helpers";
@@ -294,9 +294,9 @@ export function ModelJobImageResult({ job }: Props) {
           </div>
 
           <div className="my-4 text-sm text-base-content/60">
-            <CircleAlert
+            <Info
               size={18}
-              className="min-w-[18px] inline mr-1.5 relative top-[-2px] rotate-180"
+              className="min-w-[18px] inline mr-1.5 relative top-[-2px]"
             />
             <span>
               Готовая генерация будет доступна в личном кабинете

@@ -19,11 +19,13 @@ import GlassCard from "@/shared/ui/GlassCard";
 import { ImageSizeSegmentedControl } from "@/shared/ui/ImageSizeSegmentedControl";
 import { ImageUploadWithCrop } from "@/shared/ui/ImageUploadWithCrop";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Info } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import z from "zod";
+import GuideModal from "./GuideModel";
 
 const modelJobSchema = z.object({
   inputFileIds: z.array(z.string()).length(2, "Загрузите два изображения"),
@@ -37,6 +39,7 @@ export default function EditImageByStyleReferencePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isFetching, setIsFetching] = useState(false);
+  const [openGuideModal, setOpenGuideModal] = useState(false);
 
   const { isAuth, user } = useAuth();
 
@@ -105,6 +108,21 @@ export default function EditImageByStyleReferencePage() {
 
       <GlassCard className="w-full max-w-2xl mx-auto">
         <AIModelLabel text="Nano Banana PRO" />
+
+        <Button
+          color="ghost"
+          bordered
+          size="sm"
+          className="mb-4 font-thin hover:bg-base-content/10"
+          onClick={() => setOpenGuideModal(true)}
+        >
+          <Info
+            size={18}
+            strokeWidth={1.5}
+            className="min-w-[18px] relative left-[-2px]"
+          />{" "}
+          Короткое руководство
+        </Button>
 
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -214,6 +232,11 @@ export default function EditImageByStyleReferencePage() {
           </div>
         </form>
       </GlassCard>
+
+      <GuideModal
+        open={openGuideModal}
+        closeModal={() => setOpenGuideModal(false)}
+      />
     </>
   );
 }
