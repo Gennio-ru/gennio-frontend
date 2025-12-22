@@ -332,8 +332,9 @@ export default function AdminPromptEditModal() {
                       : null
                   }
                   onChange={(file) => {
-                    // в форму кладём только id
-                    field.onChange(file?.id ?? "");
+                    const singleFile = Array.isArray(file) ? file[0] : file;
+
+                    field.onChange(singleFile?.id ?? "");
                     clearErrors("beforeImageId");
                   }}
                   onUpload={async (file) => {
@@ -383,8 +384,9 @@ export default function AdminPromptEditModal() {
                       : null
                   }
                   onChange={(file) => {
-                    // в форму кладём только id
-                    field.onChange(file?.id ?? "");
+                    const singleFile = Array.isArray(file) ? file[0] : file;
+
+                    field.onChange(singleFile?.id ?? "");
                     clearErrors("afterImageId");
                   }}
                   onUpload={async (file) => {

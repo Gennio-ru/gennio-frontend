@@ -21,9 +21,7 @@ export function isJobFinished(job: ModelJobFull): boolean {
   return (
     !!job.error ||
     hasAny(job.outputPreviewFileUrls) ||
-    hasAny(job.outputPreviewFileIds) ||
-    hasAny(job.outputFileUrls) ||
-    hasAny(job.outputFileIds)
+    hasAny(job.outputFileUrls)
   );
 }
 
@@ -38,10 +36,7 @@ export function isJobPending(job: ModelJobFull): boolean {
 
   // pending если нет ошибки и нет результатов
   const hasResult =
-    hasAny(job.outputPreviewFileUrls) ||
-    hasAny(job.outputPreviewFileIds) ||
-    hasAny(job.outputFileUrls) ||
-    hasAny(job.outputFileIds);
+    hasAny(job.outputPreviewFileUrls) || hasAny(job.outputFileUrls);
 
   return !job.error && !hasResult;
 }
