@@ -22,10 +22,10 @@ import {
   TokenPackId,
 } from "@/api/modules/pricing";
 import { useStartPayment } from "@/features/payments/useStartPayment";
-import Loader from "../Loader";
 import { RadioDot } from "../ RadioDot";
 import { declOfNum } from "@/lib/helpers";
 import { ymGoal } from "@/lib/metrics/yandexMetrika";
+import { PaymentPackSkeleton } from "./PaymentPackSkeleton";
 
 export default function PaymentModal() {
   const theme = useAppSelector(selectAppTheme);
@@ -86,12 +86,21 @@ export default function PaymentModal() {
             <span className="sr-only">Закрыть</span>
           </DialogClose>
         </DialogHeader>
-        {/* Loading */}
-        {loadingPacks && <Loader />}
+
         <div>
           <p className="text-lg font-bold">Выберите пакет токенов</p>
         </div>
+
         {/* PACKS */}
+
+        {loadingPacks && (
+          <div className="grid gap-3 mt-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <PaymentPackSkeleton key={i} />
+            ))}
+          </div>
+        )}
+
         {!loadingPacks && packs && (
           <div className="grid gap-3 mt-2">
             {packs.map((pack) => {

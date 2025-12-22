@@ -12,6 +12,7 @@ import { customToast } from "@/lib/customToast";
 import { ymGoal } from "@/lib/metrics/yandexMetrika";
 import { declOfNum } from "@/lib/helpers";
 import { cn } from "@/lib/utils";
+import { PricingCardSkeleton } from "./PricingCardSkeleton";
 
 export default function PricingPage() {
   const [packs, setPacks] = useState<TokenPack[] | null>(null);
@@ -73,9 +74,11 @@ export default function PricingPage() {
       <section className="space-y-4">
         {/* состояние загрузки / ошибки */}
         {isLoading && (
-          <p className="text-sm text-base-content/70">
-            Загружаем тарифы&hellip;
-          </p>
+          <div className="mt-10 grid gap-6 grid-cols-1 min-[1024px]:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <PricingCardSkeleton key={i} />
+            ))}
+          </div>
         )}
 
         {error && !isLoading && <p className="text-sm text-error">{error}</p>}
