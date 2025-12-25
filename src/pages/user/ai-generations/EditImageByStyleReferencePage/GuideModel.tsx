@@ -52,7 +52,6 @@ export default function GuideModal({ open, closeModal }: GuideModalProps) {
                 перенос получается корректнее.
               </p>
             </li>
-
             <li className="flex items-start gap-3">
               <UserRound className="h-5 min-h-5 w-5 min-w-5 opacity-80" />
               <p>
@@ -63,7 +62,6 @@ export default function GuideModal({ open, closeModal }: GuideModalProps) {
                 , как на референсе.
               </p>
             </li>
-
             <li className="flex items-start gap-3">
               <Sparkles className="h-5 min-h-5 w-5 min-w-5 opacity-80" />
               <p>
@@ -75,15 +73,28 @@ export default function GuideModal({ open, closeModal }: GuideModalProps) {
 
             <li className="flex items-start gap-3">
               <CircleAlert className="h-5 min-h-5 w-5 min-w-5 opacity-80" />
-              <p>
-                Если кажется, что стиль{" "}
-                <span className="font-medium">
-                  просто наложился поверх лица
-                </span>
-                , попробуйте другое исходное фото — с другим освещением,
-                ракурсом или качеством снимка (например, без жёстких теней и
-                бликов).
-              </p>
+              <div className="space-y-2">
+                <p>
+                  Если кажется, что{" "}
+                  <span className="font-medium">
+                    стиль просто наложился поверх лица
+                  </span>{" "}
+                  или{" "}
+                  <span className="font-medium">
+                    результат не отличается от референса
+                  </span>
+                  :
+                </p>
+
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>
+                    попробуйте другое исходное фото —{" "}
+                    <span className="font-medium">с другим освещением</span> или{" "}
+                    <span className="font-medium">ракурсом</span>
+                  </li>
+                  <li>или попробуйте использовать другой референс</li>
+                </ul>
+              </div>
             </li>
           </ul>
 
