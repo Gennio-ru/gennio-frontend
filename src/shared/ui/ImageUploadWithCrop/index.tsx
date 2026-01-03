@@ -372,10 +372,19 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
       return;
     }
 
+    let normalizedFile = file;
+    try {
+      const res = await fileToOrientedDataURLAndFile(file);
+      normalizedFile = res.normalizedFile;
+    } catch {
+      showError("Не удалось обработать изображение");
+      return;
+    }
+
     hideBanner();
     setStep("uploading");
 
-    const objectUrl = URL.createObjectURL(file);
+    const objectUrl = URL.createObjectURL(normalizedFile);
     const tempId = `temp-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
     setDoubleSlots((prev) => {
@@ -388,7 +397,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     setDoubleUploadingSlotIndex(slotIndex);
 
     try {
-      const uploaded = await Promise.resolve(onUpload(file));
+      const uploaded = await Promise.resolve(onUpload(normalizedFile));
       if (!uploaded || !uploaded.id)
         throw new Error("Не удалось загрузить файл");
 

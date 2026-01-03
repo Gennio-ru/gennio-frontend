@@ -1,5 +1,4 @@
 import { Area } from "react-easy-crop";
-import * as exifr from "exifr";
 
 /** Валидация файла по типу и размеру */
 export function validateFile(file: File, maxSizeMb: number, accept: string) {
@@ -45,88 +44,34 @@ export async function fileToOrientedDataURLAndFile(
   outMime: string = "image/jpeg",
   quality: number = 0.92
 ): Promise<{ dataUrl: string; normalizedFile: File }> {
-  const orientation = await exifr.orientation(file).catch(() => 1);
+  // Сбрасываем EXIF-ориентацию, просто перерисовав картинку в canvas.
+  // Браузер применяет ориентацию при drawImage, а сохранённый Blob уже без EXIF.
+  const dataUrl = await fileToDataURL(file);
+  const img = await loadImage(dataUrl);
 
-  // Если ориентация нормальная — можно не трогать (но всё равно получим dataUrl)
-  // Однако: если хочешь гарантировать одинаковое поведение везде — нормализуй всегда.
-  const shouldNormalize = !!orientation && orientation !== 1;
+  const canvas = document.createElement("canvas");
+  canvas.width = img.naturalWidth || img.width;
+  canvas.height = img.naturalHeight || img.height;
 
-  if (!shouldNormalize) {
-    const dataUrl = await fileToDataURL(file);
-    return { dataUrl, normalizedFile: file };
-  }
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Canvas не поддерживается");
 
-  const objectUrl = URL.createObjectURL(file);
-  try {
-    const img = await loadImage(objectUrl);
+  ctx.drawImage(img, 0, 0);
 
-    const w = img.naturalWidth;
-    const h = img.naturalHeight;
-
-    const swapWH = [5, 6, 7, 8].includes(orientation);
-    const canvas = document.createElement("canvas");
-    canvas.width = swapWH ? h : w;
-    canvas.height = swapWH ? w : h;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) throw new Error("Canvas не поддерживается");
-
-    // EXIF orientation transform
-    switch (orientation) {
-      case 2:
-        ctx.translate(w, 0);
-        ctx.scale(-1, 1);
-        break;
-      case 3:
-        ctx.translate(w, h);
-        ctx.rotate(Math.PI);
-        break;
-      case 4:
-        ctx.translate(0, h);
-        ctx.scale(1, -1);
-        break;
-      case 5:
-        ctx.rotate(0.5 * Math.PI);
-        ctx.scale(1, -1);
-        break;
-      case 6:
-        ctx.rotate(0.5 * Math.PI);
-        ctx.translate(0, -h);
-        break;
-      case 7:
-        ctx.rotate(0.5 * Math.PI);
-        ctx.translate(w, -h);
-        ctx.scale(-1, 1);
-        break;
-      case 8:
-        ctx.rotate(-0.5 * Math.PI);
-        ctx.translate(-w, 0);
-        break;
-    }
-
-    ctx.drawImage(img, 0, 0);
-
-    const blob = await new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob(
-        (b) => (b ? resolve(b) : reject(new Error("toBlob вернул null"))),
-        outMime,
-        quality
-      );
-    });
-
-    const normalizedFile = new File(
-      [blob],
-      file.name.replace(/\.\w+$/, ".jpg"),
-      {
-        type: blob.type,
-      }
+  const blob = await new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (b) => (b ? resolve(b) : reject(new Error("toBlob вернул null"))),
+      outMime,
+      quality
     );
+  });
 
-    const dataUrl = await fileToDataURL(normalizedFile);
-    return { dataUrl, normalizedFile };
-  } finally {
-    URL.revokeObjectURL(objectUrl);
-  }
+  const normalizedFile = new File([blob], file.name, {
+    type: blob.type,
+  });
+
+  const normalizedDataUrl = canvas.toDataURL(outMime, quality);
+  return { dataUrl: normalizedDataUrl, normalizedFile };
 }
 
 /** Загружаем картинку как HTMLImageElement */
