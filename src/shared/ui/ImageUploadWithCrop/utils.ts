@@ -144,21 +144,21 @@ export async function fileToOrientedDataURLAndFile(
       ctx.scale(1, -1);
       break;
     case 5:
-      ctx.rotate(-0.5 * Math.PI);
+      ctx.rotate(0.5 * Math.PI);
       ctx.scale(1, -1);
       break;
     case 6:
-      ctx.rotate(-0.5 * Math.PI);
-      ctx.translate(-w, 0);
+      ctx.rotate(0.5 * Math.PI);
+      ctx.translate(0, -h);
       break;
     case 7:
-      ctx.rotate(-0.5 * Math.PI);
-      ctx.translate(-w, 0);
+      ctx.rotate(0.5 * Math.PI);
+      ctx.translate(w, -h);
       ctx.scale(-1, 1);
       break;
     case 8:
-      ctx.rotate(0.5 * Math.PI);
-      ctx.translate(0, -h);
+      ctx.rotate(-0.5 * Math.PI);
+      ctx.translate(-w, 0);
       break;
     default:
       break;
