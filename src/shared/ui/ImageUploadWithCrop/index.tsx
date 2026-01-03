@@ -7,7 +7,11 @@ import { selectAppTheme, setPaymentModalOpen } from "@/features/app/appSlice";
 import { useAuth } from "@/features/auth/useAuth";
 
 import { FileDto } from "@/api/modules/files";
-import { validateFile, fileToDataURL, getCroppedBlob } from "./utils";
+import {
+  validateFile,
+  fileToOrientedDataURLAndFile,
+  getCroppedBlob,
+} from "./utils";
 import { ImageUploadBanner, LocalBanner } from "./ImageUploadBanner";
 import { ImageUploadPreview } from "./ImageUploadPreview";
 import { setAuthModalOpen } from "@/features/auth/authSlice";
@@ -317,7 +321,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 
     // ✅ с кропом: открываем кроппер
     try {
-      const dataUrl = await fileToDataURL(file);
+      const { dataUrl } = await fileToOrientedDataURLAndFile(file);
       setOriginalFile(file);
       setImageSrc(dataUrl);
       setStep("cropping");
@@ -376,7 +380,8 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 
     try {
       const uploaded = await Promise.resolve(onUpload(file));
-      if (!uploaded || !uploaded.id) throw new Error("Не удалось загрузить файл");
+      if (!uploaded || !uploaded.id)
+        throw new Error("Не удалось загрузить файл");
 
       setDoubleSlots((prev) => {
         const next: [FileDto | null, FileDto | null] = [prev[0], prev[1]];
@@ -389,9 +394,9 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
       setDoubleUploadingSlotIndex(null);
 
       const nextReal = getRealOnly(
-        ([doubleSlots[0], doubleSlots[1]]
+        [doubleSlots[0], doubleSlots[1]]
           .map((x, i) => (i === slotIndex ? uploaded : x))
-          .filter(Boolean) as FileDto[])
+          .filter(Boolean) as FileDto[]
       );
       emitChange(nextReal);
 
@@ -570,7 +575,9 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 
       // восстановим кроп-экран (пересоздадим imageSrc из исходника)
       try {
-        const dataUrl = await fileToDataURL(originalFile ?? file);
+        const { dataUrl } = await fileToOrientedDataURLAndFile(
+          originalFile ?? file
+        );
         setOriginalFile(originalFile ?? file);
         setImageSrc(dataUrl);
         setStep("cropping");
@@ -730,7 +737,8 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
           onDragLeaveAt={(idx, e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (doubleDraggingSlotIndex === idx) setDoubleDraggingSlotIndex(null);
+            if (doubleDraggingSlotIndex === idx)
+              setDoubleDraggingSlotIndex(null);
           }}
           onDropAt={(idx, e) => handleDropDouble(idx)(e)}
           onClickAt={(idx) => handleUploadAreaClickDouble(idx)}
