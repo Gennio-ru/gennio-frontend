@@ -42,13 +42,78 @@ export function fileToDataURL(file: File): Promise<string> {
   });
 }
 
+/** Определяем EXIF-ориентацию (exifr + ручной парсер JPEG), по умолчанию 1 */
+async function detectOrientation(file: File): Promise<ImageOrientation> {
+  try {
+    const exifrOrientation = await exifr.orientation(file);
+    if (
+      typeof exifrOrientation === "number" &&
+      exifrOrientation >= 1 &&
+      exifrOrientation <= 8
+    ) {
+      return exifrOrientation as ImageOrientation;
+    }
+  } catch {
+    // noop — попробуем ручной парсер
+  }
+
+  try {
+    const buf = await file.slice(0, 256 * 1024).arrayBuffer();
+    const view = new DataView(buf);
+    if (view.byteLength < 12 || view.getUint16(0, false) !== 0xffd8) return 1;
+
+    let offset = 2;
+    while (offset + 4 <= view.byteLength) {
+      const marker = view.getUint16(offset, false);
+      offset += 2;
+
+      if (marker === 0xffe1) {
+        if (offset + 8 > view.byteLength) break;
+
+        const exifStart = offset + 2;
+        const exifHeader = view.getUint32(exifStart, false);
+        if (exifHeader !== 0x45786966) break; // "Exif"
+
+        const tiffStart = exifStart + 6;
+        const littleEndian = view.getUint16(tiffStart, false) === 0x4949;
+        const firstIfdOffset = view.getUint32(tiffStart + 4, littleEndian);
+        const ifdStart = tiffStart + firstIfdOffset;
+        if (ifdStart + 2 > view.byteLength) break;
+
+        const entries = view.getUint16(ifdStart, littleEndian);
+        for (let i = 0; i < entries; i++) {
+          const entryOffset = ifdStart + 2 + i * 12;
+          if (entryOffset + 12 > view.byteLength) break;
+
+          if (view.getUint16(entryOffset, littleEndian) === 0x0112) {
+            const orientation = view.getUint16(
+              entryOffset + 8,
+              littleEndian
+            ) as ImageOrientation;
+            return orientation;
+          }
+        }
+        break;
+      } else if ((marker & 0xff00) !== 0xff00) {
+        break;
+      } else {
+        const size = view.getUint16(offset, false);
+        offset += size;
+      }
+    }
+  } catch {
+    // ignore
+  }
+
+  return 1;
+}
+
 export async function fileToOrientedDataURLAndFile(
   file: File,
   outMime: string = "image/jpeg",
   quality: number = 0.92
 ): Promise<{ dataUrl: string; normalizedFile: File }> {
-  const orientation =
-    ((await exifr.orientation(file).catch(() => 1)) as ImageOrientation) || 1;
+  const orientation = await detectOrientation(file);
 
   const dataUrl = await fileToDataURL(file);
   const img = await loadImage(dataUrl);
