@@ -294,25 +294,32 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     }
 
     if (!effectiveEnableCrop) {
-      // ✅ без кропа: сразу показываем превью + лоадер на временной плитке
       hideBanner();
       setStep("uploading");
 
-      const { tempId, objectUrl } = addTempTile(file);
-
       try {
-        const uploaded = await Promise.resolve(onUpload(file));
-        if (!uploaded || !uploaded.id)
-          throw new Error("Не удалось загрузить файл");
+        // ✅ нормализуем ориентацию (если надо)
+        const { normalizedFile } = await fileToOrientedDataURLAndFile(file);
 
-        replaceTempTile(tempId, objectUrl, uploaded);
-        showSuccess();
-        setStep("idle");
-      } catch (err) {
-        const message =
-          err instanceof Error ? err.message : "Ошибка при загрузке файла";
-        showError(message);
-        cleanupTempTile(tempId, objectUrl);
+        const { tempId, objectUrl } = addTempTile(normalizedFile);
+
+        try {
+          const uploaded = await Promise.resolve(onUpload(normalizedFile));
+          if (!uploaded || !uploaded.id)
+            throw new Error("Не удалось загрузить файл");
+
+          replaceTempTile(tempId, objectUrl, uploaded);
+          showSuccess();
+          setStep("idle");
+        } catch (err) {
+          const message =
+            err instanceof Error ? err.message : "Ошибка при загрузке файла";
+          showError(message);
+          cleanupTempTile(tempId, objectUrl);
+          setStep("idle");
+        }
+      } catch {
+        showError("Не удалось обработать изображение");
         setStep("idle");
       }
 
@@ -321,8 +328,10 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 
     // ✅ с кропом: открываем кроппер
     try {
-      const { dataUrl } = await fileToOrientedDataURLAndFile(file);
-      setOriginalFile(file);
+      const { dataUrl, normalizedFile } = await fileToOrientedDataURLAndFile(
+        file
+      );
+      setOriginalFile(normalizedFile);
       setImageSrc(dataUrl);
       setStep("cropping");
       setCrop({ x: 0, y: 0 });
@@ -575,10 +584,10 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 
       // восстановим кроп-экран (пересоздадим imageSrc из исходника)
       try {
-        const { dataUrl } = await fileToOrientedDataURLAndFile(
+        const { dataUrl, normalizedFile } = await fileToOrientedDataURLAndFile(
           originalFile ?? file
         );
-        setOriginalFile(originalFile ?? file);
+        setOriginalFile(normalizedFile);
         setImageSrc(dataUrl);
         setStep("cropping");
       } catch {
