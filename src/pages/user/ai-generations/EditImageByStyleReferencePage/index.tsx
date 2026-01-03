@@ -102,7 +102,7 @@ export default function EditImageByStyleReferencePage() {
   return (
     <>
       <AIGenerationTitle
-        title="Поймай атмосферу кадра 2"
+        title="Поймай атмосферу кадра"
         description="Загрузи своё фото и референс — мы перенесём композицию, стиль и настроение, а&nbsp;ты&nbsp;останешься&nbsp;собой."
       />
 
