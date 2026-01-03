@@ -1,7 +1,9 @@
 import { apiAIUploadFile } from "@/api/modules/files";
-import { apiStartImageEditByPromptId } from "@/api/modules/model-job";
+import {
+  apiStartImageEditByStyleReference,
+  ModelType,
+} from "@/api/modules/model-job";
 import { PROVIDER_COST_OBJECT } from "@/api/modules/pricing";
-import { apiGetPrompt, type Prompt } from "@/api/modules/prompts";
 import { setPaymentModalOpen } from "@/features/app/appSlice";
 import { setAuthModalOpen, setUser } from "@/features/auth/authSlice";
 import { useAuth } from "@/features/auth/useAuth";
@@ -10,35 +12,36 @@ import { checkApiResponseErrorCode, declOfNum } from "@/lib/helpers";
 import { ymGoal } from "@/lib/metrics/yandexMetrika";
 import { route } from "@/shared/config/routes";
 import { AIGenerationTitle } from "@/shared/ui/AIGenerationTitle";
+import { AIModelLabel } from "@/shared/ui/AIModelLabel";
+import { AspectRatioSegmentedControl } from "@/shared/ui/AspectRatioSegmentedControl";
 import Button from "@/shared/ui/Button";
 import GlassCard from "@/shared/ui/GlassCard";
+import { ImageSizeSegmentedControl } from "@/shared/ui/ImageSizeSegmentedControl";
 import { ImageUploadWithCrop } from "@/shared/ui/ImageUploadWithCrop";
-import Loader from "@/shared/ui/Loader";
-import Textarea from "@/shared/ui/Textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Info } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import z from "zod";
+import GuideModal from "./GuideModel";
 
 const modelJobSchema = z.object({
-  text: z.string().optional(),
-  inputFileIds: z.array(z.string()).length(1, "Загрузите изображениe"),
+  inputFileIds: z.array(z.string()).length(2, "Загрузите два изображения"),
+  aspectRatio: z.string().nullable(),
+  imageSize: z.string().nullable(),
 });
 
 type ModelJobFormValues = z.infer<typeof modelJobSchema>;
 
-export default function EditImageByPlatformPromptPage() {
+export default function EditImageByStyleReferencePage() {
   const dispatch = useDispatch();
-  const { promptId } = useParams<{ promptId: string }>();
   const navigate = useNavigate();
-  const { isAuth, user } = useAuth();
-
-  const [currentPrompt, setCurrentPrompt] = useState<Prompt | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
+  const [openGuideModal, setOpenGuideModal] = useState(false);
+
+  const { isAuth, user } = useAuth();
 
   const {
     control,
@@ -47,22 +50,14 @@ export default function EditImageByPlatformPromptPage() {
     clearErrors,
   } = useForm<ModelJobFormValues>({
     resolver: zodResolver(modelJobSchema),
-    defaultValues: { text: "", inputFileIds: [] },
+    defaultValues: {
+      inputFileIds: [],
+      aspectRatio: null,
+      imageSize: "1K",
+    },
     mode: "onSubmit",
     reValidateMode: "onSubmit",
   });
-
-  const inputFileId = useWatch({ control, name: "inputFileIds" });
-
-  useEffect(() => {
-    if (!promptId) return;
-    setIsLoading(true);
-    apiGetPrompt(promptId)
-      .then((res) => {
-        setCurrentPrompt(res);
-      })
-      .finally(() => setIsLoading(false));
-  }, [promptId]);
 
   const onSubmit = async (data: ModelJobFormValues) => {
     if (!isAuth) {
@@ -77,12 +72,12 @@ export default function EditImageByPlatformPromptPage() {
 
     try {
       setIsFetching(true);
-      const res = await apiStartImageEditByPromptId({
+      const res = await apiStartImageEditByStyleReference({
         ...data,
-        promptId,
-        text: data.text || null,
+        aspectRatio: data.aspectRatio || undefined,
+        imageSize: data.imageSize || undefined,
       });
-      ymGoal("generate_by_platform_prompt");
+      ymGoal("generate_by_custom_prompt");
       dispatch(setUser(res.user));
       navigate(route.jobWait(res));
     } catch (e) {
@@ -99,39 +94,40 @@ export default function EditImageByPlatformPromptPage() {
 
   const isBusy = isFetching || isSubmitting;
 
-  const { standard: standardPrice } = PROVIDER_COST_OBJECT["OPENAI"]["edit"];
+  const selectedImageSize = useWatch({ control, name: "imageSize" });
 
-  if (isLoading) {
-    return <Loader />;
-  }
+  const { standard: standardPrice, high: highPrice } =
+    PROVIDER_COST_OBJECT["GEMINI"]["edit"];
 
   return (
     <>
       <AIGenerationTitle
-        title={currentPrompt.title}
-        description={currentPrompt.description}
+        title="Поймай атмосферу кадра"
+        description="Загрузи своё фото и референс — мы перенесём композицию, стиль и настроение, а&nbsp;ты&nbsp;останешься&nbsp;собой."
       />
 
-      <div className="max-w-2xl mx-auto w-full">
-        {currentPrompt.model === "OPENAI" && (
-          <div className="text-xs text-base-content/60 mb-3 -mt-5 flex gap-1.5">
-            <Info size={16} className="min-w-[18px] relative top-[-1px]" />
+      <GlassCard className="w-full max-w-2xl mx-auto">
+        <AIModelLabel text="Nano Banana PRO" />
 
-            <div className="">
-              <p>В этом шаблоне портретное сходство не&nbsp;гарантировано</p>
-              {/* <p>сходство не гарантировано</p> */}
-            </div>
-          </div>
-        )}
-      </div>
+        <Button
+          color="ghost"
+          size="sm"
+          className="mb-3 font-thin hover:text-primary px-0 py-0 mt-[-4px]"
+          onClick={() => setOpenGuideModal(true)}
+        >
+          <Info
+            size={18}
+            strokeWidth={1.5}
+            className="min-w-[18px] relative left-[-2px]"
+          />{" "}
+          Короткое руководство
+        </Button>
 
-      <GlassCard className="w-full mx-auto max-w-2xl">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="mx-auto w-full space-y-6 text-base-content"
+          className="space-y-7 text-base-content"
         >
-          <h1 className="text-lg font-medium">Загрузка фото</h1>
-
+          <h2 className="text-lg font-medium">Загрузка фото</h2>
           {/* Референс */}
           <div className="relative mb-0">
             <Controller
@@ -139,15 +135,6 @@ export default function EditImageByPlatformPromptPage() {
               control={control}
               render={({ field }) => (
                 <ImageUploadWithCrop
-                  fromToImagesUrls={
-                    currentPrompt.beforePreviewImageUrl &&
-                    currentPrompt.afterPreviewImageUrl
-                      ? [
-                          currentPrompt.beforePreviewImageUrl,
-                          currentPrompt.afterPreviewImageUrl,
-                        ]
-                      : undefined
-                  }
                   onChange={(value) => {
                     const files = Array.isArray(value)
                       ? value
@@ -157,6 +144,7 @@ export default function EditImageByPlatformPromptPage() {
                     field.onChange(files.map((f) => f.id));
                     if (files.length) clearErrors("inputFileIds");
                   }}
+                  mode="double"
                   onUpload={async (file) => {
                     clearErrors("inputFileIds");
 
@@ -167,9 +155,8 @@ export default function EditImageByPlatformPromptPage() {
                     try {
                       const res = await apiAIUploadFile(file);
 
-                      if (!res || !res.id || !res.url) {
+                      if (!res?.id || !res?.url)
                         throw new Error("Не удалось загрузить файл");
-                      }
 
                       return res;
                     } catch (e) {
@@ -189,52 +176,66 @@ export default function EditImageByPlatformPromptPage() {
             )}
           </div>
 
-          {/* Промпт */}
-          {inputFileId && (
-            <div className="relative mt-8 mb-0">
-              <div className="mb-3 text-lg font-medium">
-                Введите детали (если необходимо)
-              </div>
+          {/* Формат */}
+          <div className="relative mb-0 mt-12 flex flex-col items-start gap-2">
+            <div className="text-lg font-medium">Формат изображения</div>
 
-              <Controller
-                name="text"
-                control={control}
-                render={({ field }) => (
-                  <Textarea
-                    {...field}
-                    rows={3}
-                    placeholder="Например: В руке — стакан кофе"
-                    className="w-full rounded-field bg-base-100/60"
-                    onChange={(e) => {
-                      field.onChange(e);
-                      clearErrors("text");
-                    }}
-                    errored={!!errors.text}
-                    errorMessage={errors.text?.message}
-                    maxLength={300}
-                  />
-                )}
-              />
-            </div>
-          )}
+            <Controller
+              name="aspectRatio"
+              control={control}
+              render={({ field }) => (
+                <AspectRatioSegmentedControl
+                  {...field}
+                  model={ModelType.GEMINI}
+                  size="xs"
+                  variant="surface"
+                />
+              )}
+            />
+          </div>
+
+          {/* Разрешение */}
+          <div className="relative mb-0 mt-4 flex flex-col items-start gap-2">
+            <div className="text-lg font-medium">Разрешение</div>
+
+            <Controller
+              name="imageSize"
+              control={control}
+              render={({ field }) => (
+                <ImageSizeSegmentedControl
+                  {...field}
+                  size="xs"
+                  variant="surface"
+                />
+              )}
+            />
+          </div>
 
           {/* Кнопка */}
           <div className="flex justify-center">
             <Button
               type="submit"
               disabled={isBusy}
-              className="mt-8 px-6 min-w-[200px] text-nowrap"
+              className="mt-12 px-6 min-w-[200px] text-nowrap"
             >
-              {isSubmitting || isFetching
-                ? "Загрузка…"
-                : `Сгенерировать за ${standardPrice} ${declOfNum(
-                    standardPrice,
-                    ["токен", "токена", "токенов"]
-                  )}`}
+              {isSubmitting
+                ? "Загрузка..."
+                : `Сгенерировать за ${
+                    selectedImageSize === "4K" ? highPrice : standardPrice
+                  } ${declOfNum(standardPrice, [
+                    "токен",
+                    "токена",
+                    "токенов",
+                  ])}`}
             </Button>
           </div>
         </form>
       </GlassCard>
+
+      <GuideModal
+        open={openGuideModal}
+        closeModal={() => setOpenGuideModal(false)}
+      />
     </>
   );
 }

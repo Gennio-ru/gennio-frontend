@@ -20,6 +20,9 @@ const EditImageByPlatformPromptPage = lazy(
 const EditImageByCustomPromptPage = lazy(
   () => import("@/pages/user/ai-generations/EditImageByCustomPromptPage")
 );
+const EditImageByStyleReferencePage = lazy(
+  () => import("@/pages/user/ai-generations/EditImageByStyleReferencePage")
+);
 const GenerateImagePage = lazy(
   () => import("@/pages/user/ai-generations/GenerateImagePage")
 );
@@ -143,6 +146,16 @@ export function AppRoutes() {
           }
         />
 
+        {/* Копирование стиля фото */}
+        <Route
+          path="/ai-generation/edit-image-by-style-reference"
+          element={
+            <Suspense fallback={<Loader />}>
+              <EditImageByStyleReferencePage />
+            </Suspense>
+          }
+        />
+
         {/* --- РЕЗУЛЬТАТЫ (включая особый promptId кейс) --- */}
 
         {/* Особый случай: platform prompt */}
@@ -192,6 +205,24 @@ export function AppRoutes() {
         />
         <Route
           path="/ai-generation/edit-image/result/:modelJobId/wait"
+          element={
+            <Suspense fallback={<Loader />}>
+              <ModelJobWaitingResultPage />
+            </Suspense>
+          }
+        />
+
+        {/* Копирование стиля фото */}
+        <Route
+          path="/ai-generation/edit-image-by-style-reference/result/:modelJobId"
+          element={
+            <Suspense fallback={<Loader />}>
+              <ModelJobResultPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/ai-generation/edit-image-by-style-reference/result/:modelJobId/wait"
           element={
             <Suspense fallback={<Loader />}>
               <ModelJobWaitingResultPage />

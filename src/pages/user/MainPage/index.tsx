@@ -68,38 +68,34 @@ export default function MainPage() {
 
       <GlassCard className="mt-20 lg:mt-10 max-w-lg lg:max-w-full mx-auto w-full sm:p-8 relative">
         <div
-          className="max-w-[380px] w-full px-2 lg:px-0 relative lg:absolute left-1/2 -top-25
-        -translate-x-1/2 lg:left-8 lg:right-auto lg:-top-2 lg:translate-x-0"
+          className="max-w-[420px] w-full px-2 lg:px-0 relative lg:absolute left-1/2 -top-28
+        -translate-x-1/2 lg:left-5 lg:right-auto lg:-top-8 lg:translate-x-0"
         >
           <ImageWithLoader
-            src="main-reference-2.webp"
+            src="main-reference-4.webp"
             className="object-contain"
           />
         </div>
 
         <div className="max-w-[500px] max-[400px]:mt-[-130px] mt-[-150px] lg:mt-0 lg:ml-auto">
           <div className="px-2 py-0.5 bg-primary/30 text-base-content text-xs w-fit rounded-full">
-            Готовые шаблоны
+            Стиль из фото
           </div>
 
           <h1 className="font-semibold mt-2.5 text-[28px] leading-9 max-w-[420px]">
-            Используйте готовые шаблоны
+            Перенесите себя в понравившееся фото
           </h1>
 
-          <p className="mt-3">
-            Готовые стили уже настроены — вам остаётся лишь загрузить
-            изображение и&nbsp;нажать на&nbsp;кнопку
-          </p>
+          <p className="mt-3">Никаких сложных описаний!</p>
 
           <p className="mt-3">
-            При&nbsp;желании вы можете добавить свои детали: изменить позу,
-            сделать портрет во&nbsp;весь рост, поменять цвет волос
-            или&nbsp;уточнить любые мелкие особенности
+            Просто загрузите фото и референс, остальное нейросеть
+            сделает&nbsp;за&nbsp;вас
           </p>
 
           <Button
-            onClick={() => navigate(AppRoute.PROMPTS)}
-            className="w-full min-[480px]:w-auto mt-6 px-8 border-2 hover:bg-base-content/10"
+            onClick={() => navigate(AppRoute.EDIT_IMAGE_BY_STYLE_REFERENCE)}
+            className="w-full min-[480px]:w-auto mt-6 lg:mt-10 px-8 border-2 hover:bg-base-content/10"
             color="ghost"
             bordered
           >
@@ -140,6 +136,48 @@ export default function MainPage() {
 
           <Button
             onClick={() => navigate(AppRoute.GENERATE_IMAGE)}
+            className="w-full min-[480px]:w-auto mt-6 px-8 border-2 hover:bg-base-content/10"
+            color="ghost"
+            bordered
+          >
+            Попробовать
+          </Button>
+        </div>
+      </GlassCard>
+
+      <GlassCard className="mt-20 lg:mt-10 max-w-lg lg:max-w-full mx-auto w-full sm:p-8 relative">
+        <div
+          className="max-w-[380px] w-full px-2 lg:px-0 relative lg:absolute left-1/2 -top-25
+        -translate-x-1/2 lg:left-8 lg:right-auto lg:-top-2 lg:translate-x-0"
+        >
+          <ImageWithLoader
+            src="main-reference-2.webp"
+            className="object-contain"
+          />
+        </div>
+
+        <div className="max-w-[500px] max-[400px]:mt-[-130px] mt-[-150px] lg:mt-0 lg:ml-auto">
+          <div className="px-2 py-0.5 bg-primary/30 text-base-content text-xs w-fit rounded-full">
+            Готовые шаблоны
+          </div>
+
+          <h1 className="font-semibold mt-2.5 text-[28px] leading-9 max-w-[420px]">
+            Используйте готовые шаблоны
+          </h1>
+
+          <p className="mt-3">
+            Готовые стили уже настроены — вам остаётся лишь загрузить
+            изображение и&nbsp;нажать на&nbsp;кнопку
+          </p>
+
+          <p className="mt-3">
+            При&nbsp;желании вы можете добавить свои детали: изменить позу,
+            сделать портрет во&nbsp;весь рост, поменять цвет волос
+            или&nbsp;уточнить любые мелкие особенности
+          </p>
+
+          <Button
+            onClick={() => navigate(AppRoute.PROMPTS)}
             className="w-full min-[480px]:w-auto mt-6 px-8 border-2 hover:bg-base-content/10"
             color="ghost"
             bordered

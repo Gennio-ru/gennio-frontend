@@ -20,7 +20,7 @@ export default function ModelJobWaitingResultPage() {
   const [serverError, setServerError] = useState<string>();
 
   //
-  // === LOAD JOB ===
+  // === LOAD JOB (initial) ===
   //
   useEffect(() => {
     if (!modelJobId) return;
@@ -34,7 +34,6 @@ export default function ModelJobWaitingResultPage() {
         const job = data as ModelJobFull;
         setJob(job);
 
-        // → ПРАВИЛЬНО: редирект только если job есть
         if (isJobFinished(job)) {
           navigate(route.jobResult(job), { replace: true });
         }
@@ -82,6 +81,64 @@ export default function ModelJobWaitingResultPage() {
       socket.emit(MODEL_JOB_EVENTS.UNSUBSCRIBE, modelJobId);
     };
   }, [modelJobId, dispatch, navigate]);
+
+  //
+  // === POLLING (start after 60s, then every 15s) ===
+  //
+  useEffect(() => {
+    if (!modelJobId) return;
+    if (serverError) return;
+
+    let cancelled = false;
+    // eslint-disable-next-line prefer-const
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    let intervalId: ReturnType<typeof setInterval> | undefined;
+
+    const tick = async () => {
+      try {
+        const data = await apiGetModelJob(modelJobId);
+        if (cancelled) return;
+
+        const updated = data as ModelJobFull;
+        setJob(updated);
+
+        if (updated.user) dispatch(setUser(updated.user));
+
+        if (isJobFinished(updated)) {
+          // стопаем до навигации, чтобы не было лишних вызовов
+          if (timeoutId) clearTimeout(timeoutId);
+          if (intervalId) clearInterval(intervalId);
+
+          navigate(route.jobResult(updated), { replace: true });
+        }
+      } catch (e) {
+        if (cancelled) return;
+
+        if (checkApiResponseErrorCode(e, "FORBIDDEN")) {
+          setServerError("У вас нет доступа к результату этой генерации");
+        } else {
+          // если хочешь НЕ падать в ошибку, а продолжать поллить — убери setServerError
+          setServerError("Не удалось загрузить результат");
+        }
+      }
+    };
+
+    // старт через минуту
+    timeoutId = setTimeout(() => {
+      if (cancelled) return;
+
+      tick(); // первый запрос после минуты
+      intervalId = setInterval(() => {
+        void tick();
+      }, 15_000);
+    }, 60_000);
+
+    return () => {
+      cancelled = true;
+      if (timeoutId) clearTimeout(timeoutId);
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [modelJobId, serverError, dispatch, navigate]);
 
   //
   // === ERROR CASES ===

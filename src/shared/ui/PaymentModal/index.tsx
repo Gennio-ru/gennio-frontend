@@ -22,10 +22,10 @@ import {
   TokenPackId,
 } from "@/api/modules/pricing";
 import { useStartPayment } from "@/features/payments/useStartPayment";
-import Loader from "../Loader";
 import { RadioDot } from "../ RadioDot";
 import { declOfNum } from "@/lib/helpers";
 import { ymGoal } from "@/lib/metrics/yandexMetrika";
+import { PaymentPackSkeleton } from "./PaymentPackSkeleton";
 
 export default function PaymentModal() {
   const theme = useAppSelector(selectAppTheme);
@@ -86,21 +86,27 @@ export default function PaymentModal() {
             <span className="sr-only">Закрыть</span>
           </DialogClose>
         </DialogHeader>
-        {/* Loading */}
-        {loadingPacks && <Loader />}
-        <div>
-          <p className="text-lg font-bold">Выберите количество генераций</p>
 
-          <p>Одна генерация = 10 токенов</p>
+        <div>
+          <p className="text-lg font-bold">Выберите пакет токенов</p>
         </div>
+
         {/* PACKS */}
+
+        {loadingPacks && (
+          <div className="grid gap-3 mt-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <PaymentPackSkeleton key={i} />
+            ))}
+          </div>
+        )}
+
         {!loadingPacks && packs && (
           <div className="grid gap-3 mt-2">
             {packs.map((pack) => {
-              const giftTokens = (pack.tokens - pack.priceRub) / 10;
-
               return (
                 <div
+                  key={pack.id}
                   className={cn(
                     "rounded-selector p-4 flex justify-between items-center cursor-pointer gap-4 transition-shadow duration-200",
                     theme === "dark" ? "bg-white/15" : "bg-base-200",
@@ -111,18 +117,18 @@ export default function PaymentModal() {
                   onClick={() => setSelectedPackId(pack.id)}
                 >
                   <div className="flex flex-col">
-                    <div className="font-bold ">
-                      <span>{pack.name} </span>{" "}
-                      {giftTokens > 0 && (
-                        <span className="text-nowrap">
-                          + {giftTokens} в подарок
-                        </span>
-                      )}
+                    <div className="font-bold">
+                      <span>{pack.name} </span>
                     </div>
 
                     <p className="text-sm mt-2">
-                      Входит {pack.tokens}{" "}
-                      {declOfNum(pack.tokens, ["токен", "токена", "токенов"])}
+                      {pack.tokens - (pack.bonusTokens || 0)}{" "}
+                      {declOfNum(pack.tokens, ["токен", "токена", "токенов"])}{" "}
+                      {pack.bonusTokens && (
+                        <span className="text-nowrap">
+                          + {pack.bonusTokens} в подарок
+                        </span>
+                      )}
                     </p>
                   </div>
 

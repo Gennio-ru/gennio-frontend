@@ -3,30 +3,34 @@ import {
   apiStartImageEditByPromptText,
   ModelType,
 } from "@/api/modules/model-job";
+import { PROVIDER_COST_OBJECT } from "@/api/modules/pricing";
 import { setPaymentModalOpen } from "@/features/app/appSlice";
 import { setAuthModalOpen, setUser } from "@/features/auth/authSlice";
 import { useAuth } from "@/features/auth/useAuth";
 import { customToast } from "@/lib/customToast";
-import { checkApiResponseErrorCode } from "@/lib/helpers";
+import { checkApiResponseErrorCode, declOfNum } from "@/lib/helpers";
 import { ymGoal } from "@/lib/metrics/yandexMetrika";
 import { route } from "@/shared/config/routes";
 import { AIGenerationTitle } from "@/shared/ui/AIGenerationTitle";
+import { AIModelLabel } from "@/shared/ui/AIModelLabel";
 import { AspectRatioSegmentedControl } from "@/shared/ui/AspectRatioSegmentedControl";
 import Button from "@/shared/ui/Button";
 import GlassCard from "@/shared/ui/GlassCard";
+import { ImageSizeSegmentedControl } from "@/shared/ui/ImageSizeSegmentedControl";
 import { ImageUploadWithCrop } from "@/shared/ui/ImageUploadWithCrop";
 import Textarea from "@/shared/ui/Textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import z from "zod";
 
 const modelJobSchema = z.object({
-  text: z.string().min(1, "Добавьте текст промпта"),
-  inputFileId: z.string().min(1, "Загрузите изображение"),
+  text: z.string().min(1, "Добавьте описание"),
+  inputFileIds: z.array(z.string()).min(1, "Загрузите изображение"),
   aspectRatio: z.string().nullable(),
+  imageSize: z.string().nullable(),
 });
 
 type ModelJobFormValues = z.infer<typeof modelJobSchema>;
@@ -45,17 +49,33 @@ export default function EditImageByCustomPromptPage() {
     clearErrors,
   } = useForm<ModelJobFormValues>({
     resolver: zodResolver(modelJobSchema),
-    defaultValues: { text: "", inputFileId: "", aspectRatio: null },
+    defaultValues: {
+      text: "",
+      inputFileIds: [],
+      aspectRatio: null,
+      imageSize: "1K",
+    },
     mode: "onSubmit",
     reValidateMode: "onSubmit",
   });
 
   const onSubmit = async (data: ModelJobFormValues) => {
+    if (!isAuth) {
+      dispatch(setAuthModalOpen(true));
+      return;
+    }
+
+    if (isAuth && user.tokens === 0) {
+      dispatch(setPaymentModalOpen(true));
+      return;
+    }
+
     try {
       setIsFetching(true);
       const res = await apiStartImageEditByPromptText({
         ...data,
         aspectRatio: data.aspectRatio || undefined,
+        imageSize: data.imageSize || undefined,
       });
       ymGoal("generate_by_custom_prompt");
       dispatch(setUser(res.user));
@@ -74,6 +94,11 @@ export default function EditImageByCustomPromptPage() {
 
   const isBusy = isFetching || isSubmitting;
 
+  const selectedImageSize = useWatch({ control, name: "imageSize" });
+
+  const { standard: standardPrice, high: highPrice } =
+    PROVIDER_COST_OBJECT["GEMINI"]["edit"];
+
   return (
     <>
       <AIGenerationTitle
@@ -82,6 +107,8 @@ export default function EditImageByCustomPromptPage() {
       />
 
       <GlassCard className="w-full max-w-2xl mx-auto">
+        <AIModelLabel text="Nano Banana PRO" />
+
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-7 text-base-content"
@@ -90,17 +117,24 @@ export default function EditImageByCustomPromptPage() {
           {/* Референс */}
           <div className="relative mb-0">
             <Controller
-              name="inputFileId"
+              name="inputFileIds"
               control={control}
               render={({ field }) => (
                 <ImageUploadWithCrop
                   onChange={(value) => {
-                    if (value === null) {
-                      field.onChange("");
-                    }
+                    const files = Array.isArray(value)
+                      ? value
+                      : value
+                      ? [value]
+                      : [];
+                    field.onChange(files.map((f) => f.id));
+                    if (files.length) clearErrors("inputFileIds");
                   }}
+                  multiple
+                  maxFiles={6}
+                  enableCrop={false}
                   onUpload={async (file) => {
-                    clearErrors("inputFileId");
+                    clearErrors("inputFileIds");
 
                     if (!file) {
                       throw new Error("Файл не передан");
@@ -109,11 +143,9 @@ export default function EditImageByCustomPromptPage() {
                     try {
                       const res = await apiAIUploadFile(file);
 
-                      if (!res || !res.id || !res.url) {
+                      if (!res?.id || !res?.url)
                         throw new Error("Не удалось загрузить файл");
-                      }
 
-                      field.onChange(res.id);
                       return res;
                     } catch (e) {
                       if (checkApiResponseErrorCode(e, "UNAUTHORIZED")) {
@@ -125,9 +157,9 @@ export default function EditImageByCustomPromptPage() {
               )}
             />
 
-            {errors.inputFileId && (
+            {errors.inputFileIds && (
               <p className="absolute top-full mt-1 text-xs text-error">
-                {errors.inputFileId.message}
+                {errors.inputFileIds.message}
               </p>
             )}
           </div>
@@ -151,7 +183,7 @@ export default function EditImageByCustomPromptPage() {
                   }}
                   errored={!!errors.text}
                   errorMessage={errors.text?.message}
-                  maxLength={700}
+                  maxLength={1000}
                 />
               )}
             />
@@ -175,37 +207,40 @@ export default function EditImageByCustomPromptPage() {
             />
           </div>
 
+          {/* Разрешение */}
+          <div className="relative mb-0 mt-4 flex flex-col items-start gap-2">
+            <div className="text-lg font-medium">Разрешение</div>
+
+            <Controller
+              name="imageSize"
+              control={control}
+              render={({ field }) => (
+                <ImageSizeSegmentedControl
+                  {...field}
+                  size="xs"
+                  variant="surface"
+                />
+              )}
+            />
+          </div>
+
           {/* Кнопка */}
           <div className="flex justify-center">
-            {isAuth && user.tokens > 0 && (
-              <Button
-                type="submit"
-                disabled={isBusy}
-                className="mt-12 px-6 w-[200px]"
-              >
-                {isSubmitting ? "Загрузка..." : "Сгенерировать"}
-              </Button>
-            )}
-
-            {!isAuth && (
-              <Button
-                type="button"
-                className="mt-12 px-6 w-[200px]"
-                onClick={() => dispatch(setAuthModalOpen(true))}
-              >
-                Войти в аккаунт
-              </Button>
-            )}
-
-            {isAuth && user.tokens === 0 && (
-              <Button
-                type="button"
-                className="mt-12 px-6 w-[200px]"
-                onClick={() => dispatch(setPaymentModalOpen(true))}
-              >
-                Пополнить токены
-              </Button>
-            )}
+            <Button
+              type="submit"
+              disabled={isBusy}
+              className="mt-12 px-6 min-w-[200px] text-nowrap"
+            >
+              {isSubmitting
+                ? "Загрузка..."
+                : `Сгенерировать за ${
+                    selectedImageSize === "4K" ? highPrice : standardPrice
+                  } ${declOfNum(standardPrice, [
+                    "токен",
+                    "токена",
+                    "токенов",
+                  ])}`}
+            </Button>
           </div>
         </form>
       </GlassCard>

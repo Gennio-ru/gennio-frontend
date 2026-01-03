@@ -2,15 +2,17 @@ import {
   apiStartImageGenerateByPromptText,
   ModelType,
 } from "@/api/modules/model-job";
+import { PROVIDER_COST_OBJECT } from "@/api/modules/pricing";
 import { setPaymentModalOpen } from "@/features/app/appSlice";
 import { setAuthModalOpen, setUser } from "@/features/auth/authSlice";
 import { useAuth } from "@/features/auth/useAuth";
 import { customToast } from "@/lib/customToast";
-import { checkApiResponseErrorCode } from "@/lib/helpers";
+import { checkApiResponseErrorCode, declOfNum } from "@/lib/helpers";
 import { ymGoal } from "@/lib/metrics/yandexMetrika";
 import { cn } from "@/lib/utils";
 import { route } from "@/shared/config/routes";
 import { AIGenerationTitle } from "@/shared/ui/AIGenerationTitle";
+import { AIModelLabel } from "@/shared/ui/AIModelLabel";
 import { AspectRatioSegmentedControl } from "@/shared/ui/AspectRatioSegmentedControl";
 import Button from "@/shared/ui/Button";
 import GlassCard from "@/shared/ui/GlassCard";
@@ -49,6 +51,16 @@ export default function GenerateImagePage() {
   });
 
   const onSubmit = async (data: ModelJobFormValues) => {
+    if (!isAuth) {
+      dispatch(setAuthModalOpen(true));
+      return;
+    }
+
+    if (isAuth && user.tokens === 0) {
+      dispatch(setPaymentModalOpen(true));
+      return;
+    }
+
     try {
       setIsFetching(true);
       const res = await apiStartImageGenerateByPromptText({
@@ -72,6 +84,8 @@ export default function GenerateImagePage() {
 
   const isBusy = isFetching || isSubmitting;
 
+  const { standard: standardPrice } = PROVIDER_COST_OBJECT["OPENAI"]["edit"];
+
   return (
     <>
       <AIGenerationTitle
@@ -80,18 +94,20 @@ export default function GenerateImagePage() {
       />
 
       <GlassCard className="w-full mx-auto max-w-2xl">
+        <AIModelLabel text="gpt-image-1 (OpenAI)" />
+
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-6 text-base-content"
         >
           {!isAuth && (
-            <div className={cn("text-[18px] text-warning text-center")}>
+            <div className={cn("mt-2 text-[18px] text-warning text-center")}>
               Войдите в аккаунт, чтобы начать редактирование
             </div>
           )}
 
           {isAuth && user.tokens === 0 && (
-            <div className={cn("text-[18px] text-warning text-center")}>
+            <div className={cn("mt-2 text-[18px] text-warning text-center")}>
               Пополните баланс токенов, чтобы начать редактирование
             </div>
           )}
@@ -113,7 +129,7 @@ export default function GenerateImagePage() {
                     field.onChange(e);
                     clearErrors("text");
                   }}
-                  maxLength={700}
+                  maxLength={1000}
                   errored={!!errors.text}
                   errorMessage={errors.text?.message}
                 />
@@ -141,39 +157,18 @@ export default function GenerateImagePage() {
 
           {/* Кнопка */}
           <div className="flex justify-center">
-            {isAuth && user.tokens > 0 && (
-              <Button
-                type="submit"
-                disabled={isBusy}
-                className="mt-12 px-6 w-[200px]"
-              >
-                {isSubmitting
-                  ? "Загрузка…"
-                  : isFetching
-                  ? "Загрузка…"
-                  : "Сгенерировать"}
-              </Button>
-            )}
-
-            {!isAuth && (
-              <Button
-                type="button"
-                className="mt-12 px-6 w-[200px]"
-                onClick={() => dispatch(setAuthModalOpen(true))}
-              >
-                Войти в аккаунт
-              </Button>
-            )}
-
-            {isAuth && user.tokens === 0 && (
-              <Button
-                type="button"
-                className="mt-12 px-6 w-[200px]"
-                onClick={() => dispatch(setPaymentModalOpen(true))}
-              >
-                Пополнить токены
-              </Button>
-            )}
+            <Button
+              type="submit"
+              disabled={isBusy}
+              className="mt-12 px-6 min-w-[200px] text-nowrap"
+            >
+              {isSubmitting || isFetching
+                ? "Загрузка…"
+                : `Сгенерировать за ${standardPrice} ${declOfNum(
+                    standardPrice,
+                    ["токен", "токена", "токенов"]
+                  )}`}
+            </Button>
           </div>
         </form>
       </GlassCard>

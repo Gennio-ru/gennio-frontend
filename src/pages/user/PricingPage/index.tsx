@@ -8,9 +8,11 @@ import {
 import Button from "@/shared/ui/Button";
 import { useStartPayment } from "@/features/payments/useStartPayment";
 import GlassCard from "@/shared/ui/GlassCard";
-import { CircleCheck } from "lucide-react";
 import { customToast } from "@/lib/customToast";
 import { ymGoal } from "@/lib/metrics/yandexMetrika";
+import { declOfNum } from "@/lib/helpers";
+import { cn } from "@/lib/utils";
+import { PricingCardSkeleton } from "./PricingCardSkeleton";
 
 export default function PricingPage() {
   const [packs, setPacks] = useState<TokenPack[] | null>(null);
@@ -60,7 +62,7 @@ export default function PricingPage() {
       {/* Заголовок */}
       <header className="mt-8 sm:mt-10 text-center">
         <h1 className="text-4xl sm:text-[44px] font-bold">
-          Выберите пакет генераций
+          Выберите пакет токенов
         </h1>
 
         <p className="mt-4 text-[18px]">
@@ -72,164 +74,72 @@ export default function PricingPage() {
       <section className="space-y-4">
         {/* состояние загрузки / ошибки */}
         {isLoading && (
-          <p className="text-sm text-base-content/70">
-            Загружаем тарифы&hellip;
-          </p>
+          <div className="mt-10 grid gap-6 grid-cols-1 min-[1024px]:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <PricingCardSkeleton key={i} />
+            ))}
+          </div>
         )}
 
         {error && !isLoading && <p className="text-sm text-error">{error}</p>}
 
         {!isLoading && !error && packs && (
           <>
-            <div className="mt-10 grid gap-6 grid-cols-1 min-[860px]:grid-cols-3">
-              <GlassCard
-                className="px-8 pt-7 pb-8 min-[860px]:min-h-[380px] flex flex-col
-                justify-between gap-6 max-w-sm w-full mx-auto min-[860px]:max-w-auto"
-              >
-                <div>
-                  <p className="font-bold text-xl">Стартовый</p>
-
-                  <p className="text-sm text-base-content/60">
-                    Для знакомства с сервисом
-                  </p>
-
-                  <p className="mt-4 text-3xl font-bold text-nowrap">
-                    {packs[1].generations} генераций
-                  </p>
-
-                  <div className="mt-4 text-base flex gap-1.5 items-start">
-                    <CircleCheck
-                      size={18}
-                      className="min-w-[18px] relative top-[2px]"
-                    />
-
-                    <p>Включено {packs[1].tokens}&nbsp;токенов</p>
-                  </div>
-
-                  <div className="mt-2.5 text-base flex gap-1.5 items-start">
-                    <CircleCheck
-                      size={18}
-                      className="min-w-[18px] relative top-[2px]"
-                    />{" "}
-                    <p>1&nbsp;генерация&nbsp;= 10&nbsp;токенов</p>
-                  </div>
-                </div>
-
-                <Button
-                  onClick={() => handleBuy("STARTER")}
-                  className="w-full text-nowrap self-end"
-                  loading={creatingPayment === "STARTER"}
-                  disabled={creatingPayment === "STARTER"}
+            <div className="mt-10 grid gap-6 grid-cols-1 min-[1024px]:grid-cols-4">
+              {packs.map((pack, index) => (
+                <GlassCard
+                  key={pack.id}
+                  className={cn(
+                    "px-4 pt-5 pb-4 rounded-selector min-[1024px]:min-h-[300px] text-center flex flex-col justify-between",
+                    "gap-9 max-w-sm w-full mx-auto min-[1024px]:max-w-auto relative"
+                  )}
                 >
-                  Купить за {packs[1].priceRub} ₽
-                </Button>
-              </GlassCard>
+                  {pack.highlight && (
+                    <div className="absolute top-0 left-0 h-full w-full pointer-events-none rounded-selector shadow-[0_0_10px_rgba(129,11,219,0.35)]" />
+                  )}
 
-              <GlassCard
-                className="px-8 pt-7 pb-8 min-[860px]:min-h-[380px] flex flex-col
-                justify-between gap-6 max-w-sm w-full mx-auto min-[860px]:max-w-auto"
-              >
-                <div>
-                  <p className="font-bold text-xl">Базовый</p>
+                  <div>
+                    <p className="font-bold text-xl">{pack.name}</p>
 
-                  <p className="text-sm text-base-content/60">
-                    С приятным бонусом
-                  </p>
+                    <p className="text-sm text-base-content/60">
+                      {pack.subtitle}
+                    </p>
 
-                  <p className="mt-4 text-3xl font-bold text-nowrap">
-                    {packs[2].generations} генераций
-                  </p>
+                    <div className="text-nowrap mt-8 flex flex-col">
+                      <span className="text-2xl">
+                        {pack.tokens - (pack.bonusTokens || 0)}
+                      </span>
+                      <span className="text-base text-base-content/60">
+                        {declOfNum(pack.tokens, ["токен", "токена", "токенов"])}
+                      </span>
+                    </div>
 
-                  <div className="mt-4 text-base flex gap-1.5 items-start">
-                    <CircleCheck
-                      size={18}
-                      className="min-w-[18px] relative top-[2px]"
-                    />{" "}
-                    <p>+2 генерации в&nbsp;подарок</p>
+                    {pack.bonusTokens && (
+                      <div className="mt-6 mb-2 text-base flex flex-col">
+                        <span>
+                          +{pack.bonusTokens}{" "}
+                          {declOfNum(pack.bonusTokens, [
+                            "токен",
+                            "токена",
+                            "токенов",
+                          ])}{" "}
+                          в&nbsp;подарок&nbsp;
+                          {packs.length - 1 === index && "🔥"}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="mt-2.5 text-base flex gap-1.5 items-start">
-                    <CircleCheck
-                      size={18}
-                      className="min-w-[18px] relative top-[2px]"
-                    />{" "}
-                    <p>Включено {packs[2].tokens}&nbsp;токенов</p>
-                  </div>
-
-                  <div className="mt-2.5 text-base flex gap-1.5 items-start">
-                    <CircleCheck
-                      size={18}
-                      className="min-w-[18px] relative top-[2px]"
-                    />{" "}
-                    <p>1&nbsp;генерация&nbsp;= 10&nbsp;токенов</p>
-                  </div>
-                </div>
-
-                <Button
-                  onClick={() => handleBuy("BASIC")}
-                  className="w-full text-nowrap self-end"
-                  loading={creatingPayment === "BASIC"}
-                  disabled={creatingPayment === "BASIC"}
-                >
-                  Купить за{" "}
-                  <span className="line-through text-primary-content/70">
-                    {packs[2].tokens}
-                  </span>{" "}
-                  {packs[2].priceRub} ₽
-                </Button>
-              </GlassCard>
-
-              <GlassCard
-                className="px-8 pt-7 pb-8 min-[860px]:min-h-[380px] flex flex-col justify-between
-                gap-6 bg-base-100/70 max-w-sm w-full mx-auto min-[860px]:max-w-auto"
-              >
-                <div>
-                  <p className="font-bold text-xl">Расширенный</p>
-
-                  <p className="text-sm text-base-content/60">Самый выгодный</p>
-
-                  <p className="mt-4 text-3xl font-bold text-nowrap">
-                    {packs[3].generations} генераций
-                  </p>
-
-                  <div className="mt-4 text-base flex gap-1.5 items-start">
-                    <CircleCheck
-                      size={18}
-                      className="min-w-[18px] relative top-[2px]"
-                    />{" "}
-                    <p>+5 генераций в&nbsp;подарок&nbsp;🔥</p>
-                  </div>
-
-                  <div className="mt-2.5 text-base flex gap-1.5 items-start">
-                    <CircleCheck
-                      size={18}
-                      className="min-w-[18px] relative top-[2px]"
-                    />{" "}
-                    <p>Включено {packs[3].tokens}&nbsp;токенов</p>
-                  </div>
-
-                  <div className="mt-2.5 text-base flex gap-1.5 items-start">
-                    <CircleCheck
-                      size={18}
-                      className="min-w-[18px] relative top-[2px]"
-                    />{" "}
-                    <p>1&nbsp;генерация&nbsp;= 10&nbsp;токенов</p>
-                  </div>
-                </div>
-
-                <Button
-                  onClick={() => handleBuy("PRO")}
-                  className="w-full text-nowrap self-end"
-                  loading={creatingPayment === "PRO"}
-                  disabled={creatingPayment === "PRO"}
-                >
-                  Купить за{" "}
-                  <span className="line-through text-primary-content/70">
-                    {packs[3].tokens}
-                  </span>{" "}
-                  {packs[3].priceRub} ₽
-                </Button>
-              </GlassCard>
+                  <Button
+                    onClick={() => handleBuy(pack.id)}
+                    className="w-full text-nowrap self-end"
+                    loading={creatingPayment === pack.id}
+                    disabled={creatingPayment === pack.id}
+                  >
+                    Купить за {pack.priceRub} ₽
+                  </Button>
+                </GlassCard>
+              ))}
             </div>
 
             <div className="mt-10 font-light max-w-[800px] mb-[180px]">

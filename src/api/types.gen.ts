@@ -506,6 +506,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/model-job/start-image-edit-by-style-reference": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ModelJobController_startImageEditByStyleReference"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/model-job/start-image-generate": {
         parameters: {
             query?: never;
@@ -1075,56 +1091,32 @@ export interface components {
             id: string;
         };
         /** @enum {string} */
-        ModelJobType: "image-edit-by-prompt-id" | "image-edit-by-prompt-text" | "image-generate-by-prompt-text";
+        ModelJobType: "image-edit-by-prompt-id" | "image-edit-by-prompt-text" | "image-edit-by-style-reference" | "image-generate-by-prompt-text";
         /** @enum {string} */
         ModelJobStatusType: "queued" | "processing" | "succeeded" | "failed";
-        /**
-         * @description Тариф, по которому считали стоимость задачи
-         * @enum {string}
-         */
-        ModelTariffCode: "TEXT_BASIC" | "TEXT_PRO" | "IMAGE_BASIC_GENERATE" | "IMAGE_BASIC_EDIT" | "IMAGE_PRO_GENERATE" | "IMAGE_PRO_EDIT" | "ADMIN_GENERATE";
+        ModelJobFile: Record<string, never>;
+        /** @enum {string} */
+        ModelJobTariffCode: "USER" | "ADMIN";
         ModelJobDto: {
             model: components["schemas"]["ModelType"];
             type: components["schemas"]["ModelJobType"];
             status: components["schemas"]["ModelJobStatusType"];
-            /** @example Мягкое освещение, крупный план */
             text: string | null;
             /** @example 2:3 */
             aspectRatio: string | null;
-            /** @example Мягкое освещение, крупный план */
+            /** @example 1K */
+            imageSize: string | null;
             promptId: string | null;
             prompt: components["schemas"]["PromptDto"] | null;
             /** @example user-123 */
             userId: string;
             user: components["schemas"]["UserDto"] | null;
-            /**
-             * Format: uuid
-             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
-             */
-            inputFileId: string | null;
-            /**
-             * Format: uuid
-             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
-             */
-            outputFileId: string | null;
-            /**
-             * Format: uuid
-             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
-             */
-            outputPreviewFileId: string | null;
+            files: components["schemas"]["ModelJobFile"][] | null;
             outputText: string | null;
-            tariffCode: components["schemas"]["ModelTariffCode"];
-            /**
-             * @description Сколько токенов списано за эту задачу
-             * @example 8
-             */
+            tariffCode: components["schemas"]["ModelJobTariffCode"];
+            /** @example 8 */
             tokensCharged: number;
-            /** @example {
-             *       "width": 400,
-             *       "height": 300
-             *     } */
             usedTokens: Record<string, never> | null;
-            /** @example OpenAI timeout error */
             error: string | null;
             /** Format: date-time */
             startedAt: string | null;
@@ -1145,44 +1137,22 @@ export interface components {
             model: components["schemas"]["ModelType"];
             type: components["schemas"]["ModelJobType"];
             status: components["schemas"]["ModelJobStatusType"];
-            /** @example Мягкое освещение, крупный план */
             text: string | null;
             /** @example 2:3 */
             aspectRatio: string | null;
-            /** @example Мягкое освещение, крупный план */
+            /** @example 1K */
+            imageSize: string | null;
             promptId: string | null;
             prompt: components["schemas"]["PromptDto"] | null;
             /** @example user-123 */
             userId: string;
             user: components["schemas"]["UserDto"] | null;
-            /**
-             * Format: uuid
-             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
-             */
-            inputFileId: string | null;
-            /**
-             * Format: uuid
-             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
-             */
-            outputFileId: string | null;
-            /**
-             * Format: uuid
-             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
-             */
-            outputPreviewFileId: string | null;
+            files: components["schemas"]["ModelJobFile"][] | null;
             outputText: string | null;
-            tariffCode: components["schemas"]["ModelTariffCode"];
-            /**
-             * @description Сколько токенов списано за эту задачу
-             * @example 8
-             */
+            tariffCode: components["schemas"]["ModelJobTariffCode"];
+            /** @example 8 */
             tokensCharged: number;
-            /** @example {
-             *       "width": 400,
-             *       "height": 300
-             *     } */
             usedTokens: Record<string, never> | null;
-            /** @example OpenAI timeout error */
             error: string | null;
             /** Format: date-time */
             startedAt: string | null;
@@ -1198,52 +1168,29 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            outputPreviewFile: components["schemas"]["FileDto"] | null;
-            /** Format: uri */
-            outputPreviewFileUrl: string | null;
+            outputPreviewFiles: components["schemas"]["FileDto"][] | null;
+            outputPreviewFileUrls: string[] | null;
         };
         ModelJobFullDto: {
             model: components["schemas"]["ModelType"];
             type: components["schemas"]["ModelJobType"];
             status: components["schemas"]["ModelJobStatusType"];
-            /** @example Мягкое освещение, крупный план */
             text: string | null;
             /** @example 2:3 */
             aspectRatio: string | null;
-            /** @example Мягкое освещение, крупный план */
+            /** @example 1K */
+            imageSize: string | null;
             promptId: string | null;
             prompt: components["schemas"]["PromptDto"] | null;
             /** @example user-123 */
             userId: string;
             user: components["schemas"]["UserDto"] | null;
-            /**
-             * Format: uuid
-             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
-             */
-            inputFileId: string | null;
-            /**
-             * Format: uuid
-             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
-             */
-            outputFileId: string | null;
-            /**
-             * Format: uuid
-             * @example f47ac10b-58cc-4372-a567-0e02b2c3d479
-             */
-            outputPreviewFileId: string | null;
+            files: components["schemas"]["ModelJobFile"][] | null;
             outputText: string | null;
-            tariffCode: components["schemas"]["ModelTariffCode"];
-            /**
-             * @description Сколько токенов списано за эту задачу
-             * @example 8
-             */
+            tariffCode: components["schemas"]["ModelJobTariffCode"];
+            /** @example 8 */
             tokensCharged: number;
-            /** @example {
-             *       "width": 400,
-             *       "height": 300
-             *     } */
             usedTokens: Record<string, never> | null;
-            /** @example OpenAI timeout error */
             error: string | null;
             /** Format: date-time */
             startedAt: string | null;
@@ -1259,15 +1206,12 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            inputFile: components["schemas"]["FileDto"] | null;
-            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.jpeg */
-            inputFileUrl: string | null;
-            outputFile: components["schemas"]["FileDto"] | null;
-            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.jpeg */
-            outputFileUrl: string | null;
-            outputPreviewFile: components["schemas"]["FileDto"] | null;
-            /** @example https://cdn.example.com/jobs/2025/09/19/5139b0d6-f38d-4af1.jpeg */
-            outputPreviewFileUrl: string | null;
+            inputFiles: components["schemas"]["FileDto"][] | null;
+            inputFileUrls: string[] | null;
+            outputFiles: components["schemas"]["FileDto"][] | null;
+            outputFileUrls: string[] | null;
+            outputPreviewFiles: components["schemas"]["FileDto"][] | null;
+            outputPreviewFileUrls: string[] | null;
         };
         StartImageEditByPromptIdDto: {
             promptId: string;
@@ -1276,7 +1220,7 @@ export interface components {
              * @example Мягкое освещение, крупный план
              */
             text: string;
-            inputFileId: string;
+            inputFileIds: string[];
         };
         /** @enum {string} */
         ErrorCode: "TOKENS_NOT_ENOUGH" | "PAYMENT_FAILED" | "PAYMENT_PROVIDER_ERROR" | "MODEJ_JOB_TYPE_NOT_FOUND" | "MODEL_JOB_NOT_FOUND" | "MODEL_UNAVAILABLE" | "JOB_STALLED" | "PROCESSING_TIMEOUT" | "MODERATION_BLOCKED" | "INVALID_CREDENTIALS" | "UNAUTHORIZED" | "EMAIL_NOT_CONFIRMED" | "ACCOUNT_IS_BLOCKED" | "FORBIDDEN" | "EMAIL_ALREADY_EXISTS" | "PHONE_ALREADY_EXISTS" | "VALIDATION_FAILED" | "INTERNAL_SERVER_ERROR";
@@ -1303,20 +1247,38 @@ export interface components {
         };
         StartImageEditByPromptTextDto: {
             /**
-             * @description Не более 700 символов
+             * @description Не более 1000 символов
              * @example Мягкое освещение, крупный план
              */
             text: string;
-            inputFileId: string;
+            inputFileIds: string[];
             /**
              * @description Формат
              * @example 2:3
              */
             aspectRatio: string;
+            /**
+             * @description Разрешение
+             * @example 2K
+             */
+            imageSize: string;
+        };
+        StartImageGenerateByStyleReferenceDto: {
+            inputFileIds: string[];
+            /**
+             * @description Формат
+             * @example 2:3
+             */
+            aspectRatio: string;
+            /**
+             * @description Разрешение
+             * @example 2K
+             */
+            imageSize: string;
         };
         StartImageGenerateByPromptTextDto: {
             /**
-             * @description Не более 700 символов
+             * @description Не более 1000 символов
              * @example Мягкое освещение, крупный план
              */
             text: string;
@@ -1328,7 +1290,7 @@ export interface components {
         };
         StartAdminGenerateDto: {
             /**
-             * @description Не более 700 символов
+             * @description Не более 2000 символов
              * @example Мягкое освещение, крупный план
              */
             text: string;
@@ -1337,7 +1299,12 @@ export interface components {
              * @example 2:3
              */
             aspectRatio: string;
-            inputFileId?: string;
+            /**
+             * @description Разрешение
+             * @example 2K
+             */
+            imageSize: string;
+            inputFileIds: string[];
             model: components["schemas"]["ModelType"];
             type: components["schemas"]["ModelJobType"];
         };
@@ -1378,33 +1345,23 @@ export interface components {
          * @description Уникальный идентификатор пакета
          * @enum {string}
          */
-        TokensPackId: "ONCE" | "STARTER" | "BASIC" | "PRO";
+        TokensPackId: "STARTER" | "BASIC" | "ADVANCED" | "MAXIMUM";
         TokenPackDto: {
             /** @example STARTER */
             id: components["schemas"]["TokensPackId"];
             /**
              * @description Название пакета, отображаемое пользователю
-             * @example 5 генераций
+             * @example Старт
              */
             name: string;
             /**
-             * @description Количество токенов в пакете
-             * @example 25
+             * @description Количество токенов, которое будет начислено пользователю
+             * @example 100
              */
             tokens: number;
             /**
-             * @description Ориентировочное количество генераций, которое покрывает пакет
-             * @example 5
-             */
-            generations: number;
-            /**
-             * @description Скидка в процентах относительно базовой цены
-             * @example 10
-             */
-            discountPercent: number;
-            /**
-             * @description Стоимость в рублях
-             * @example 35
+             * @description Стоимость пакета в рублях
+             * @example 100
              */
             priceRub: number;
             /**
@@ -1412,6 +1369,21 @@ export interface components {
              * @example true
              */
             highlight?: boolean;
+            /**
+             * @description Короткая плашка на карточке пакета (например, “Выгодно”)
+             * @example +10% бонус
+             */
+            badge?: string;
+            /**
+             * @description Короткое пояснение под названием пакета
+             * @example Для регулярного использования
+             */
+            subtitle?: string;
+            /**
+             * @description Бонусные токены относительно оплаты (tokens - priceRub). Если бонусов нет — поле отсутствует.
+             * @example 10
+             */
+            bonusTokens?: number;
         };
         CreateCategoryDto: {
             /** @example Мультипликация */
@@ -2378,7 +2350,7 @@ export interface operations {
                 /** @description Общий поиск */
                 search?: string;
                 /** @description Фильтр по типу генерации */
-                type?: "image-edit-by-prompt-id" | "image-edit-by-prompt-text" | "image-generate-by-prompt-text";
+                type?: "image-edit-by-prompt-id" | "image-edit-by-prompt-text" | "image-edit-by-style-reference" | "image-generate-by-prompt-text";
                 /** @description Фильтр по статусу генерации */
                 status?: "queued" | "processing" | "succeeded" | "failed";
                 /** @description Дата создания — от */
@@ -2498,6 +2470,39 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["StartImageEditByPromptTextDto"];
+            };
+        };
+        responses: {
+            /** @description Генерация запущена */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelJobDto"];
+                };
+            };
+            /** @description Бизнес-ошибка (например, не хватает токенов) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    ModelJobController_startImageEditByStyleReference: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartImageGenerateByStyleReferenceDto"];
             };
         };
         responses: {
