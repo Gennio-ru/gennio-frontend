@@ -376,7 +376,8 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 
     try {
       const uploaded = await Promise.resolve(onUpload(file));
-      if (!uploaded || !uploaded.id) throw new Error("Не удалось загрузить файл");
+      if (!uploaded || !uploaded.id)
+        throw new Error("Не удалось загрузить файл");
 
       setDoubleSlots((prev) => {
         const next: [FileDto | null, FileDto | null] = [prev[0], prev[1]];
@@ -389,9 +390,9 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
       setDoubleUploadingSlotIndex(null);
 
       const nextReal = getRealOnly(
-        ([doubleSlots[0], doubleSlots[1]]
+        [doubleSlots[0], doubleSlots[1]]
           .map((x, i) => (i === slotIndex ? uploaded : x))
-          .filter(Boolean) as FileDto[])
+          .filter(Boolean) as FileDto[]
       );
       emitChange(nextReal);
 
@@ -730,7 +731,8 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
           onDragLeaveAt={(idx, e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (doubleDraggingSlotIndex === idx) setDoubleDraggingSlotIndex(null);
+            if (doubleDraggingSlotIndex === idx)
+              setDoubleDraggingSlotIndex(null);
           }}
           onDropAt={(idx, e) => handleDropDouble(idx)(e)}
           onClickAt={(idx) => handleUploadAreaClickDouble(idx)}
