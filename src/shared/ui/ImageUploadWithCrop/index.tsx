@@ -7,11 +7,7 @@ import { selectAppTheme, setPaymentModalOpen } from "@/features/app/appSlice";
 import { useAuth } from "@/features/auth/useAuth";
 
 import { FileDto } from "@/api/modules/files";
-import {
-  validateFile,
-  fileToOrientedDataURLAndFile,
-  getCroppedBlob,
-} from "./utils";
+import { validateFile, fileToDataURL, getCroppedBlob } from "./utils";
 import { ImageUploadBanner, LocalBanner } from "./ImageUploadBanner";
 import { ImageUploadPreview } from "./ImageUploadPreview";
 import { setAuthModalOpen } from "@/features/auth/authSlice";
@@ -294,32 +290,25 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     }
 
     if (!effectiveEnableCrop) {
+      // ✅ без кропа: сразу показываем превью + лоадер на временной плитке
       hideBanner();
       setStep("uploading");
 
+      const { tempId, objectUrl } = addTempTile(file);
+
       try {
-        // ✅ нормализуем ориентацию (если надо)
-        const { normalizedFile } = await fileToOrientedDataURLAndFile(file);
+        const uploaded = await Promise.resolve(onUpload(file));
+        if (!uploaded || !uploaded.id)
+          throw new Error("Не удалось загрузить файл");
 
-        const { tempId, objectUrl } = addTempTile(normalizedFile);
-
-        try {
-          const uploaded = await Promise.resolve(onUpload(normalizedFile));
-          if (!uploaded || !uploaded.id)
-            throw new Error("Не удалось загрузить файл");
-
-          replaceTempTile(tempId, objectUrl, uploaded);
-          showSuccess();
-          setStep("idle");
-        } catch (err) {
-          const message =
-            err instanceof Error ? err.message : "Ошибка при загрузке файла";
-          showError(message);
-          cleanupTempTile(tempId, objectUrl);
-          setStep("idle");
-        }
-      } catch {
-        showError("Не удалось обработать изображение");
+        replaceTempTile(tempId, objectUrl, uploaded);
+        showSuccess();
+        setStep("idle");
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Ошибка при загрузке файла";
+        showError(message);
+        cleanupTempTile(tempId, objectUrl);
         setStep("idle");
       }
 
@@ -328,10 +317,8 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 
     // ✅ с кропом: открываем кроппер
     try {
-      const { dataUrl, normalizedFile } = await fileToOrientedDataURLAndFile(
-        file
-      );
-      setOriginalFile(normalizedFile);
+      const dataUrl = await fileToDataURL(file);
+      setOriginalFile(file);
       setImageSrc(dataUrl);
       setStep("cropping");
       setCrop({ x: 0, y: 0 });
@@ -372,19 +359,10 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
       return;
     }
 
-    let normalizedFile = file;
-    try {
-      const res = await fileToOrientedDataURLAndFile(file);
-      normalizedFile = res.normalizedFile;
-    } catch {
-      showError("Не удалось обработать изображение");
-      return;
-    }
-
     hideBanner();
     setStep("uploading");
 
-    const objectUrl = URL.createObjectURL(normalizedFile);
+    const objectUrl = URL.createObjectURL(file);
     const tempId = `temp-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
     setDoubleSlots((prev) => {
@@ -397,7 +375,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     setDoubleUploadingSlotIndex(slotIndex);
 
     try {
-      const uploaded = await Promise.resolve(onUpload(normalizedFile));
+      const uploaded = await Promise.resolve(onUpload(file));
       if (!uploaded || !uploaded.id)
         throw new Error("Не удалось загрузить файл");
 
@@ -593,10 +571,8 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
 
       // восстановим кроп-экран (пересоздадим imageSrc из исходника)
       try {
-        const { dataUrl, normalizedFile } = await fileToOrientedDataURLAndFile(
-          originalFile ?? file
-        );
-        setOriginalFile(normalizedFile);
+        const dataUrl = await fileToDataURL(originalFile ?? file);
+        setOriginalFile(originalFile ?? file);
         setImageSrc(dataUrl);
         setStep("cropping");
       } catch {
