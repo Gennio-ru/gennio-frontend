@@ -1,4 +1,7 @@
 import { Area } from "react-easy-crop";
+import * as exifr from "exifr";
+
+type ImageOrientation = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
 /** Валидация файла по типу и размеру */
 export function validateFile(file: File, maxSizeMb: number, accept: string) {
@@ -95,19 +98,61 @@ export async function getCroppedBlob(
   });
 }
 
+const detectOrientation = async (file: File): Promise<ImageOrientation> => {
+  try {
+    const o = await exifr.orientation(file);
+    if (typeof o === "number" && o >= 1 && o <= 8) return o as ImageOrientation;
+  } catch {
+    // ignore
+  }
+  return 1;
+};
+
 /** Нормализуем ориентацию без изменения размеров/кропа */
 export async function normalizeImageOrientation(file: File): Promise<File> {
+  const orientation = await detectOrientation(file);
+  if (orientation === 1) return file;
+
   const dataUrl = await fileToDataURL(file);
   const img = await loadImage(dataUrl);
 
+  const w = img.naturalWidth || img.width;
+  const h = img.naturalHeight || img.height;
+  const swap = orientation > 4;
+
   const canvas = document.createElement("canvas");
-  canvas.width = img.naturalWidth || img.width;
-  canvas.height = img.naturalHeight || img.height;
+  canvas.width = swap ? h : w;
+  canvas.height = swap ? w : h;
 
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas не поддерживается");
 
-  // Браузер применит EXIF при drawImage, а результат будет уже без флага
+  switch (orientation) {
+    case 2:
+      ctx.setTransform(-1, 0, 0, 1, w, 0);
+      break;
+    case 3:
+      ctx.setTransform(-1, 0, 0, -1, w, h);
+      break;
+    case 4:
+      ctx.setTransform(1, 0, 0, -1, 0, h);
+      break;
+    case 5:
+      ctx.setTransform(0, 1, 1, 0, 0, 0);
+      break;
+    case 6:
+      ctx.setTransform(0, 1, -1, 0, h, 0);
+      break;
+    case 7:
+      ctx.setTransform(0, -1, -1, 0, h, w);
+      break;
+    case 8:
+      ctx.setTransform(0, -1, 1, 0, 0, w);
+      break;
+    default:
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+  }
+
   ctx.drawImage(img, 0, 0);
 
   const targetMime = file.type || "image/jpeg";
