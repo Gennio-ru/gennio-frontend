@@ -94,3 +94,32 @@ export async function getCroppedBlob(
     );
   });
 }
+
+/** Нормализуем ориентацию без изменения размеров/кропа */
+export async function normalizeImageOrientation(file: File): Promise<File> {
+  const dataUrl = await fileToDataURL(file);
+  const img = await loadImage(dataUrl);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = img.naturalWidth || img.width;
+  canvas.height = img.naturalHeight || img.height;
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Canvas не поддерживается");
+
+  // Браузер применит EXIF при drawImage, а результат будет уже без флага
+  ctx.drawImage(img, 0, 0);
+
+  const targetMime = file.type || "image/jpeg";
+  const lossy = /jpe?g|webp/i.test(targetMime);
+
+  const blob = await new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (b) => (b ? resolve(b) : reject(new Error("Не удалось создать Blob"))),
+      targetMime,
+      lossy ? 0.92 : undefined
+    );
+  });
+
+  return new File([blob], file.name, { type: blob.type });
+}

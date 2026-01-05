@@ -7,7 +7,12 @@ import { selectAppTheme, setPaymentModalOpen } from "@/features/app/appSlice";
 import { useAuth } from "@/features/auth/useAuth";
 
 import { FileDto } from "@/api/modules/files";
-import { validateFile, fileToDataURL, getCroppedBlob } from "./utils";
+import {
+  validateFile,
+  fileToDataURL,
+  getCroppedBlob,
+  normalizeImageOrientation,
+} from "./utils";
 import { ImageUploadBanner, LocalBanner } from "./ImageUploadBanner";
 import { ImageUploadPreview } from "./ImageUploadPreview";
 import { setAuthModalOpen } from "@/features/auth/authSlice";
@@ -294,10 +299,17 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
       hideBanner();
       setStep("uploading");
 
-      const { tempId, objectUrl } = addTempTile(file);
+      let preparedFile = file;
+      try {
+        preparedFile = await normalizeImageOrientation(file);
+      } catch {
+        // игнорируем, оставим оригинал
+      }
+
+      const { tempId, objectUrl } = addTempTile(preparedFile);
 
       try {
-        const uploaded = await Promise.resolve(onUpload(file));
+        const uploaded = await Promise.resolve(onUpload(preparedFile));
         if (!uploaded || !uploaded.id)
           throw new Error("Не удалось загрузить файл");
 
@@ -359,10 +371,17 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
       return;
     }
 
+    let preparedFile = file;
+    try {
+      preparedFile = await normalizeImageOrientation(file);
+    } catch {
+      // оставим исходный
+    }
+
     hideBanner();
     setStep("uploading");
 
-    const objectUrl = URL.createObjectURL(file);
+    const objectUrl = URL.createObjectURL(preparedFile);
     const tempId = `temp-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
     setDoubleSlots((prev) => {
@@ -375,7 +394,7 @@ export const ImageUploadWithCrop: React.FC<ImageUploadWithCropProps> = ({
     setDoubleUploadingSlotIndex(slotIndex);
 
     try {
-      const uploaded = await Promise.resolve(onUpload(file));
+      const uploaded = await Promise.resolve(onUpload(preparedFile));
       if (!uploaded || !uploaded.id)
         throw new Error("Не удалось загрузить файл");
 
