@@ -116,9 +116,13 @@ export default function AdminAIGeneratePage() {
                   maxFiles={6}
                   enableCrop={false}
                   onChange={(value) => {
-                    if (value === null) {
-                      field.onChange("");
-                    }
+                    const files = Array.isArray(value)
+                      ? value
+                      : value
+                      ? [value]
+                      : [];
+                    field.onChange(files.map((f) => f.id));
+                    if (files.length) clearErrors("inputFileIds");
                   }}
                   onUpload={async (file) => {
                     clearErrors("inputFileIds");
@@ -134,7 +138,6 @@ export default function AdminAIGeneratePage() {
                         throw new Error("Не удалось загрузить файл");
                       }
 
-                      field.onChange(res.id);
                       return res;
                     } catch (e) {
                       if (checkApiResponseErrorCode(e, "UNAUTHORIZED")) {
