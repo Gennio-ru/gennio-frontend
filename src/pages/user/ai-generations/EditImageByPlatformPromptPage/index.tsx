@@ -98,8 +98,8 @@ export default function EditImageByPlatformPromptPage() {
   };
 
   const isBusy = isFetching || isSubmitting;
-
-  const { standard: standardPrice } = PROVIDER_COST_OBJECT["OPENAI"]["edit"];
+  const providerCost = PROVIDER_COST_OBJECT[currentPrompt?.model];
+  const standardPrice = providerCost?.edit?.standard;
 
   if (isLoading) {
     return <Loader />;
@@ -119,7 +119,6 @@ export default function EditImageByPlatformPromptPage() {
 
             <div className="">
               <p>В этом шаблоне портретное сходство не&nbsp;гарантировано</p>
-              {/* <p>сходство не гарантировано</p> */}
             </div>
           </div>
         )}
