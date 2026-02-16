@@ -50,7 +50,7 @@
   position: relative;
   transform-style: preserve-3d;
   transition: none;
-  filter: blur(1px);
+  filter: blur(0.7px);
   overflow: visible;
 }
 

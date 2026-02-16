@@ -40,9 +40,9 @@ export default function CardSwitcher({
   const cards = useMemo<CardItem[]>(
     () => [
       { id: 1, image: AlfaCard1, hitX: 70, hitY: 70 },
-      { id: 2, image: AlfaCard2, hitX: 64, hitY: 66 },
+      { id: 2, image: AlfaCard2, hitX: 34, hitY: 54 },
       { id: 3, image: AlfaCard3, hitX: 70, hitY: 75 },
-      { id: 4, image: AlfaCard4, hitX: 34, hitY: 54 },
+      { id: 4, image: AlfaCard4, hitX: 64, hitY: 66 },
       { id: 5, image: AlfaCard5, hitX: 68, hitY: 62 },
       { id: 6, image: AlfaCard6, hitX: 58, hitY: 70 },
       { id: 7, image: AlfaCard7, hitX: 58, hitY: 92 },
@@ -57,7 +57,6 @@ export default function CardSwitcher({
   );
   const rayTimerRef = useRef<number | null>(null);
   const sparksTimerRef = useRef<number | null>(null);
-  const isFirstRenderRef = useRef(true);
 
   useEffect(() => {
     const handleMove = (event: MouseEvent) => {
@@ -85,10 +84,6 @@ export default function CardSwitcher({
     }
     setRayActiveIndex(null);
     setSparksActiveIndex(null);
-    if (isFirstRenderRef.current) {
-      isFirstRenderRef.current = false;
-      return;
-    }
 
     const delay = Math.max(0, CARD_TRANSITION_MS - RAY_EARLY_MS);
     rayTimerRef.current = window.setTimeout(() => {
@@ -132,7 +127,8 @@ export default function CardSwitcher({
           const baseGap = 130;
           const activePush = 40;
           const translateX =
-            offset * baseGap + (offset !== 0 ? Math.sign(offset) * activePush : 0);
+            offset * baseGap +
+            (offset !== 0 ? Math.sign(offset) * activePush : 0);
           const translateZ = isActive ? 200 : 0;
           const rotateY = isActive ? 30 : 0;
           const scale = isActive ? 1.6 : 1;
