@@ -141,6 +141,15 @@ body::before {
   background-blend-mode: luminosity;
 }
 
+/* отключение глобального фона для изолированных страниц */
+:root[data-theme="light"] body.no-site-bg::before,
+:root[data-theme="dark"] body.no-site-bg::before,
+body.no-site-bg::before {
+  background-image: none !important;
+  background-color: #111 !important;
+  background-blend-mode: normal !important;
+}
+
 @layer components {
   .glass-panel-light,
   .glass-panel-light-important {

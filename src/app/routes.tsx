@@ -10,28 +10,29 @@ const PricingPage = lazy(() => import("@/pages/user/PricingPage"));
 const LegalOfferPage = lazy(() => import("@/pages/user/LegalOfferPage"));
 const PrivacyPolicyPage = lazy(() => import("@/pages/user/PrivacyPolicyPage"));
 const MyGenerations = lazy(() => import("@/pages/user/MyGenerations"));
+const AlphaExamplePage = lazy(() => import("@/pages/user/AlphaExamplePage"));
 
 const PromptsPage = lazy(
-  () => import("@/pages/user/ai-generations/PromptsPage")
+  () => import("@/pages/user/ai-generations/PromptsPage"),
 );
 const EditImageByPlatformPromptPage = lazy(
-  () => import("@/pages/user/ai-generations/EditImageByPlatformPromptPage")
+  () => import("@/pages/user/ai-generations/EditImageByPlatformPromptPage"),
 );
 const EditImageByCustomPromptPage = lazy(
-  () => import("@/pages/user/ai-generations/EditImageByCustomPromptPage")
+  () => import("@/pages/user/ai-generations/EditImageByCustomPromptPage"),
 );
 const EditImageByStyleReferencePage = lazy(
-  () => import("@/pages/user/ai-generations/EditImageByStyleReferencePage")
+  () => import("@/pages/user/ai-generations/EditImageByStyleReferencePage"),
 );
 const GenerateImagePage = lazy(
-  () => import("@/pages/user/ai-generations/GenerateImagePage")
+  () => import("@/pages/user/ai-generations/GenerateImagePage"),
 );
 
 const ModelJobWaitingResultPage = lazy(
-  () => import("@/pages/user/ai-generations/ModelJobWaitingResultPage")
+  () => import("@/pages/user/ai-generations/ModelJobWaitingResultPage"),
 );
 const ModelJobResultPage = lazy(
-  () => import("@/pages/user/ai-generations/ModelJobResultPage")
+  () => import("@/pages/user/ai-generations/ModelJobResultPage"),
 );
 
 // admin
@@ -39,16 +40,16 @@ const PromptsAdminPage = lazy(() => import("@/pages/admin/PromptsListPage"));
 const PaymentsAdminPage = lazy(() => import("@/pages/admin/PaymentsListPage"));
 const UsersAdminPage = lazy(() => import("@/pages/admin/UsersListPage"));
 const ModelJobsAdminPage = lazy(
-  () => import("@/pages/admin/ModelJobsListPage")
+  () => import("@/pages/admin/ModelJobsListPage"),
 );
 const CategoriesAdminPage = lazy(
-  () => import("@/pages/admin/CategoriesListPage")
+  () => import("@/pages/admin/CategoriesListPage"),
 );
 const TransactionsAdminPage = lazy(
-  () => import("@/pages/admin/TransactionsListPage")
+  () => import("@/pages/admin/TransactionsListPage"),
 );
 const AdminAIGeneratePage = lazy(
-  () => import("@/pages/admin/AdminAIGeneratePage")
+  () => import("@/pages/admin/AdminAIGeneratePage"),
 );
 
 export function AppRoutes() {
@@ -100,6 +101,16 @@ export function AppRoutes() {
         element={
           <Suspense fallback={<Loader />}>
             <PrivacyPolicyPage />
+          </Suspense>
+        }
+      />
+
+      {/* Альфа-банк */}
+      <Route
+        path="/alfa-example"
+        element={
+          <Suspense fallback={<Loader />}>
+            <AlphaExamplePage />
           </Suspense>
         }
       />
