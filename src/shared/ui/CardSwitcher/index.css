@@ -43,6 +43,11 @@
   transform-style: preserve-3d;
 }
 
+.card-switcher__card.is-holding {
+  cursor: grabbing;
+  transition: none;
+}
+
 .card-switcher__tilt {
   width: 100%;
   height: 100%;
@@ -52,18 +57,51 @@
   transition: none;
   filter: blur(0.7px);
   overflow: visible;
+  --hold-light-x: 50%;
+  --hold-light-y: 50%;
+  --hold-shadow-x: 50%;
+  --hold-shadow-y: 50%;
+  --hold-light-opacity: 0;
+  --hold-shadow-opacity: 0;
 }
 
+.card-switcher__tilt::before,
 .card-switcher__tilt::after {
   content: "";
   position: absolute;
   inset: 1px;
   border-radius: 14px;
-  opacity: 0;
-  transition: opacity 300ms ease;
+  pointer-events: none;
 }
 
-.card-switcher__card.is-active .card-switcher__tilt::after {
+.card-switcher__tilt::before {
+  background: radial-gradient(
+    circle at var(--hold-shadow-x) var(--hold-shadow-y),
+    rgba(0, 0, 0, 0) 20%,
+    rgba(0, 0, 0, calc(var(--hold-shadow-opacity) * 0.9)) 85%
+  );
+  filter: blur(10px);
+  opacity: 0;
+  transition: opacity 300ms ease;
+  z-index: 2;
+}
+
+.card-switcher__tilt::after {
+  background: radial-gradient(
+    circle at var(--hold-light-x) var(--hold-light-y),
+    rgba(255, 255, 255, var(--hold-light-opacity)) 0%,
+    rgba(255, 255, 255, calc(var(--hold-light-opacity) * 0.45)) 34%,
+    rgba(255, 255, 255, 0) 74%
+  );
+  mix-blend-mode: screen;
+  filter: blur(8px);
+  opacity: 0 !important;
+  transition: none;
+  z-index: 3;
+  display: none;
+}
+
+.card-switcher__card.is-holding .card-switcher__tilt::before {
   opacity: 1;
 }
 
