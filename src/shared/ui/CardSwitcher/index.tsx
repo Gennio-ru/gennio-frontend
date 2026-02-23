@@ -325,6 +325,21 @@ export default function CardSwitcher({
           );
         })}
       </div>
+      <div className="card-switcher__dots" aria-label="Card pagination">
+        {cards.map((card, index) => {
+          const isCurrent = index === activeIndex;
+          return (
+            <button
+              key={card.id}
+              type="button"
+              className={cn("card-switcher__dot", isCurrent && "is-active")}
+              onClick={() => setActiveIndex(index)}
+              aria-label={`Go to card ${index + 1}`}
+              aria-pressed={isCurrent}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }

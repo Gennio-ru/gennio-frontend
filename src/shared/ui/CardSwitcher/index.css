@@ -27,6 +27,35 @@
   transform-style: preserve-3d;
 }
 
+.card-switcher__dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.card-switcher__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: 0;
+  background: rgb(255 255 255 / 12%);
+  cursor: pointer;
+  transition:
+    transform 220ms ease,
+    background-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.card-switcher__dot:hover {
+  background: rgb(255 255 255 / 20%);
+}
+
+.card-switcher__dot.is-active {
+  background: rgb(255 255 255 / 86%);
+  transform: scale(1.06);
+}
+
 .card-switcher__card {
   position: absolute;
   left: 50%;
